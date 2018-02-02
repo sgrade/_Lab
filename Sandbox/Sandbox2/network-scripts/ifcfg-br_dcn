@@ -1,0 +1,8 @@
+DEVICE=br_dcn
+TYPE=Bridge
+IPADDR=10.128.108.99
+PREFIX=27
+BOOTPROTO=none
+NAME=br_dcn
+ONBOOT=yes
+

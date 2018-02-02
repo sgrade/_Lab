@@ -1,0 +1,10 @@
+DEVICE=bond0
+TEAM_CONFIG="{\"runner\":{\"name\":\"loadbalance\"}}"
+BOOTPROTO=none
+NAME=bond0
+UUID=d0647ecc-06b8-421f-912b-9811ee57ada2
+ONBOOT=yes
+DEVICETYPE=Team
+IPADDR=192.168.110.105
+PREFIX=24
+NETWORK=192.168.110.0

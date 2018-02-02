@@ -1,0 +1,101 @@
+# This file describes the network interfaces available on your system
+# and how to activate them. For more information, see interfaces(5).
+
+source /etc/network/interfaces.d/*
+
+# The loopback network interface
+auto lo
+iface lo inet loopback
+
+auto br_eno49
+iface br_eno49 inet static
+        address 192.168.2.251
+        netmask 255.255.255.0
+        bridge_ports eno49
+        bridge_stp off
+        bridge_fd 0
+        bridge_maxwait 0
+
+auto br_eno50
+iface br_eno50 inet static
+        address 172.16.1.251
+        netmask 255.255.255.0
+        bridge_ports eno50
+        bridge_stp off
+        bridge_fd 0
+        bridge_maxwait 0
+
+auto br_ens1f0
+iface br_ens1f0 inet static
+        address 192.168.12.254
+        netmask 255.255.255.0
+        bridge_ports ens1f0
+        bridge_stp off
+        bridge_fd 0
+        bridge_maxwait 0
+
+auto br_ens1f1
+iface br_ens1f1 inet static
+        address 172.16.0.254
+        netmask 255.255.255.0
+        bridge_ports ens1f1
+        bridge_stp off
+        bridge_fd 0
+        bridge_maxwait 0
+
+auto br_ens2f0
+iface br_ens2f0 inet static
+       address 10.128.108.101
+       netmask 255.255.255.224
+       bridge_ports ens2f0
+       bridge_stp off
+       bridge_fd 0
+       bridge_maxwait 0
+       up route add -net 10.128.4.0 netmask 255.255.252.0 gw 10.128.108.97
+       up route add -net 10.128.8.0 netmask 255.255.252.0 gw 10.128.108.97
+       up route add -net 10.188.4.0 netmask 255.255.254.0 gw 10.128.108.97
+       up route add -net 10.188.6.0 netmask 255.255.255.0 gw 10.128.108.97
+       up route add -net 10.188.14.0 netmask 255.255.254.0 gw 10.128.108.97
+       up route add -net 10.190.4.0 netmask 255.255.252.0 gw 10.128.108.97
+
+# The primary network interface
+auto br_ens2f1
+iface br_ens2f1 inet static
+	address 10.154.169.69
+	netmask 255.255.255.224
+        bridge_ports ens2f1
+        bridge_stp off
+        bridge_fd 0
+        bridge_maxwait 0
+	gateway 10.154.169.65
+	# dns-* options are implemented by the resolvconf package, if installed
+	dns-nameservers 212.44.130.6
+        dns-nameservers 195.68.136.5
+
+
+auto virbr1
+iface virbr1 inet static
+        address 10.20.0.254
+        netmask 255.255.255.0
+        bridge_ports none
+        bridge_stp off
+        bridge_fd 0
+        bridge_maxwait 0
+
+auto virbr3
+iface virbr3 inet static
+        address 192.168.10.254
+        netmask 255.255.255.0
+        bridge_ports none
+        bridge_stp off
+        bridge_fd 0
+        bridge_maxwait 0
+
+auto virbr4
+iface virbr4 inet static
+        address 192.168.11.254
+        netmask 255.255.255.0
+        bridge_ports none
+        bridge_stp off
+        bridge_fd 0
+        bridge_maxwait 0

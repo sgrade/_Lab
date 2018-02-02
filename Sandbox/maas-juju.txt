@@ -1,0 +1,58 @@
+Deploy maas
+	Note: to connect to a host deployed BY maas: 
+		key(s) should be imported via gui; username: ubuntu, no password
+		e.g.: ssh ubuntu@172.16.31.3
+
+Connect to compute node with kvm/virsh
+	Before connecting to virsh host maas node should be prepared:
+		Выполнить действия по инструкции - https://docs.ubuntu.com/maas/2.2/en/nodes-add#kvm-guest-nodes
+			Установить sudo apt install libvirt-bin
+			Создать на maas-сервере служебный аккаунт maas (он используется самим maas-ом, я его не использую)
+				sudo chsh -s /bin/bash maas
+				sudo su - maas
+				ssh-keygen -f ~/.ssh/id_rsa -N ''
+			ssh-copy-id из под maas@maas на таргетный сервер 
+				Note: I do it with Salt
+				Примечание: Коннектиться к удаленному virsh я буду с юзернеймом, существующем на удаленном хосте. 
+					Для этого юзера в его .ssh/authorized_keys прописан ключ юзера maas
+	Note: если таргетный сервер переинсталлен, зайти на maas под юзером maas и удалить из .ssh/known_hosts его старый ключ
+		ssh maas
+		sudo su - maas
+		ssh-keygen -f "/var/lib/maas/.ssh/known_hosts" -R sandbox1
+		ssh ubuntu@sandbox1
+		yes
+		exit
+		exit
+		exit
+					
+MAAS CLI
+	sudo apt install maas-cli
+	maas login roman http://10.128.108.119:5240/MAAS
+	# You will be prompted for the API key: 
+	
+Juju
+	Create a VM for juju-controller
+		Можно сделать из maas, используя "Compose" в Pod-е
+	Install juju on management workstation (or maas host):
+		sudo snap install juju --classic
+	Using juju cli, create maas cloud and relevant credentials:
+		juju add-cloud
+			maas
+			maas-cloud
+			http://10.128.108.119:5240/MAAS
+		juju add-credential maas-cloud
+			maas-cloud-creds
+			copy-paste MAAS API key (from maas admin -> User preferences)
+	Deploy juju-controller (maas will choose previously created VM automatically):
+		juju bootstrap maas-cloud maas-cloud-controller --constraints tags=virtual
+		Note: 
+			After bootstrapping juju controller doesn't have ssh keys, which maas-deployed nodes usually have
+			I only could connect from the host, from which juju controller was bootstrapped, as ubuntu@juju1
+			As a temporary workaround I added needed ssh keys manually
+		
+DNS
+	install dnsmasq on gateway-vm
+	put needed hosts in /etc/hosts on gateway-vm, e.g. 
+		172.16.31.253	salt
+	configure address of gateway-vm as a DNS-forwarder in maas
+	

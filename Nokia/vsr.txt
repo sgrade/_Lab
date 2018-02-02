@@ -1,0 +1,97 @@
+# Grub 
+## CentOS
+nano /etc/default/grub
+GRUB_CMDLINE_LINUX="... intel_iommu=on iommu=pt hugepagesz=1G, hugepages=56, default_hugepagesz=1G selinux=0 audit=0 kvm_intel.ple_gap=0 pci=realloc pcie_aspm=off nopat"
+# iommu=pt causes the DMA remapping to be bypassed in the Linux kernel, improving host performance
+grub2-mkconfig -o /boot/efi/EFI/centos/grub.cfg
+# Note: the above is for UEFI-based systems (Physical servers in our case). 
+# For BIOS-based (VMs) see here - https://wiki.centos.org/HowTos/Grub2
+grub2-mkconfig -o /boot/grub2/grub.cfg
+
+
+<interface type='hostdev' managed='yes'>
+  <mac address='52:54:00:62:00:01'/>
+  <source>
+    <address type='pci' domain='0x0000' bus='0x87' slot='0x02' function='0x0'/>
+  </source>
+  <vlan>
+    <tag id='120'/>
+  </vlan>
+</interface>
+
+#############
+# SR-IOV with dual-port VFs
+[011 s 10/03/17 07:22:12.493]  1:tRootTask:DRV:mlx4_slave_cap Unknown pf context behaviour
+[011 s 10/03/17 07:22:12.493]  1:tRootTask:DRV:mlx4_init_hca Failed to obtain slave caps
+[011 s 10/03/17 07:22:12.499]  1:tRootTask:DRV:mlx4_init 00:07.0 failed to init mlx4 device. Exiting
+[011 s 10/03/17 07:22:12.576]  1:tRootTask:DRV:netdev_activate Unit 1 has not been attached to its device yet
+
+#############
+# SR-IOV with single-port VFs
+[011 s 10/03/17 07:47:34.455]  1:tRootTask:DRV:mlx4_slave_cap Unknown pf context behaviour
+[011 s 10/03/17 07:47:34.456]  1:tRootTask:DRV:mlx4_init_hca Failed to obtain slave caps
+[011 s 10/03/17 07:47:34.458]  1:tRootTask:DRV:mlx4_init 00:07.0 failed to init mlx4 device. Exiting
+[011 s 10/03/17 07:47:34.556]  1:tRootTask:DRV:netdev_activate Unit 1 has not been attached to its device yet
+
+############
+# PCI passthrough according to the Nokia docs
+    <hostdev mode='subsystem' type='pci' managed='yes'>
+      <source>
+        <address type='pci' domain='0x0000' bus='0x87' slot='0x00' function='0x0'/>
+      </source>
+      <rom bar='off'/>
+    </hostdev>
+
+error: internal error: qemu unexpectedly closed the monitor: 2017-10-03T08:20:54.476325Z qemu-kvm: -device vfio-pci,host=87:00.0,id=hostdev0,bus=pci.0,addr=0x7,rombar=0: vfio: failed to set iommu for container: Operation not permitted
+2017-10-03T08:20:54.476349Z qemu-kvm: -device vfio-pci,host=87:00.0,id=hostdev0,bus=pci.0,addr=0x7,rombar=0: vfio: failed to setup container for group 68
+2017-10-03T08:20:54.476354Z qemu-kvm: -device vfio-pci,host=87:00.0,id=hostdev0,bus=pci.0,addr=0x7,rombar=0: vfio: failed to get group 68
+2017-10-03T08:20:54.476373Z qemu-kvm: -device vfio-pci,host=87:00.0,id=hostdev0,bus=pci.0,addr=0x7,rombar=0: Device initialization failed.
+2017-10-03T08:20:54.476383Z qemu-kvm: -device vfio-pci,host=87:00.0,id=hostdev0,bus=pci.0,addr=0x7,rombar=0: Device 'vfio-pci' could not be initialized
+
+#
+lshw -class network -businfo
+    pci@0000:87:00.0  ens2        network        MT27520 Family [ConnectX-3 Pro]
+virsh nodedev-list --cap pci | grep 87
+    pci_0000_87_00_0
+virsh nodedev-dumpxml pci_0000_87_00_0
+    <iommuGroup number='68'>
+      <address domain='0x0000' bus='0x87' slot='0x00' function='0x0'/>
+    </iommuGroup>
+
+# virsh nodedev-dettach pci_0000_87_00_0
+ <address domain='0x0000' bus='0x87' slot='0x00' function='0x0'/>
+ 
+[root@sandbox6 ~]# readlink /sys/bus/pci/devices/0000\:87\:00.0/driver
+../../../../bus/pci/drivers/vfio-pci
+
+virsh start vsr62
+...
+2017-10-03T09:44:48.849841Z qemu-kvm: -device vfio-pci,host=87:00.0,id=hostdev0,bus=pci.0,addr=0x7,rombar=0: vfio: failed to set iommu for container: Operation not permitted
+...
+
+#
+virsh nodedev-list --tree
+
+ +- pci_0000_80_03_0
+  |   |
+  |   +- pci_0000_87_00_0
+  |       |
+  |       +- net_ens2_e0_07_1b_7f_0c_40
+  |       +- net_ens2d1_e0_07_1b_7f_0c_48
+
+
+##########
+# PCI passthrough according to the libvirt docs
+# https://libvirt.org/formatdomain.html#elementsNICSHostdev
+
+    <interface type='hostdev' managed='yes'>
+      <driver name='vfio'/>
+      <source>
+        <address type='pci' domain='0x0000' bus='0x87' slot='0x00' function='0x0'/>
+      </source>
+      <rom bar='off'/>
+    </interface>
+
+error: Failed to start domain vsr62
+error: unsupported configuration: Interface type hostdev is currently supported on SR-IOV Virtual Functions only
+

@@ -1,0 +1,14 @@
+add "net.ifnames=1" kernel boot parameter
+## CentOS
+sudo nano /etc/default/grub
+GRUB_CMDLINE_LINUX="... intel_iommu=on"
+grub2-mkconfig -o /boot/grub2/grub.cfg
+
+Sample rules - http://packetpushers.net/udev/
+
+
+################
+Using the ethX names works correctly for the following scenarios:
+•	...
+•	When used for virtio NICs in Red Hat Enterprise Linux 7 virtual machine guests.
+https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/7/html/Networking_Guide/sec-Troubleshooting_Network_Device_Naming.html

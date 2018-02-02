@@ -1,0 +1,10 @@
+https://www.juniper.net/techpubs/en_US/contrail3.1/topics/task/configuration/web-use-case-vnc.html
+
+public with IP address 10.84.41.0/24
+frontend with IP address 192.168.1.0/24
+backend with IP address 192.168.2.0/24
+
+IP pool named public_pool for the public network within the demo project
+Allocate the floating IP pool public_pool to the demo project
+
+Create a policy that allows any host to talk to any host using any IP address, protocol, and port, and apply this policy between the frontend network and the backend network.

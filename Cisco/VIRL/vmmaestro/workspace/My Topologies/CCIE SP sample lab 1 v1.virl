@@ -1,0 +1,830 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<topology xmlns="http://www.cisco.com/VIRL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="0.95" xsi:schemaLocation="http://www.cisco.com/VIRL https://raw.github.com/CiscoVIRL/schema/v0.95/virl.xsd">
+    <extensions>
+        <entry key="AutoNetkit.IGP" type="String">isis</entry>
+        <entry key="management_network" type="String">flat</entry>
+        <entry key="management_lxc" type="Boolean">true</entry>
+    </extensions>
+    <node name="R8" type="SIMPLE" subtype="IOS XRv" location="238,211" excludeFromLaunch="true">
+        <extensions>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="Auto-generate config" type="Boolean">false</entry>
+            <entry key="config" type="String">!! IOS XR Configuration 6.0.1
+!! Last configuration change at Mon Sep 12 15:16:55 2016 by cisco
+!
+!  IOS-XR Config generated on 2016-09-11 10:15
+! by autonetkit_0.23.2
+hostname R8
+service timestamps log datetime msec
+service timestamps debug datetime msec
+telnet vrf default ipv4 server max-servers 10
+telnet vrf Mgmt-intf ipv4 server max-servers 10
+domain name virl.info
+domain lookup disable
+vrf Mgmt-intf
+ address-family ipv4 unicast
+ !
+ address-family ipv6 unicast
+ !
+!
+line template vty
+ timestamp
+ exec-timeout 720 0
+!
+line console
+ exec-timeout 0 0
+!
+line default
+ exec-timeout 720 0
+!
+vty-pool default 0 50
+control-plane
+ management-plane
+  inband
+   interface all
+    allow all
+   !
+  !
+ !
+!
+interface Loopback0
+ description Loopback
+ !ipv4 address 192.168.0.3 255.255.255.255
+ ipv4 address 2.2.0.8 255.255.255.255
+ ipv6 address 2002:2:2::8/128
+!
+interface MgmtEth0/0/CPU0/0
+ description OOB Management
+ ! Configured on launch
+ vrf Mgmt-intf
+ ipv4 address 172.16.1.60 255.255.255.0
+!
+interface GigabitEthernet0/0/0/0
+ shutdown
+!
+interface GigabitEthernet0/0/0/1
+ shutdown
+!
+interface GigabitEthernet0/0/0/2
+ description to R2
+ !ipv4 address 10.0.0.10 255.255.255.252
+ ipv4 address 2.2.28.8 255.255.255.0
+ ipv6 address 2002:2:2:28::8/64
+!
+interface GigabitEthernet0/0/0/3
+ shutdown
+!
+interface GigabitEthernet0/0/0/4
+ shutdown
+!
+interface GigabitEthernet0/0/0/5
+ shutdown
+!
+interface GigabitEthernet0/0/0/6
+ shutdown
+!
+interface GigabitEthernet0/0/0/7
+ description to R7
+ !ipv4 address 10.0.0.18 255.255.255.252
+ ipv4 address 2.2.78.8 255.255.255.0
+ ipv6 address 2002:2:2:78::8/64
+!
+!route-policy bgp_in
+!pass
+!end-policy
+!route-policy bgp_out
+!pass
+!end-policy
+!router isis 1
+!net 49.1921.6800.0003.00
+!address-family ipv4 unicast
+!metric-style wide
+router isis abc
+ is-type level-1
+ net 47.0002.0000.0000.0008.00
+ address-family ipv4 unicast
+  metric-style wide
+ !
+ address-family ipv6 unicast
+  single-topology
+ !
+ interface Loopback0
+  !circuit-type level-2-only
+  address-family ipv4 unicast
+  !
+  address-family ipv6 unicast
+  !
+ !
+ interface GigabitEthernet0/0/0/2
+  !circuit-type level-2-only
+  !point-to-point
+  !hello-padding disable
+  address-family ipv4 unicast
+  !
+  !metric 1
+  address-family ipv6 unicast
+  !
+ !
+ interface GigabitEthernet0/0/0/7
+  !circuit-type level-2-only
+  !point-to-point
+  !hello-padding disable
+  address-family ipv4 unicast
+  !
+  !metric 1
+  address-family ipv6 unicast
+  !
+ !
+!
+!router bgp 1
+!bgp router-id 192.168.0.3
+!address-family ipv4 unicast
+!network 192.168.0.3/32
+!iBGP
+!iBGP peers
+!neighbor 192.168.0.1
+!remote-as 1
+!description iBGP peer R2
+!update-source Loopback0
+!address-family ipv4 unicast
+!neighbor 192.168.0.2
+!remote-as 1
+!description iBGP peer R7
+!update-source Loopback0
+!address-family ipv4 unicast
+!neighbor 192.168.0.4
+!remote-as 1
+!description iBGP peer R9
+!update-source Loopback0
+!address-family ipv4 unicast
+ssh server v2
+ssh server vrf Mgmt-intf
+end</entry>
+            <entry key="static_ip" type="String">172.16.1.16</entry>
+        </extensions>
+        <interface id="2" name="GigabitEthernet0/0/0/2" ipv4="10.0.0.10" netPrefixLenV4="30">
+            <extensions>
+                <entry key="AutoNetkit.vlan" type="Integer">28</entry>
+            </extensions>
+        </interface>
+        <interface id="7" name="GigabitEthernet0/0/0/7" ipv4="10.0.0.18" netPrefixLenV4="30">
+            <extensions>
+                <entry key="AutoNetkit.vlan" type="Integer">78</entry>
+            </extensions>
+        </interface>
+    </node>
+    <node name="R9" type="SIMPLE" subtype="IOS XRv" location="427,120" excludeFromLaunch="true">
+        <extensions>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="Auto-generate config" type="Boolean">false</entry>
+            <entry key="config" type="String">!! IOS XR Configuration 6.0.1
+!! Last configuration change at Mon Sep 12 14:40:09 2016 by cisco
+!
+!  IOS-XR Config generated on 2016-09-11 10:15
+! by autonetkit_0.23.2
+hostname R9
+service timestamps log datetime msec
+service timestamps debug datetime msec
+telnet vrf default ipv4 server max-servers 10
+telnet vrf Mgmt-intf ipv4 server max-servers 10
+domain name virl.info
+domain lookup disable
+vrf Mgmt-intf
+ address-family ipv4 unicast
+ !
+ address-family ipv6 unicast
+ !
+!
+line template vty
+ timestamp
+ exec-timeout 720 0
+!
+line console
+ exec-timeout 0 0
+!
+line default
+ exec-timeout 720 0
+!
+vty-pool default 0 50
+control-plane
+ management-plane
+  inband
+   interface all
+    allow all
+   !
+  !
+ !
+!
+interface Loopback0
+ description Loopback
+ !ipv4 address 192.168.0.4 255.255.255.255
+ ipv4 address 2.2.0.9 255.255.255.255
+ ipv6 address 2002:2:2::9/128
+!
+interface MgmtEth0/0/CPU0/0
+ description OOB Management
+ ! Configured on launch
+ vrf Mgmt-intf
+ ipv4 address 172.16.1.61 255.255.255.0
+!
+interface GigabitEthernet0/0/0/0
+ shutdown
+!
+interface GigabitEthernet0/0/0/1
+ shutdown
+!
+interface GigabitEthernet0/0/0/2
+ description to R2
+ !ipv4 address 10.0.0.14 255.255.255.252
+ ipv4 address 2.2.29.9 255.255.255.0
+ ipv6 address 2002:2:2:29::9/64
+!
+interface GigabitEthernet0/0/0/3
+ shutdown
+!
+interface GigabitEthernet0/0/0/4
+ shutdown
+!
+interface GigabitEthernet0/0/0/5
+ shutdown
+!
+interface GigabitEthernet0/0/0/6
+ shutdown
+!
+interface GigabitEthernet0/0/0/7
+ description to R7
+ !ipv4 address 10.0.0.22 255.255.255.252
+ ipv4 address 2.2.79.9 255.255.255.0
+ ipv6 address 2002:2:2:79::9/64
+!
+!route-policy bgp_in
+!pass
+!end-policy
+!route-policy bgp_out
+!pass
+!end-policy
+!router isis 1
+!net 49.1921.6800.0004.00
+!address-family ipv4 unicast
+!metric-style wide
+router isis abc
+ is-type level-1
+ net 47.0002.0000.0000.9999.00
+ address-family ipv4 unicast
+  metric-style wide
+ !
+ address-family ipv6 unicast
+  single-topology
+ !
+ interface Loopback0
+  !passive
+  !circuit-type level-2-only
+  !address-family ipv4 unicast
+  address-family ipv4 unicast
+  !
+  address-family ipv6 unicast
+  !
+ !
+ interface GigabitEthernet0/0/0/2
+  !circuit-type level-2-only
+  !point-to-point
+  !hello-padding disable
+  !address-family ipv4 unicast
+  ! metric 1
+  address-family ipv4 unicast
+  !
+  address-family ipv6 unicast
+  !
+ !
+ interface GigabitEthernet0/0/0/7
+  !circuit-type level-2-only
+  !point-to-point
+  !hello-padding disable
+  !address-family ipv4 unicast
+  !metric 1
+  address-family ipv4 unicast
+  !
+  address-family ipv6 unicast
+  !
+ !
+!
+!router bgp 1
+!bgp router-id 192.168.0.4
+!address-family ipv4 unicast
+!network 192.168.0.4/32
+! iBGP
+! iBGP peers
+!neighbor 192.168.0.1
+!remote-as 1
+!description iBGP peer R2
+!update-source Loopback0
+!address-family ipv4 unicast
+!neighbor 192.168.0.2
+!remote-as 1
+!description iBGP peer R7
+!update-source Loopback0
+!address-family ipv4 unicast
+!neighbor 192.168.0.3
+!remote-as 1
+!description iBGP peer R8
+!update-source Loopback0
+!address-family ipv4 unicast
+ssh server v2
+ssh server vrf Mgmt-intf
+end</entry>
+            <entry key="static_ip" type="String">172.16.1.17</entry>
+        </extensions>
+        <interface id="2" name="GigabitEthernet0/0/0/2" ipv4="10.0.0.14" netPrefixLenV4="30">
+            <extensions>
+                <entry key="AutoNetkit.vlan" type="Integer">29</entry>
+            </extensions>
+        </interface>
+        <interface id="7" name="GigabitEthernet0/0/0/7" ipv4="10.0.0.22" netPrefixLenV4="30">
+            <extensions>
+                <entry key="AutoNetkit.vlan" type="Integer">79</entry>
+            </extensions>
+        </interface>
+    </node>
+    <node name="R2" type="SIMPLE" subtype="IOSv" location="238,118">
+        <extensions>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="Auto-generate config" type="Boolean">false</entry>
+            <entry key="static_ip" type="String">172.16.1.10</entry>
+            <entry key="config" type="String">!&#xD;
+! Last configuration change at 14:10:29 UTC Mon Sep 12 2016&#xD;
+!&#xD;
+version 15.6&#xD;
+service timestamps debug datetime msec&#xD;
+service timestamps log datetime msec&#xD;
+no service password-encryption&#xD;
+!&#xD;
+hostname R2&#xD;
+!&#xD;
+boot-start-marker&#xD;
+boot-end-marker&#xD;
+!&#xD;
+!&#xD;
+vrf definition Mgmt-intf&#xD;
+ !&#xD;
+ address-family ipv4&#xD;
+ exit-address-family&#xD;
+ !&#xD;
+ address-family ipv6&#xD;
+ exit-address-family&#xD;
+!&#xD;
+enable password cisco&#xD;
+!&#xD;
+no aaa new-model&#xD;
+ethernet lmi ce&#xD;
+!&#xD;
+!&#xD;
+!&#xD;
+mmi polling-interval 60&#xD;
+no mmi auto-configure&#xD;
+no mmi pvc&#xD;
+mmi snmp-timeout 180&#xD;
+!&#xD;
+!&#xD;
+!&#xD;
+!&#xD;
+!&#xD;
+!&#xD;
+!&#xD;
+!&#xD;
+!&#xD;
+!&#xD;
+!&#xD;
+no ip domain lookup&#xD;
+ip domain name virl.info&#xD;
+ip cef&#xD;
+ipv6 unicast-routing&#xD;
+ipv6 cef&#xD;
+!&#xD;
+multilink bundle-name authenticated&#xD;
+!&#xD;
+!&#xD;
+!&#xD;
+!&#xD;
+username cisco privilege 15 secret 5 $1$xg3M$DoysbJP1pnOfg2yOIrYrV0&#xD;
+!&#xD;
+redundancy&#xD;
+!&#xD;
+no cdp run&#xD;
+!&#xD;
+! &#xD;
+!&#xD;
+!&#xD;
+!&#xD;
+!&#xD;
+!&#xD;
+!&#xD;
+!&#xD;
+!&#xD;
+!&#xD;
+!&#xD;
+!&#xD;
+!&#xD;
+interface Loopback0&#xD;
+ description Loopback&#xD;
+ ip address 2.2.0.2 255.255.255.255&#xD;
+ ip router isis &#xD;
+ ipv6 address 2002:2:2::2/128&#xD;
+ ipv6 router isis &#xD;
+!&#xD;
+interface GigabitEthernet0/0&#xD;
+ description OOB Management&#xD;
+ vrf forwarding Mgmt-intf&#xD;
+ ip address 172.16.1.58 255.255.255.0&#xD;
+ duplex full&#xD;
+ speed auto&#xD;
+ media-type rj45&#xD;
+!&#xD;
+interface GigabitEthernet0/1&#xD;
+ no ip address&#xD;
+ shutdown&#xD;
+ duplex auto&#xD;
+ speed auto&#xD;
+ media-type rj45&#xD;
+!&#xD;
+interface GigabitEthernet0/2&#xD;
+ no ip address&#xD;
+ shutdown&#xD;
+ duplex auto&#xD;
+ speed auto&#xD;
+ media-type rj45&#xD;
+!&#xD;
+interface GigabitEthernet0/3&#xD;
+ no ip address&#xD;
+ shutdown&#xD;
+ duplex auto&#xD;
+ speed auto&#xD;
+ media-type rj45&#xD;
+!&#xD;
+interface GigabitEthernet0/4&#xD;
+ no ip address&#xD;
+ shutdown&#xD;
+ duplex auto&#xD;
+ speed auto&#xD;
+ media-type rj45&#xD;
+!&#xD;
+interface GigabitEthernet0/5&#xD;
+ no ip address&#xD;
+ shutdown&#xD;
+ duplex auto&#xD;
+ speed auto&#xD;
+ media-type rj45&#xD;
+!&#xD;
+interface GigabitEthernet0/6&#xD;
+ no ip address&#xD;
+ shutdown&#xD;
+ duplex auto&#xD;
+ speed auto&#xD;
+ media-type rj45&#xD;
+!&#xD;
+interface GigabitEthernet0/7&#xD;
+ ip address 2.2.27.2 255.255.255.0&#xD;
+ ip router isis &#xD;
+ duplex full&#xD;
+ speed auto&#xD;
+ media-type rj45&#xD;
+ ipv6 address 2002:2:2:27::2/64&#xD;
+ ipv6 router isis &#xD;
+!&#xD;
+interface GigabitEthernet0/8&#xD;
+ description to R8&#xD;
+ ip address 2.2.28.2 255.255.255.0&#xD;
+ duplex full&#xD;
+ speed auto&#xD;
+ media-type rj45&#xD;
+ ipv6 address 2002:2:2:28::2/64&#xD;
+ ipv6 router isis &#xD;
+ clns mtu 1430&#xD;
+!&#xD;
+interface GigabitEthernet0/9&#xD;
+ description to R9&#xD;
+ ip address 2.2.29.2 255.255.255.0&#xD;
+ ip router isis &#xD;
+ duplex full&#xD;
+ speed auto&#xD;
+ media-type rj45&#xD;
+ ipv6 address 2002:2:2:29::2/64&#xD;
+ ipv6 router isis &#xD;
+ clns mtu 1430&#xD;
+!&#xD;
+router isis&#xD;
+ net 47.0002.0000.0000.0002.00&#xD;
+ is-type level-1&#xD;
+ metric-style wide&#xD;
+!&#xD;
+router isis 1&#xD;
+!&#xD;
+ip forward-protocol nd&#xD;
+!&#xD;
+!&#xD;
+no ip http server&#xD;
+no ip http secure-server&#xD;
+ip ssh server algorithm authentication password&#xD;
+!&#xD;
+!&#xD;
+!&#xD;
+!&#xD;
+control-plane&#xD;
+!&#xD;
+banner exec `&#xD;
+**************************************************************************&#xD;
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *&#xD;
+* education. IOSv is provided as-is and is not supported by Cisco's      *&#xD;
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *&#xD;
+* of the IOSv Software or Documentation to any third party for any       *&#xD;
+* purposes is expressly prohibited except as otherwise authorized by     *&#xD;
+* Cisco in writing.                                                      *&#xD;
+**************************************************************************`&#xD;
+banner incoming `&#xD;
+**************************************************************************&#xD;
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *&#xD;
+* education. IOSv is provided as-is and is not supported by Cisco's      *&#xD;
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *&#xD;
+* of the IOSv Software or Documentation to any third party for any       *&#xD;
+* purposes is expressly prohibited except as otherwise authorized by     *&#xD;
+* Cisco in writing.                                                      *&#xD;
+**************************************************************************`&#xD;
+banner login `&#xD;
+**************************************************************************&#xD;
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *&#xD;
+* education. IOSv is provided as-is and is not supported by Cisco's      *&#xD;
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *&#xD;
+* of the IOSv Software or Documentation to any third party for any       *&#xD;
+* purposes is expressly prohibited except as otherwise authorized by     *&#xD;
+* Cisco in writing.                                                      *&#xD;
+**************************************************************************`&#xD;
+!&#xD;
+line con 0&#xD;
+ password cisco&#xD;
+line aux 0&#xD;
+line vty 0 4&#xD;
+ exec-timeout 720 0&#xD;
+ password cisco&#xD;
+ login local&#xD;
+ transport input telnet ssh&#xD;
+!&#xD;
+no scheduler allocate&#xD;
+!&#xD;
+end</entry>
+        </extensions>
+        <interface id="6" name="GigabitEthernet0/7" ipv4="10.0.0.5" netPrefixLenV4="30"/>
+        <interface id="7" name="GigabitEthernet0/8" ipv4="10.0.0.9" netPrefixLenV4="30">
+            <extensions>
+                <entry key="AutoNetkit.vlan" type="Integer">28</entry>
+            </extensions>
+        </interface>
+        <interface id="8" name="GigabitEthernet0/9" ipv4="10.0.0.13" netPrefixLenV4="30">
+            <extensions>
+                <entry key="AutoNetkit.vlan" type="Integer">29</entry>
+            </extensions>
+        </interface>
+    </node>
+    <node name="R7" type="SIMPLE" subtype="IOSv" location="428,214">
+        <extensions>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="Auto-generate config" type="Boolean">false</entry>
+            <entry key="static_ip" type="String">172.16.1.15</entry>
+            <entry key="config" type="String">!&#xD;
+! Last configuration change at 14:23:26 UTC Mon Sep 12 2016 by cisco&#xD;
+!&#xD;
+version 15.6&#xD;
+service timestamps debug datetime msec&#xD;
+service timestamps log datetime msec&#xD;
+no service password-encryption&#xD;
+!&#xD;
+hostname R7&#xD;
+!&#xD;
+boot-start-marker&#xD;
+boot-end-marker&#xD;
+!&#xD;
+!&#xD;
+vrf definition Mgmt-intf&#xD;
+ !&#xD;
+ address-family ipv4&#xD;
+ exit-address-family&#xD;
+ !&#xD;
+ address-family ipv6&#xD;
+ exit-address-family&#xD;
+!&#xD;
+enable password cisco&#xD;
+!&#xD;
+no aaa new-model&#xD;
+ethernet lmi ce&#xD;
+!&#xD;
+!&#xD;
+!&#xD;
+mmi polling-interval 60&#xD;
+no mmi auto-configure&#xD;
+no mmi pvc&#xD;
+mmi snmp-timeout 180&#xD;
+!&#xD;
+!&#xD;
+!&#xD;
+!&#xD;
+!&#xD;
+!&#xD;
+!&#xD;
+!&#xD;
+!&#xD;
+!&#xD;
+!&#xD;
+no ip domain lookup&#xD;
+ip domain name virl.info&#xD;
+ip cef&#xD;
+ipv6 unicast-routing&#xD;
+ipv6 cef&#xD;
+!&#xD;
+multilink bundle-name authenticated&#xD;
+!&#xD;
+!&#xD;
+!&#xD;
+!&#xD;
+username cisco privilege 15 secret 5 $1$czVW$wOObj/Q2jP.nd.6R8Oyoc0&#xD;
+!&#xD;
+redundancy&#xD;
+!&#xD;
+no cdp run&#xD;
+!&#xD;
+! &#xD;
+!&#xD;
+!&#xD;
+!&#xD;
+!&#xD;
+!&#xD;
+!&#xD;
+!&#xD;
+!&#xD;
+!&#xD;
+!&#xD;
+!&#xD;
+!&#xD;
+interface Loopback0&#xD;
+ description Loopback&#xD;
+ ip address 2.2.0.7 255.255.255.255&#xD;
+ ip router isis &#xD;
+ ipv6 address 2002:2:2::7/128&#xD;
+ ipv6 router isis &#xD;
+!&#xD;
+interface GigabitEthernet0/0&#xD;
+ description OOB Management&#xD;
+ vrf forwarding Mgmt-intf&#xD;
+ ip address 172.16.1.59 255.255.255.0&#xD;
+ duplex full&#xD;
+ speed auto&#xD;
+ media-type rj45&#xD;
+!&#xD;
+interface GigabitEthernet0/1&#xD;
+ no ip address&#xD;
+ shutdown&#xD;
+ duplex auto&#xD;
+ speed auto&#xD;
+ media-type rj45&#xD;
+!&#xD;
+interface GigabitEthernet0/2&#xD;
+ description to R2&#xD;
+ ip address 2.2.27.7 255.255.255.0&#xD;
+ ip router isis &#xD;
+ duplex full&#xD;
+ speed auto&#xD;
+ media-type rj45&#xD;
+ ipv6 address 2002:2:2:27::7/64&#xD;
+ ipv6 router isis &#xD;
+!&#xD;
+interface GigabitEthernet0/3&#xD;
+ no ip address&#xD;
+ shutdown&#xD;
+ duplex auto&#xD;
+ speed auto&#xD;
+ media-type rj45&#xD;
+!&#xD;
+interface GigabitEthernet0/4&#xD;
+ no ip address&#xD;
+ shutdown&#xD;
+ duplex auto&#xD;
+ speed auto&#xD;
+ media-type rj45&#xD;
+!&#xD;
+interface GigabitEthernet0/5&#xD;
+ no ip address&#xD;
+ shutdown&#xD;
+ duplex auto&#xD;
+ speed auto&#xD;
+ media-type rj45&#xD;
+!&#xD;
+interface GigabitEthernet0/6&#xD;
+ no ip address&#xD;
+ shutdown&#xD;
+ duplex auto&#xD;
+ speed auto&#xD;
+ media-type rj45&#xD;
+!&#xD;
+interface GigabitEthernet0/7&#xD;
+ no ip address&#xD;
+ shutdown&#xD;
+ duplex auto&#xD;
+ speed auto&#xD;
+ media-type rj45&#xD;
+!&#xD;
+interface GigabitEthernet0/8&#xD;
+ description to R8&#xD;
+ ip address 2.2.78.7 255.255.255.0&#xD;
+ ip router isis &#xD;
+ duplex full&#xD;
+ speed auto&#xD;
+ media-type rj45&#xD;
+ ipv6 address 2002:2:2:78::7/64&#xD;
+ ipv6 router isis &#xD;
+ clns mtu 1430&#xD;
+!&#xD;
+interface GigabitEthernet0/9&#xD;
+ description to R9&#xD;
+ ip address 2.2.79.7 255.255.255.0&#xD;
+ ip router isis &#xD;
+ duplex full&#xD;
+ speed auto&#xD;
+ media-type rj45&#xD;
+ ipv6 address 2002:2:2:79::7/64&#xD;
+ ipv6 router isis &#xD;
+ clns mtu 1430&#xD;
+!&#xD;
+router isis&#xD;
+ net 47.0002.0000.0000.0007.00&#xD;
+ is-type level-1&#xD;
+ metric-style wide&#xD;
+!&#xD;
+ip forward-protocol nd&#xD;
+!&#xD;
+!&#xD;
+no ip http server&#xD;
+no ip http secure-server&#xD;
+ip ssh server algorithm authentication password&#xD;
+!&#xD;
+!&#xD;
+!&#xD;
+!&#xD;
+control-plane&#xD;
+!&#xD;
+banner exec `&#xD;
+**************************************************************************&#xD;
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *&#xD;
+* education. IOSv is provided as-is and is not supported by Cisco's      *&#xD;
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *&#xD;
+* of the IOSv Software or Documentation to any third party for any       *&#xD;
+* purposes is expressly prohibited except as otherwise authorized by     *&#xD;
+* Cisco in writing.                                                      *&#xD;
+**************************************************************************`&#xD;
+banner incoming `&#xD;
+**************************************************************************&#xD;
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *&#xD;
+* education. IOSv is provided as-is and is not supported by Cisco's      *&#xD;
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *&#xD;
+* of the IOSv Software or Documentation to any third party for any       *&#xD;
+* purposes is expressly prohibited except as otherwise authorized by     *&#xD;
+* Cisco in writing.                                                      *&#xD;
+**************************************************************************`&#xD;
+banner login `&#xD;
+**************************************************************************&#xD;
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *&#xD;
+* education. IOSv is provided as-is and is not supported by Cisco's      *&#xD;
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *&#xD;
+* of the IOSv Software or Documentation to any third party for any       *&#xD;
+* purposes is expressly prohibited except as otherwise authorized by     *&#xD;
+* Cisco in writing.                                                      *&#xD;
+**************************************************************************`&#xD;
+!&#xD;
+line con 0&#xD;
+ password cisco&#xD;
+line aux 0&#xD;
+line vty 0 4&#xD;
+ exec-timeout 720 0&#xD;
+ password cisco&#xD;
+ login local&#xD;
+ transport input telnet ssh&#xD;
+!&#xD;
+no scheduler allocate&#xD;
+!&#xD;
+end</entry>
+        </extensions>
+        <interface id="1" name="GigabitEthernet0/2" ipv4="10.0.0.6" netPrefixLenV4="30"/>
+        <interface id="7" name="GigabitEthernet0/8" ipv4="10.0.0.17" netPrefixLenV4="30">
+            <extensions>
+                <entry key="AutoNetkit.vlan" type="Integer">78</entry>
+            </extensions>
+        </interface>
+        <interface id="8" name="GigabitEthernet0/9" ipv4="10.0.0.21" netPrefixLenV4="30">
+            <extensions>
+                <entry key="AutoNetkit.vlan" type="Integer">79</entry>
+            </extensions>
+        </interface>
+    </node>
+    <annotations/>
+    <connection dst="/virl:topology/virl:node[2]/virl:interface[1]" src="/virl:topology/virl:node[3]/virl:interface[3]"/>
+    <connection dst="/virl:topology/virl:node[1]/virl:interface[1]" src="/virl:topology/virl:node[3]/virl:interface[2]"/>
+    <connection dst="/virl:topology/virl:node[4]/virl:interface[3]" src="/virl:topology/virl:node[2]/virl:interface[2]"/>
+    <connection dst="/virl:topology/virl:node[4]/virl:interface[2]" src="/virl:topology/virl:node[1]/virl:interface[2]"/>
+    <connection dst="/virl:topology/virl:node[4]/virl:interface[1]" src="/virl:topology/virl:node[3]/virl:interface[1]"/>
+</topology>

@@ -1,0 +1,6 @@
+NAME=bond0-port2
+UUID=9e2c11d5-bddb-4eeb-b239-902b6bd9d2db
+DEVICE=ens8d1
+ONBOOT=yes
+TEAM_MASTER=bond0
+DEVICETYPE=TeamPort

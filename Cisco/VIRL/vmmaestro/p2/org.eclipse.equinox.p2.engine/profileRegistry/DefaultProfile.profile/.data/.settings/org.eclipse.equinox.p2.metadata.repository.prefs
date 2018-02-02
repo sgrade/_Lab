@@ -1,0 +1,16 @@
+eclipse.preferences.version=1
+repositories/file\:_C\:_Program%20Files_Cisco_vmmaestro_.eclipseextension/description=
+repositories/file\:_C\:_Program%20Files_Cisco_vmmaestro_.eclipseextension/enabled=true
+repositories/file\:_C\:_Program%20Files_Cisco_vmmaestro_.eclipseextension/isSystem=true
+repositories/file\:_C\:_Program%20Files_Cisco_vmmaestro_.eclipseextension/name=C\:\\Program Files\\Cisco\\vmmaestro\\.eclipseextension
+repositories/file\:_C\:_Program%20Files_Cisco_vmmaestro_.eclipseextension/provider=
+repositories/file\:_C\:_Program%20Files_Cisco_vmmaestro_.eclipseextension/type=org.eclipse.equinox.p2.extensionlocation.metadataRepository
+repositories/file\:_C\:_Program%20Files_Cisco_vmmaestro_.eclipseextension/uri=file\:/C\:/Program%20Files/Cisco/vmmaestro/.eclipseextension
+repositories/file\:_C\:_Program%20Files_Cisco_vmmaestro_.eclipseextension/version=1
+repositories/file\:_C\:_Users_RKlyuev_vmmaestro_configuration_org.eclipse.osgi_154_data_listener_1925729951/description=
+repositories/file\:_C\:_Users_RKlyuev_vmmaestro_configuration_org.eclipse.osgi_154_data_listener_1925729951/isSystem=true
+repositories/file\:_C\:_Users_RKlyuev_vmmaestro_configuration_org.eclipse.osgi_154_data_listener_1925729951/name=dropins
+repositories/file\:_C\:_Users_RKlyuev_vmmaestro_configuration_org.eclipse.osgi_154_data_listener_1925729951/provider=
+repositories/file\:_C\:_Users_RKlyuev_vmmaestro_configuration_org.eclipse.osgi_154_data_listener_1925729951/type=org.eclipse.equinox.internal.p2.metadata.repository.LocalMetadataRepository
+repositories/file\:_C\:_Users_RKlyuev_vmmaestro_configuration_org.eclipse.osgi_154_data_listener_1925729951/uri=file\:/C\:/Users/RKlyuev/vmmaestro/configuration/org.eclipse.osgi/154/data/listener_1925729951/
+repositories/file\:_C\:_Users_RKlyuev_vmmaestro_configuration_org.eclipse.osgi_154_data_listener_1925729951/version=1

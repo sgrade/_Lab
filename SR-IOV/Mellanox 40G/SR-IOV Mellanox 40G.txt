@@ -1,0 +1,197 @@
+##############
+# Useful commands
+# yum install lshw
+sudo lshw -class network -businfo
+ethtool -i <interface-name>
+readlink -f /sys/class/net/<interface-name>/device
+
+##############
+
+# Grub 
+## Ubuntu
+sudo nano /etc/default/grub
+	GRUB_CMDLINE_LINUX="intel_iommu=on"
+sudo update-grub
+sudo reboot
+	# NOTE: Setting GRUB_CMDLINE_LINUX_DEFAULT doesnt work
+## CentOS
+sudo nano /etc/default/grub
+GRUB_CMDLINE_LINUX="... intel_iommu=on console=ttyS0"
+# console=ttyS0 enables virsh console
+grub2-mkconfig -o /boot/efi/EFI/centos/grub.cfg
+# Note: the above is for UEFI-based systems (Physical servers in our case). 
+# For BIOS-based (VMs) see here - https://wiki.centos.org/HowTos/Grub2
+grub2-mkconfig -o /boot/grub2/grub.cfg
+
+# Mellanox driver
+# http://www.mellanox.com/page/products_dyn?product_family=27
+wget http://www.mellanox.com/downloads/ofed/MLNX_EN-4.1-1.0.2.0/mlnx-en-4.1-1.0.2.0-ubuntu16.04-x86_64.iso
+# or
+wget http://www.mellanox.com/downloads/ofed/MLNX_EN-4.1-1.0.2.0/mlnx-en-4.1-1.0.2.0-rhel7.3-x86_64.iso
+
+sudo mount -o ro,loop mlnx-en-4.1-1.0.2.0-ubuntu16.04-x86_64.iso /mnt
+# or
+mount -o ro,loop mlnx-en-4.1-1.0.2.0-rhel7.3-x86_64.iso /mnt
+
+sudo /mnt/install
+	### Note:
+		The firmware for this device is not distributed inside Mellanox driver: 87:00.0 (PSID: HP_1360110017)
+		To obtain firmware for this device, please contact your HW vendor.
+		Failed to update Firmware.
+		See /tmp/mlnx-en.2621.logs/fw_update.log
+sudo /etc/init.d/mlnx-en.d restart
+# Note: for some reason on Ubuntu Mellanox VFs dont start after reboot. I need to restart driver manually after reboot: sudo /etc/init.d/mlnx-en.d restart
+
+# Mellanox management utilities
+# http://www.mellanox.com/page/management_tools
+# Download, for example
+	wget http://www.mellanox.com/downloads/MFT/mft-4.7.0-42-x86_64-deb.tgz
+	wget http://www.mellanox.com/downloads/MFT/mft-4.7.0-42-x86_64-rpm.tgz
+tar -xzvf mft[TAB]
+cd mft[TAB]
+sudo ./install.sh
+
+# Use Mellanox management utilities
+# start mst
+mst start
+# get device list
+mst status
+# query device config
+mlxconfig -d /dev/mst/mt4103_pciconf0 q
+
+sudo nano /etc/modprobe.d/mlx4.conf
+	options mlx4_core num_vfs=0,0,16 port_type_array=2,2  enable_vfs_qos=1 probe_vf=0,0,1 log_num_mgm_entry_size=-7
+	
+# После обновления CentOS в dmesg вижу ошибку
+# mlx4_core: Unknown parameter `enable_vfs_qos'
+# При этом ручной перезапуск не работает
+# [root@sandbox6 ~]# /etc/init.d/mlnx-en.d restart
+Unloading NIC driver:                                      [  OK  ]
+Loading Mellanox MLX4 NIC driver:                          [FAILED]
+Loading Mellanox MLX4_EN NIC driver:                       [FAILED]
+Loading NIC driver:                                        [FAILED]
+# Удалил enable_vfs_qos=1 
+# [root@sandbox6 ~]# /etc/init.d/mlnx-en.d restart
+Unloading NIC driver:                                      [  OK  ]
+Loading NIC driver:                                        [  OK  ]
+Connection successfully activated (D-Bus active path: /org/freedesktop/NetworkManager/ActiveConnection/12)
+Connection successfully activated (D-Bus active path: /org/freedesktop/NetworkManager/ActiveConnection/13)
+
+	
+reboot
+# or
+sudo /etc/init.d/mlnx-en.d restart
+
+lspci | grep Mellanox
+
+# Note: for extensive description of pci devices use
+lspci -vvnn
+
+# CentOS VM on CentOS
+mkdir /home/images
+mkdir /home/iso
+chmod 711 /home/images
+chmod 711 /home/iso
+
+virt-install \
+--name centos61 \
+--vcpus=2 \
+--autostart \
+--connect qemu:///system \
+--virt-type kvm \
+--ram 8192 \
+--disk size=128,path=/home/images/centos61.qcow2 \
+--cdrom /home/iso/CentOS-7-x86_64-DVD-1611.iso \
+--os-variant rhel7 \
+--graphics vnc,port=5911 \
+--network network=default \
+
+--console pty,target_type=serial \
+
+lspci | grep Mellanox
+	87:00.0 Network controller: Mellanox Technologies MT27520 Family [ConnectX-3 Pro]
+virsh nodedev-list --cap pci | grep 87
+virsh nodedev-dumpxml pci_0000_87_00_0
+virsh nodedev-dumpxml pci_0000_87_00_1
+	<address domain='0x0000' bus='0x87' slot='0x00' function='0x1'/>
+
+# Add interface to vm
+virsh edit centos1
+    <interface type='hostdev' managed='yes'>
+      <driver name='vfio'/>
+      <source>
+        <address type='pci' domain='0x0000' bus='0x87' slot='0x00' function='0x1'/>
+      </source>
+      <alias name='hostdev0'/>
+	    <vlan>
+	      <tag id='110'/>
+        </vlan>
+    </interface>
+
+	
+###
+# Centos 51
+sudo ip link set dev ens2d1 vf 0 vlan 110
+sudo ip link set dev ens2d1 vf 1 vlan 111
+sudo ip link set dev ens2d1 vf 0 mac 52:54:00:c6:92:b0
+sudo ip link set dev ens2d1 vf 1 mac 52:54:00:fe:af:9d
+# Centos 61
+ip link set dev ens2d1 vf 0 vlan 110
+ip link set dev ens2d1 vf 1 vlan 111
+ip link set dev ens2d1 vf 0 mac 52:54:00:bf:ac:8b
+ip link set dev ens2d1 vf 1 mac 52:54:00:c7:93:6f
+# Centos 62
+ip link set dev ens2d1 vf 2 vlan 110
+ip link set dev ens2d1 vf 3 vlan 111
+ip link set dev ens2d1 vf 2 mac 52:54:00:ff:a1:d8
+ip link set dev ens2d1 vf 3 mac 52:54:00:f8:46:64
+
+###
+ubuntu@sandbox5:~$ dmesg -T | grep -i 'mac address'
+[Tue Sep 12 09:44:07 2017] mlx4_en: 0000:87:00.1: Port 1: Assigned random MAC address de:d5:99:a0:b7:93
+[Tue Sep 12 09:44:07 2017] mlx4_en: 0000:87:00.1: Port 2: Assigned random MAC address 36:65:b4:e1:21:c3
+
+[root@sandbox6 ~]# dmesg -T | grep -i 'mac address'
+[Tue Sep 12 12:43:40 2017] mlx4_en: 0000:87:00.1: Port 1: Assigned random MAC address 2e:d2:00:bb:9d:bd
+[Tue Sep 12 12:43:41 2017] mlx4_en: 0000:87:00.1: Port 2: Assigned random MAC address 26:f8:25:0c:92:db
+
+###
+
+[root@centos51 network-scripts]# teamdctl bond0 state
+setup:
+  runner: loadbalance
+ports:
+  ens8
+    link watches:
+      link summary: up
+      instance[link_watch_0]:
+        name: ethtool
+        link: up
+        down count: 0
+  ens8d1
+    link watches:
+      link summary: up
+      instance[link_watch_0]:
+        name: ethtool
+        link: up
+        down count: 0
+
+[root@centos61 network-scripts]# teamdctl bond0 state
+setup:
+  runner: loadbalance
+ports:
+  ens8
+    link watches:
+      link summary: up
+      instance[link_watch_0]:
+        name: ethtool
+        link: up
+        down count: 0
+  ens8d1
+    link watches:
+      link summary: up
+      instance[link_watch_0]:
+        name: ethtool
+        link: up
+        down count: 0
+###

@@ -1,0 +1,76 @@
+### Use salt-cloud to saltify target hosts (to install and configure salt minions)
+# https://docs.saltstack.com/en/latest/topics/cloud/saltify.html
+
+# 0. Dependencies:
+DNS should resolve "salt" to IP address of salt master
+ssh keys should be configured (see how I did it for MaaS for details)
+
+
+# 1. Prepare salt master	
+# /etc/salt/cloud.providers.d$ cat my-saltify-config.conf
+my-saltify-config:
+	minion:
+		master: salt
+	driver: saltify
+
+#  cat /etc/salt/cloud.profiles.d/sandboxes.conf
+sandbox1:
+	ssh_host: sandbox1.maas
+	ssh_username: ubuntu
+	key_filename: '/home/ubuntu/.ssh/id_rsa'
+	provider: my-saltify-config
+
+# Saltify target host (e.g. sandbox1) using salt-profile (e.g. sandbox1) 
+salt-cloud -p sandbox1 sandbox1
+
+# Double-check if the target host is 
+salt sandbox1 test.ping
+
+
+### Configure the host
+
+# /srv/salt/top.sls
+base:
+  '*':
+	- test
+# put relevant configs (see which ones in test.sls) in /srv/sandbox/files/
+# /srv/salt/test.sls
+
+################
+### Salt-cloud with Libvirt
+
+## Ubuntu
+#on salt master
+sudo apt install libvirt-bin
+sudo salt-cloud --list-providers
+# WARNING ] The cloud driver, 'libvirt', configured under the 'kvm-via-ssh' cloud provider alias, could not be loaded. Please check your provider configuration files and ensure all required dependencies are installed for the 'libvirt' driver.
+sudo apt install python-libvirt
+sudo salt-cloud --list-providers
+
+## CentOS
+yum groupinstall "Virtualization Client"
+
+# Create base_domain
+maas roman pod compose 6 cores=2 memory=8192 hostname=salt-template storage=80
+	# Note: если таргетный сервер переинсталлен, будет ошибка "Failed talking to pod: Failed to login to virsh console."
+	# зайти на maas под юзером maas и удалить из .ssh/known_hosts его старый ключ
+	# Как это сделать смотрим в файле maas-juju
+
+
+### Salt-cloud libvirt
+# "ip_source: ip-learing" didn't work for me
+# "ip_source: qemu-agent"
+# In the guest VM
+yum install qemu-guest-agent
+	
+###########
+
+virt-clone --original centos62 --name centos-image --auto-clone
+
+###########
+
+Reboot the system:
+  module.run:
+    - name: system.reboot
+    - onchanges:
+      - Change network config

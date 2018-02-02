@@ -1,0 +1,83 @@
+[    0.169324] pci_bus 0000:00: root bus resource [bus 00-ff]
+[    0.169327] pci_bus 0000:00: root bus resource [io  0x0000-0x0cf7 window]
+[    0.169328] pci_bus 0000:00: root bus resource [io  0x0d00-0xffff window]
+[    0.169329] pci_bus 0000:00: root bus resource [mem 0x000a0000-0x000bffff window]
+[    0.169330] pci_bus 0000:00: root bus resource [mem 0xc0000000-0xfebfffff window]
+
+[    0.386262] pci 0000:00:08.0: [15b3:1004] type 00 class 0x028000
+[    0.396468] pci 0000:00:08.0: reg 0x18: [mem 0xfa000000-0xfbffffff 64bit pref]
+
+[    0.407021] pci 0000:00:09.0: [15b3:1004] type 00 class 0x028000
+[    0.417218] pci 0000:00:09.0: reg 0x18: [mem 0xfc000000-0xfdffffff 64bit pref]
+
+
+[    0.966087] mlx4_core: Mellanox ConnectX core driver v4.1-1.0.2 (27 Jun 2017)
+
+[    0.966123] mlx4_core: Initializing 0000:00:08.0
+[    0.968986] mlx4_core 0000:00:08.0: Detected virtual function - running in slave mode
+[    0.969020] mlx4_core 0000:00:08.0: Sending reset
+[    0.969592] mlx4_core 0000:00:08.0: Sending vhcr0
+[    0.970620] mlx4_core 0000:00:08.0: HCA minimum page size:512
+[    0.971275] mlx4_core 0000:00:08.0: Timestamping is not supported in slave mode
+[    0.971276] mlx4_core: device is working in RoCE mode: Roce V1
+[    0.971277] mlx4_core: UD QP Gid type is: V1
+[    0.971639] mlx4_core 0000:00:08.0: irq 24 for MSI/MSI-X
+[    0.971650] mlx4_core 0000:00:08.0: irq 25 for MSI/MSI-X
+[    0.971664] mlx4_core 0000:00:08.0: irq 26 for MSI/MSI-X
+[    0.971675] mlx4_core 0000:00:08.0: irq 27 for MSI/MSI-X
+[    0.971687] mlx4_core 0000:00:08.0: irq 28 for MSI/MSI-X
+
+[    0.995227] mlx4_core: Initializing 0000:00:09.0
+[    1.001028] mlx4_core 0000:00:09.0: Detected virtual function - running in slave mode
+[    1.001056] mlx4_core 0000:00:09.0: Sending reset
+[    1.001604] mlx4_core 0000:00:09.0: Sending vhcr0
+[    1.002851] mlx4_core 0000:00:09.0: HCA minimum page size:512
+[    1.003467] mlx4_core 0000:00:09.0: Timestamping is not supported in slave mode
+[    1.003468] mlx4_core: device is working in RoCE mode: Roce V1
+[    1.003469] mlx4_core: UD QP Gid type is: V1
+[    1.003833] mlx4_core 0000:00:09.0: irq 29 for MSI/MSI-X
+[    1.003845] mlx4_core 0000:00:09.0: irq 30 for MSI/MSI-X
+[    1.003855] mlx4_core 0000:00:09.0: irq 31 for MSI/MSI-X
+[    1.003869] mlx4_core 0000:00:09.0: irq 32 for MSI/MSI-X
+[    1.003880] mlx4_core 0000:00:09.0: irq 33 for MSI/MSI-X
+
+
+[    1.025583] mlx4_en: Mellanox ConnectX HCA Ethernet driver v4.1-1.0.2 (27 Jun 2017)
+
+[    1.026321] mlx4_en 0000:00:08.0: Activating port:1
+[    1.026410] mlx4_en: 0000:00:08.0: Port 1: Assigned random MAC address 76:ef:56:25:3c:73
+[    1.039222] mlx4_en: 0000:00:08.0: Port 1: Using 16 TX rings
+[    1.039222] mlx4_en: 0000:00:08.0: Port 1: Using 2 RX rings
+[    1.039223] mlx4_en: 0000:00:08.0: Port 1:   frag:0 - size:1522 prefix:0 stride:1536
+[    1.041875] mlx4_en: 0000:00:08.0: Port 1: Initializing port
+
+[    1.045995] mlx4_en 0000:00:08.0: Activating port:2
+[    1.053482] mlx4_en: 0000:00:08.0: Port 2: Using 16 TX rings
+[    1.053482] mlx4_en: 0000:00:08.0: Port 2: Using 2 RX rings
+[    1.053483] mlx4_en: 0000:00:08.0: Port 2:   frag:0 - size:1522 prefix:0 stride:1536
+[    1.053630] mlx4_en: 0000:00:08.0: Port 2: Initializing port
+
+[    1.059124] mlx4_en 0000:00:09.0: Activating port:1
+[    1.059203] mlx4_en: 0000:00:09.0: Port 1: Assigned random MAC address ea:30:61:01:ac:da
+[    1.068270] mlx4_en: 0000:00:09.0: Port 1: Using 16 TX rings
+[    1.068272] mlx4_en: 0000:00:09.0: Port 1: Using 2 RX rings
+[    1.068273] mlx4_en: 0000:00:09.0: Port 1:   frag:0 - size:1522 prefix:0 stride:1536
+[    1.068441] mlx4_en: 0000:00:09.0: Port 1: Initializing port
+
+[    1.072785] mlx4_en 0000:00:09.0: Activating port:2
+[    1.265807] mlx4_en: 0000:00:09.0: Port 2: Using 16 TX rings
+[    1.265809] mlx4_en: 0000:00:09.0: Port 2: Using 2 RX rings
+[    1.265811] mlx4_en: 0000:00:09.0: Port 2:   frag:0 - size:1522 prefix:0 stride:1536
+[    1.265995] mlx4_en: 0000:00:09.0: Port 2: Initializing port
+
+[    7.370672] mlx4_en: ens8:   frag:0 - size:1522 prefix:0 stride:1536
+[    7.391986] mlx4_en: ens8: Link Up
+
+[    8.170077] mlx4_en: ens8d1:   frag:0 - size:1522 prefix:0 stride:1536
+[    8.187449] mlx4_en: ens8d1: Link Up
+
+[    8.190556] mlx4_en: ens9:   frag:0 - size:1522 prefix:0 stride:1536
+[    8.212323] mlx4_en: ens9: Link Up
+
+[    8.220515] mlx4_en: ens9d1:   frag:0 - size:1522 prefix:0 stride:1536
+[    8.238140] mlx4_en: ens9d1: Link Up

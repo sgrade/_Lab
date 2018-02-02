@@ -1,0 +1,256 @@
+Sandbox notes
+
+jumphost server interfaces
+eno49
+eno50
+ens1f0
+ens1f1
+ens2f0: 10.128.108.98 255.255.255.240
+ens2f1: 10.154.169.66 255.255.255.240 gw 10.154.169.65
+
+
+virt-install \
+--name test-ubuntu \
+--connect qemu:///system \
+--virt-type kvm \
+--memory 512 \
+--disk size=10 \
+--cdrom ~/distros/mini.iso \
+--os-variant auto \
+--graphics vnc,port=5910\
+--extra-args 'console=tty0 console=ttyS0,115200n8'\
+--network bridge=br_ens2f0\
+
+https://medium.com/@HashtagSecurity/ubuntu-16-04-server-lvmetad-is-not-active-yet-solution-655827a5c11d#.f6gyq9uky
+
+sudo systemctl stop vncserver@1
+sudo systemctl start vncserver@1
+sudo systemctl status vncserver@1
+
+###########
+## Add network interfaces
+https://kashyapc.fedorapeople.org/virt/add-network-card-in-guest.txt
+virsh domiflist vm1
+
+#https://libvirt.org/formatnetwork.html
+# the xml files are in the same directory as this file
+
+virt-install --console=?
+
+virt-install \
+--name opnfv-c3 \
+--autostart \
+--connect qemu:///system \
+--virt-type kvm \
+--memory 8192 \
+--disk size=128 \
+--cdrom ~/distros/opnfv-colorado.3.0.iso \
+--os-variant auto \
+--graphics vnc,port=5911 \
+--network bridge=br_eno49 \
+--network bridge=br_eno50 \
+--network bridge=br_ens1f0 \
+--network bridge=br_ens1f1 \
+--network bridge=br_ens2f0 \
+--network network=default \
+--console pty,target_type=virtio\
+
+virt-install \
+--name fuel-master \
+--vcpus=4 \
+--autostart \
+--connect qemu:///system \
+--virt-type kvm \
+--memory 8192 \
+--disk size=128 \
+--cdrom /home/roman/distros/opnfv-danube.1.0.iso \
+--os-variant auto \
+--graphics vnc,port=5911 \
+--network bridge=virbr1,model=virtio \
+--network bridge=br_eno50,model=virtio \
+--network bridge=br_ens2f0,model=virtio \
+--network network=default \
+--console pty,target_type=serial \
+
+
+# Не сработало
+#--serial dev,path=ttyS0 \
+
+# If reinstall is needed and you need to boot from CD, use bootmenu (press F12)
+# the configuration (for virsh edit) is below
+  <os>
+    <type arch='x86_64' machine='pc-i440fx-xenial'>hvm</type>
+    <boot dev='hd'/>
+    <boot dev='cdrom'/>
+    <bootmenu enable='yes'/>
+  </os>
+  <devices>
+      <disk type='file' device='cdrom'>
+      <driver name='qemu' type='raw'/>
+      <source file='/home/roman/distros/opnfv-colorado.3.0.iso'/>
+      <backingStore/>
+      <target dev='hdb' bus='ide'/>
+      <readonly/>
+      <alias name='ide0-0-1'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='1'/>
+  </devices>
+
+virt-install \
+--name fuel-controller1 \
+--autostart \
+--connect qemu:///system \
+--virt-type kvm \
+--memory 16384 \
+--disk size=128 \
+--pxe \
+--os-variant auto \
+--graphics vnc,port=5912 \
+--network bridge=br_eno49 \
+--network bridge=br_eno50 \
+--network bridge=br_ens1f0 \
+--network bridge=br_ens1f1 \
+--network bridge=br_ens2f0 \
+--network bridge=br_ens2f1 \
+--console pty,target_type=virtio\
+
+virt-install \
+--name fuel-controller2 \
+--autostart \
+--connect qemu:///system \
+--virt-type kvm \
+--memory 16384 \
+--disk size=128 \
+--pxe \
+--os-variant auto \
+--graphics vnc,port=5913 \
+--network bridge=br_eno49 \
+--network bridge=br_eno50 \
+--network bridge=br_ens1f0 \
+--network bridge=br_ens1f1 \
+--network bridge=br_ens2f0 \
+--network bridge=br_ens2f1 \
+--console pty,target_type=virtio\
+
+virt-install \
+--name fuel-controller3 \
+--autostart \
+--connect qemu:///system \
+--virt-type kvm \
+--memory 16384 \
+--disk size=128 \
+--pxe \
+--os-variant auto \
+--graphics vnc,port=5914 \
+--network bridge=br_eno49 \
+--network bridge=br_eno50 \
+--network bridge=br_ens1f0 \
+--network bridge=br_ens1f1 \
+--network bridge=br_ens2f0 \
+--network bridge=br_ens2f1 \
+--console pty,target_type=virtio\
+
+virt-install \
+--name fuel-controller4 \
+--autostart \
+--connect qemu:///system \
+--virt-type kvm \
+--memory 16384 \
+--disk size=128 \
+--pxe \
+--os-variant auto \
+--graphics vnc,port=5915 \
+--network bridge=br_eno49 \
+--network bridge=br_eno50 \
+--network bridge=br_ens1f0 \
+--network bridge=br_ens1f1 \
+--network bridge=br_ens2f0 \
+--network bridge=br_ens2f1 \
+--noautoconsole \
+--vcpus 2\
+
+######
+--noautoconsole \
+--vcpus 2\
+######
+#ttys0
+
+
+virt-install \
+--name fuel-compute1 \
+--autostart \
+--connect qemu:///system \
+--virt-type kvm \
+--memory 32768 \
+--disk size=128 \
+--pxe \
+--os-variant auto \
+--graphics vnc,port=5916 \
+--network bridge=br_eno49 \
+--network bridge=br_eno50 \
+--network bridge=br_ens1f0 \
+--network bridge=br_ens1f1 \
+--network bridge=br_ens2f0 \
+--network bridge=br_ens2f1 \
+--noautoconsole \
+--vcpus 4 \
+
+virt-install \
+--name fuel-compute2 \
+--autostart \
+--connect qemu:///system \
+--virt-type kvm \
+--memory 32768 \
+--disk size=128 \
+--pxe \
+--os-variant auto \
+--graphics vnc,port=5917 \
+--network bridge=br_eno49 \
+--network bridge=br_eno50 \
+--network bridge=br_ens1f0 \
+--network bridge=br_ens1f1 \
+--network bridge=br_ens2f0 \
+--network bridge=br_ens2f1 \
+--noautoconsole \
+--vcpus 4 \
+
+
+# Set existing VM boot from PXE
+Alternatively, ensure that the guest network is configured to use your private libvirt network, and that the XML guest configuration file has a <boot dev='network'/> element inside the <os> element, as shown in the following example:
+<os>
+   #<type arch='x86_64' machine='pc-i440fx-rhel7.0.0'>hvm</type>
+   <boot dev='network'/>
+   #<boot dev='hd'/>
+</os>
+# More - https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/7/html/Virtualization_Deployment_and_Administration_Guide/sect-Network_booting_with_libvirt-Booting_a_guest_using_PXE.html
+
+
+virt-install \
+--name juju \
+--vcpus=2 \
+--autostart \
+--connect qemu:///system \
+--virt-type kvm \
+--memory 8192 \
+--disk size=128 \
+--cdrom /home/roman/distros/ubuntu-16.04.2-server-amd64.iso \
+--os-variant auto \
+--graphics vnc,port=5911 \
+--network bridge=virbr1,model=virtio \
+--network bridge=br_eno50,model=virtio \
+--network bridge=br_ens2f0,model=virtio \
+--network network=default \
+--console pty,target_type=serial \
+
+virt-install \
+--name centos2 \
+--vcpus=2 \
+--autostart \
+--connect qemu:///system \
+--virt-type kvm \
+--ram 8192 \
+--disk size=128,path=/var/lib/libvirt/images/centos2.qcow2 \
+--cdrom /home/roman/distros/CentOS-7-x86_64-Everything-1611.iso \
+--os-variant rhel7 \
+--graphics vnc,port=5916 \
+--network network=default \
+--console pty,target_type=serial \

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Delete resource &apos;My Topologies/CCIE SP sample lab 1 v2.virl&apos;" deleteContents="false" description="Delete resource &apos;My Topologies/CCIE SP sample lab 1 v2.virl&apos;" element1="/My Topologies/CCIE SP sample lab 1 v2.virl" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="1" stamp="1473769606678"/>
+</session>

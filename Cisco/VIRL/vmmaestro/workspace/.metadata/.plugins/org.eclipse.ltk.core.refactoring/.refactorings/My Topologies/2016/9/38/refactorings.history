@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename resource &apos;My Topologies/CCIE SP sample lab 1.virl&apos; to &apos;CCIE SP sample lab 1 v1.virl&apos;" description="Rename resource &apos;CCIE SP sample lab 1.virl&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="CCIE SP sample lab 1.virl" name="CCIE SP sample lab 1 v1.virl" stamp="1473758611766" updateReferences="true"/>
+</session>

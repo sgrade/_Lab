@@ -1,0 +1,8 @@
+TYPE="Ethernet"
+NAME="ens1f0"
+DEVICE="ens1f0"
+BOOTPROTO="none"
+ONBOOT="yes"
+BRIDGE="br0"
+UUID=32c6a660-274f-4b4c-adc2-4bd6c063e10d
+

@@ -1,0 +1,8 @@
+TYPE=Ethernet
+BOOTPROTO=none
+NAME=bond0-port1
+UUID=32b81f7e-1590-4f52-8529-4d981538b0bb
+DEVICE=ens2
+ONBOOT=yes
+MASTER=bond0
+SLAVE=yes

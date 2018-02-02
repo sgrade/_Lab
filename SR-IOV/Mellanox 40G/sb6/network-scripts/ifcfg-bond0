@@ -1,0 +1,9 @@
+DEVICE=bond0
+NAME=bond0
+TYPE=Bond
+BONDING_MASTER=yes
+ONBOOT=yes
+BOOTPROTO=none
+IPADDR=192.168.1.6
+PREFIX=24
+BONDING_OPTS="mode=802.3ad lacp_rate=1 miimon=100"

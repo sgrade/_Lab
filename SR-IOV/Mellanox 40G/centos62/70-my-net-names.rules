@@ -1,0 +1,24 @@
+# Created manually. Start here:
+# https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/7/html/Networking_Guide/sec-Disabling_Consistent_Network_Device_Naming.html
+
+ACTION!="add", GOTO="net_name_slot_end"
+SUBSYSTEM!="net", GOTO="net_name_slot_end"
+NAME!="", GOTO="net_name_slot_end"
+
+IMPORT{cmdline}="net.ifnames"
+ENV{net.ifnames}=="0", GOTO="net_name_slot_end"
+
+
+# MAC Address
+SUBSYSTEM=="net", ACTION=="add", ATTR{address}=="52:54:00:2d:60:df", NAME="eth0"
+
+# PCI ID
+#SUBSYSTEM=="net", ACTION=="add", KERNELS=="0000:00:03.0", NAME="eth0"
+SUBSYSTEM=="net", ACTION=="add", KERNELS=="0000:00:0a.0", NAME="eth1"
+SUBSYSTEM=="net", ACTION=="add", KERNELS=="0000:00:0b.0", NAME="eth2"
+
+# Device ID and Device port
+SUBSYSTEM=="net", ACTION=="add", KERNELS=="0000:00:09.0", ATTR{address}=="52:54:00:f8:46:64", ATTR{dev_id}=="0x0", ATTR{dev_port}=="0", NAME="eth90"
+SUBSYSTEM=="net", ACTION=="add", KERNELS=="0000:00:09.0", ATTR{address}=="52:54:00:f8:46:64", ATTR{dev_id}=="0x0", ATTR{dev_port}=="1", NAME="eth91"
+
+LABEL="net_name_slot_end"

@@ -1,0 +1,9 @@
+auto lo
+iface lo inet loopback
+    dns-nameservers 172.16.31.1 172.16.31.254
+    dns-search maas
+
+# name of the bridge should be br0 as Salt Virt requires
+auto br0
+iface br0 inet dhcp
+    bridge_ports ens4

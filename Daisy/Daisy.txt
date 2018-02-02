@@ -1,0 +1,148 @@
+#do not assign any ip address to interfaces, dedicated for daisy
+
+# Prerequisites
+# 
+yum -y install epel-release
+yum -y update
+yum -y install gcc python-devel python-pip python-wheel git sshpass
+reboot
+
+#git clone to the home directory itself (/home/daisy), do NOT create any subdirectories (
+# the scripts are created badly and fail in other directory, e.g. (/home/daisy/daisy)
+cd ~
+git clone https://gerrit.opnfv.org/gerrit/daisy
+cd daisy
+pip install -r requirements.txt
+# pip install -r test-requirements.txt
+
+# download opnfv, e.g. opnfv-2017-11-28_08-00-05.bin
+mkdir -p ~/distros/daisy
+cd ~/distros/daisy
+wget http://artifacts.opnfv.org/daisy/euphrates/opnfv-2017-11-28_08-00-05.bin
+cp opnfv-*.bin ~/daisy/opnfv.bin
+
+cd ~/daisy
+mkdir -p labs/zte/virtual1/daisy/config/
+cp deploy/config/vm_environment/zte-virtual1/* labs/zte/virtual1/daisy/config/
+
+./ci/deploy/deploy.sh -L $(cd ./;pwd) -l zte -p virtual1 -s os-nosdn-nofeature-ha
+OR
+./ci/deploy/deploy.sh -L $(cd ./;pwd) -l zte -p virtual1 -s os-odl_l3-nofeature-ha
+
+Login to:
+Daisy: 10.20.11.2 daisy/daisy
+OpenStack: 10.20.11.11 admin/keystone
+
+#############
+
+docker exec openvswitch_vswitchd ovs-vsctl show
+docker exec openvswitch_vswitchd ovs-vsctl --version
+
+docker exec nova_api nova-manage --version
+docker exec neutron_server neutron-server --version
+docker exec heat_api heat-manage --version
+docker exec cinder_api cinder-manage --version
+docker exec glance_api glance-manage --version
+docker exec keystone keystone-manage --version
+
+#############
+
+# !!! the commented lines below are just for reference !!! They related to old functest version (opnfv/functest). The newer version packed in more specific containers, e.g. opnfv/functest-core
+# docker pull opnfv/functest
+# 
+# docker run -ti –name functest -e INSTALLER_TYPE=”daisy” -e INSTALLER_IP=”10.21.11.2” -e NODE_NAME=”zte-vtest” -e DEPLOY_SCENARIO=”os-nosdn-nofeature-ha” -e BUILD_TAG=”jenkins-functest-daisy-virtual-daily-master-1259” -e DEPLOY_TYPE=”virt” opnfv/functest:latest /bin/bash
+# The following option deleted for now: -e BUILD_TAG=”jenkins-functest-daisy-virtual-daily-master-1259” 
+# Before run above command change below parameters: DEPLOY_SCENARIO: indicate the scenario DEPLOY_TYPE: virt/baremetal NODE_NAME: pod name INSTALLER_IP: daisy vm node ip
+#
+# docker run -ti --env-file env     -v $(pwd)/openstack.creds:/home/opnfv/functest/conf/openstack.creds:Z      -v /home/images:/home/opnfv/functest/images:Z  opnfv/functest:latest /bin/bash
+# Note: ":Z" is needed to eliminate "Permission denied" when accessing the volumes from inside the container. https://stackoverflow.com/questions/24288616/permission-denied-on-accessing-host-directory-in-docker
+# functest env prepare
+# functest tier run healthcheck
+
+
+http://docs.opnfv.org/en/stable-euphrates/submodules/functest/docs/testing/user/configguide/index.html
+docker pull opnfv/functest-core:opnfv-5.1.0
+docker pull opnfv/functest-healthcheck:opnfv-5.1.0
+docker pull opnfv/functest-smoke:opnfv-5.1.0
+docker pull opnfv/functest-features:opnfv-5.1.0
+docker pull opnfv/functest-components:opnfv-5.1.0
+docker pull opnfv/functest-vnf:opnfv-5.1.0
+docker pull opnfv/functest-parser:opnfv-5.1.0
+docker pull opnfv/functest-restapi:opnfv-5.1.0
+
+cd /home
+mkdir -p images && wget -q -O- https://git.opnfv.org/functest/plain/functest/ci/download_images.sh?h=stable/euphrates | bash -s -- images && ls -1 images/*
+
+# nano env
+INSTALLER_TYPE=”daisy”
+INSTALLER_IP=”10.21.11.2”
+DEPLOY_SCENARIO=”os-nosdn-nofeature-ha”
+DEPLOY_TYPE=”virt”
+
+docker run --env-file env \
+    -v $(pwd)/openstack.creds:/home/opnfv/functest/conf/openstack.creds:Z  \
+    -v /home/images:/home/opnfv/functest/images:Z  \
+    opnfv/functest-healthcheck:opnfv-5.1.0
+
+docker run --env-file env \
+    -v $(pwd)/openstack.creds:/home/opnfv/functest/conf/openstack.creds:Z  \
+    -v /home/images:/home/opnfv/functest/images:Z  \
+    opnfv/functest-smoke:opnfv-5.1.0
+	
++------------------------------+------------------------+---------------+------------------+----------------+
+|          TEST CASE           |        PROJECT         |      TIER     |     DURATION     |     RESULT     |
++------------------------------+------------------------+---------------+------------------+----------------+
+|          vping_ssh           |        functest        |     smoke     |      01:28       |      PASS      |
+|        vping_userdata        |        functest        |     smoke     |      01:11       |      PASS      |
+|     tempest_smoke_serial     |        functest        |     smoke     |      30:59       |      PASS      |
+|         rally_sanity         |        functest        |     smoke     |      01:38       |      FAIL      |
+|       refstack_defcore       |        functest        |     smoke     |      22:14       |      PASS      |
+|         snaps_smoke          |        functest        |     smoke     |      57:44       |      PASS      |
+|             odl              |        functest        |     smoke     |      00:00       |      SKIP      |
+|         odl_netvirt          |        functest        |     smoke     |      00:00       |      SKIP      |
+|             fds              |     fastdatastacks     |     smoke     |      00:00       |      SKIP      |
++------------------------------+------------------------+---------------+------------------+----------------+
+
+
+sudo docker run --env-file env \
+    -v $(pwd)/openstack.creds:/home/opnfv/functest/conf/openstack.creds:Z  \
+    -v /home/images:/home/opnfv/functest/images:Z  \
+    opnfv/functest-components:opnfv-5.1.0
+	
++-------------------------------+------------------+--------------------+------------------+----------------+
+|           TEST CASE           |     PROJECT      |        TIER        |     DURATION     |     RESULT     |
++-------------------------------+------------------+--------------------+------------------+----------------+
+|     tempest_full_parallel     |     functest     |     components     |      62:26       |      PASS      |
+|           rally_full          |     functest     |     components     |      02:16       |      FAIL      |
++-------------------------------+------------------+--------------------+------------------+----------------+
+
+### Почему-то ралли-тесты не работают. Может это поможет?
+HINTS:
+
+* To use standard OpenStack clients, set up your env by running:
+        source ~/.rally/openrc
+		
+		
+docker run --env-file env \
+    -v $(pwd)/openstack.creds:/home/opnfv/functest/conf/openstack.creds:Z \
+	-v /home/images:/home/opnfv/functest/images:Z \
+	opnfv/functest-vnf:opnfv-5.1.0
+	
++---------------------------------+-------------------+--------------+------------------+----------------+
+|            TEST CASE            |      PROJECT      |     TIER     |     DURATION     |     RESULT     |
++---------------------------------+-------------------+--------------+------------------+----------------+
+|           cloudify_ims          |      functest     |     vnf      |      39:34       |      FAIL      |
+|           vyos_vrouter          |      functest     |     vnf      |      06:11       |      FAIL      |
+|        orchestra_openims        |     orchestra     |     vnf      |      36:42       |      FAIL      |
+|     orchestra_clearwaterims     |     orchestra     |     vnf      |      24:59       |      FAIL      |
++---------------------------------+-------------------+--------------+------------------+----------------+
+
+		
+###########################
+
+docker run -itd --privileged -v /var/run/docker.sock:/var/run/docker.sock \
+   -v $(pwd)/openstack.creds:/etc/yardstick/openstack.creds \
+   -p 8888:5000 --name yardstick opnfv/yardstick:stable
+   
+docker exec -it yardstick /bin/bash
+

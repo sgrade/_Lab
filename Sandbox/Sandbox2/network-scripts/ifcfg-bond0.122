@@ -1,0 +1,5 @@
+DEVICE=bond0.122
+NAME=bond0.122
+BOOTPROTO=none
+ONBOOT=yes
+VLAN=yes

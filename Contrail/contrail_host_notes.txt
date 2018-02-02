@@ -1,0 +1,268 @@
+# test netconf connection
+ssh -s 172.16.0.250 -p 830 netconf
+
+----
+Делал такие настройки во Fuel:
+Networks - default
+	Public CIDR: 172.16.0.0/24
+	IP Range: 172.16.0.2 - 172.16.0.119
+	Gateway: 172.16.0.250
+Networks - Neutron L3
+	Floating IP range: 172.16.0.130 - 172.16.0.239
+Settings -> Other
+	GW IP for Private net - пусто
+	GW IP - 192.168.12.250 - НАДО ПОМЕНЯТЬ НА 172.16.0.250? ПОМЕНЯЛ, ПЕРЕИНСТАЛЛИВАЮ
+
+Несмотря на описанные выше настройки во Fuel, в Contrail после инсталляции такие настройки admin_floating_net
+	CIDR			Gateway		DNS		DHCP	Allocation Pools
+	172.16.0.0/24	172.16.0.1	Enabled	Enabled	172.16.0.2 - 172.16.0.254
+То же самое в OpenStack
+	172.16.0.0/24
+	IP allocation pool
+	Start 172.16.0.2 - End 172.16.0.254
+	Gateway IP
+	172.16.0.1
+Нигде не могу поменять ничего - ошибки выдает или просто поля серые (нельзя изменить)
+
+При попытке добавить интерфейс на роутер без указания IP-адреса выдает ошибку
+Error: Failed to add_interface: Unable to complete operation for network 386c6b23-3ea8-4150-bd62-3cfb0d34175c. The IP address 172.16.0.1 is in use. Neutron server returns request_ids: ['req-dd8c952d-a096-4f8b-b5ff-288f7aff9eb0']
+При попытке указать адрес (172.16.0.239) тоже ошибка
+Error: Failed to add_interface: An unknown exception occurred. Neutron server returns request_ids: ['req-65c18f12-61d4-4d4c-8e25-e703a272f28e']
+Пробовал на дефолтном роутере (router04) и на вновь созданном
+
+----
+Когда 
+	Сменил Floating IP CIDR на 172.16.0.64/26 
+	Сделал соответствующим Floating IP range: 172.16.0.128 - 172.16.0.191
+	Но оставил 
+		Networks - default - Public - Gateway: 172.16.0.1
+		Networks - default - Public - IP Range: 172.16.0.2 - 172.16.0.119
+Получилось так:
+	Underlay
+		На fuel-controller1 выставился адрес 172.16.0.2 и дефолтный маршрут через 172.16.0.1
+		На всех остальных хостах дефолтный маршрут идет через 192.168.10.7 
+			это vrouter на fuel-controller1 (ip netns list)
+			если на vrouter сделать 'route -n', уже у него дефолт через 172.16.0.1
+	Overlay
+		Во флоатинг пуле дефолт gw стал 172.16.0.129
+		А вот на компьют-нодах странная конфига получилась на vrouter-ах
+			Адрес в публичной сети сконфигурирован из диапазона floating С МАСКОЙ /26 (как я конфигурировал для Floating IP range)
+При я этом оставил
+	Gateway IP 192.168.12.250
+	Т.к. у Contrail-нода нет интерфейса в 172.16.0.0, он не найдет этот BGP peer (может и найдет, но мультихоп нужен?)
+
+
+В Contrail:
+Configure -> Infrastructure -> BGP Routers
+	Два роутера
+	192.168.12.250 - mx
+	192.168.12.5 - contrail
+Configure -> Infrastructure -> Virtual Routers
+	Два роутера на компьют-нодах: тип Hypevisor, IP 
+	node-8.domain.tld	192.168.12.6
+	node-6.domain.tld	192.168.12.3
+Configure -> Networking -> Ports
+	a097ddad-dd07-4bdc-8881-454eb044ba66	admin_floating_net	172.16.0.1		-network:router_interface
+		В графе device-id прочерк
+	f15982fd-255b-4d82-8178-922727e79eef	admin_internal_net	192.168.111.1	-network:router_interface
+		В графе device-id стоит router04 (2c62d099-d70a-44c9-a7b8-048db8861253)
+Configure -> Networking -> Routers
+	router04
+		Name 				router04
+		UUID 				2c62d099-d70a-44c9-a7b8-048db8861253
+		External Gateway 	admin_floating_net
+		SNAT 				Enabled
+		Connected 			Network admin_internal_net
+		Router Interfaces
+			UUID									Network				IP
+			f15982fd-255b-4d82-8178-922727e79eef	admin_internal_net	192.168.111.1
+		Owner 	819d272d03cb4791b6c5d77fa5606646
+			(Это ID проджекта в OpenStack -> Services (Tenant for the openstack services))
+			
+При создании  в OpenStack нового роутера создались автоматом два SNAT-а
+	Configure -> Networking -> Networks
+		Network																						Subnets
+		snat-si-left_snat_1d8b58e3-5fab-4f60-9abe-c68cd8fd1804_c2b7fee6-569d-4ebb-8628-6a07d6c86180	100.64.0.0/29
+		snat-si-left_snat_2c62d099-d70a-44c9-a7b8-048db8861253_5110fb93-75fc-4adb-aae3-71af96c4d4f5	100.64.0.0/29
+	Подсети для этих NAT-ов я не указывал
+
+------
+DONT assign public network to all hosts - installation will fail
+When I dont assign public network to all hosts, 
+Contrail web-interface in in public network: 172.16.0.8 96:39:36:ef:80:15
+But hosts dont have public interfaces, 
+root@node-6:~# route -n
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+0.0.0.0         192.168.10.7    0.0.0.0         UG    0      0        0 br-mgmt
+10.20.0.0       0.0.0.0         255.255.255.0   U     0      0        0 br-fw-admin
+169.254.169.254 -               255.255.255.255 !H    0      -        0 -
+192.168.10.0    0.0.0.0         255.255.255.0   U     0      0        0 br-mgmt
+192.168.11.0    0.0.0.0         255.255.255.0   U     0      0        0 br-storage
+192.168.12.0    0.0.0.0         255.255.255.0   U     0      0        0 vhost0
+
+Default gw for hosts: 192.168.10.7 
+
+-----
+# Remote desktop
+# http://ubuntuhandbook.org/index.php/2016/07/remote-access-ubuntu-16-04/
+
+virt-install \
+--name desktop \
+--autostart \
+--graphics vnc,port=5919 \
+--ram 16192 \
+--vcpus=8 \
+--arch=x86_64 \
+--cdrom /home/roman/distros/ubuntu-17.04-desktop-amd64.iso \
+--os-type linux \
+--network bridge=br_eno49,model=virtio \
+--network bridge=br_eno50,model=virtio \
+--network bridge=br_ens1f0,model=virtio \
+--network bridge=br_ens1f1,model=virtio \
+--network bridge=br_ens2f0,model=virtio \
+--network bridge=br_ens2f1,model=virtio \
+--disk pool=default,size=64 \
+--noautoconsole\
+
+## I changed manually video driver to virtio to be able increase desktop resolution
+    <video>
+      <model type='virtio' vram='16384' heads='1'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
+    </video>
+# I tried virt-install with the following, but vm doesn't start
+--video model=virtio \
+
+
+# --video qxl --channel spicevmc \
+# Почитать про защиту spice с помощью TLS
+#http://www.ibm.com/support/knowledgecenter/linuxonibm/liaat/liaatkvmsecoverview.htm
+# Затем вернуться к рекомендуемому способу инсталляции
+# --graphics spice,port='5919',disable-ticketing,listen='0.0.0.0' \
+
+# Default is
+    <video>
+      <model type='cirrus' vram='16384' heads='1'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
+    </video>
+
+
+virt-install \
+--name fuel-master \
+--connect qemu:///system \
+--virt-type kvm \
+--memory 8192 \
+--disk size=128 \
+--cdrom ~/distros/MirantisOpenStack-9.0.iso \
+--os-variant auto \
+--graphics vnc,port=5910 \
+--network bridge=virbr1 \
+--network bridge=virbr2 \
+--network bridge=br_ens2f0 \
+--network network=default \
+--noautoconsole \
+--vcpus 2 \
+
+virt-install \
+--name fuel-controller1 \
+--connect qemu:///system \
+--virt-type kvm \
+--memory 16384 \
+--disk size=128 \
+--pxe \
+--os-variant auto \
+--graphics vnc,port=5911 \
+--network bridge=virbr1 \
+--network bridge=virbr2 \
+--network bridge=virbr3 \
+--network bridge=virbr4 \
+--network bridge=virbr5 \
+--noautoconsole\
+
+# Порты 5912, 5913 зарезервировал для контроллеров, когда доберусь до HA
+
+virt-install \
+--name contrail-controller1 \
+--connect qemu:///system \
+--virt-type kvm \
+--memory 16384 \
+--disk size=320 \
+--pxe \
+--os-variant auto \
+--graphics vnc,port=5913 \
+--network bridge=virbr1 \
+--network bridge=virbr2 \
+--network bridge=virbr3 \
+--network bridge=virbr4 \
+--network bridge=virbr5 \
+--noautoconsole\
+
+virt-install \
+--name contrail-analytics \
+--connect qemu:///system \
+--virt-type kvm \
+--memory 16384 \
+--disk size=640 \
+--pxe \
+--os-variant auto \
+--graphics vnc,port=5914 \
+--network bridge=virbr1 \
+--network bridge=virbr2 \
+--network bridge=virbr3 \
+--network bridge=virbr4 \
+--network bridge=virbr5 \
+--noautoconsole \
+--vcpus 2 \
+
+virt-install \
+--name fuel-compute1 \
+--connect qemu:///system \
+--virt-type kvm \
+--memory 32768 \
+--disk size=128 \
+--pxe \
+--os-variant auto \
+--graphics vnc,port=5915 \
+--network bridge=virbr1 \
+--network bridge=virbr2 \
+--network bridge=virbr3 \
+--network bridge=virbr4 \
+--network bridge=virbr5 \
+--noautoconsole \
+--vcpus 4 \
+
+virt-install \
+--name fuel-compute2 \
+--connect qemu:///system \
+--virt-type kvm \
+--memory 32768 \
+--disk size=128 \
+--pxe \
+--os-variant auto \
+--graphics vnc,port=5916 \
+--network bridge=virbr1 \
+--network bridge=virbr2 \
+--network bridge=virbr3 \
+--network bridge=virbr4 \
+--network bridge=virbr5 \
+--noautoconsole \
+--vcpus 4 \
+
+# node for Telemetry, Cinder
+virt-install \
+--name fuel-services \
+--connect qemu:///system \
+--virt-type kvm \
+--memory 16384 \
+--disk size=512 \
+--pxe \
+--boot hd,network,menu=on \
+--os-variant auto \
+--graphics vnc,port=5917 \
+--network bridge=virbr1,model='virtio' \
+--network bridge=br_ens1f1,model='virtio' \
+--network bridge=virbr3,model='virtio' \
+--network bridge=virbr4,model='virtio' \
+--network bridge=br_ens1f0,model='virtio' \
+--noautoconsole \
+--vcpus 2 \

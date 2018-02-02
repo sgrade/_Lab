@@ -1,0 +1,13 @@
+virt-install \
+--name salt \
+--vcpus=2 \
+--autostart \
+--connect qemu:///system \
+--virt-type kvm \
+--ram 8192 \
+--disk size=128 \
+--cdrom /home/roman/distros/CentOS-7-x86_64-DVD-1611.iso \
+--os-variant rhel7 \
+--graphics vnc,port=5901 \
+--network network=maas \
+--console pty,target_type=serial \

@@ -1,0 +1,49 @@
+For Fuel installer
+
+docker run --name "FunctestContainer" -it \
+-e "INSTALLER_IP=10.20.0.2" \
+-e "INSTALLER_TYPE=fuel" \
+-e "DEPLOY_SCENARIO=os-nosdn-ovs" \
+-v ~/openrc:/home/opnfv/functest/conf/openstack.creds \
+opnfv/functest /bin/bash
+
+# Tried, but found that this is not needed
+#docker network create -d macvlan \
+#    --subnet=10.20.0.0/24 \
+#    --gateway=10.20.0.1  \
+#    -o parent=eth1 administrative
+
+# Before doing below, login once to fuel master manually, accept the fingerprint. Then it will work
+# ssh root@10.20.0.2. Pass r00tme
+$repos_dir/releng/utils/fetch_os_creds.sh \
+-d /home/opnfv/functest/conf/openstack.creds \
+-i fuel \
+-a 10.20.0.2 \
+-v
+
+functest env prepare
+functest env show
+
+source /home/opnfv/functest/conf/openstack.creds
+openstack user list
+env|grep OS_
+
+functest tier --help
+functest tier list
+functest testcase list
+functest tier show smoke
+
+#In openrc add v2.0
+# it was: export OS_AUTH_URL='http://192.168.10.3:5000/'
+# should be: export OS_AUTH_URL='http://192.168.10.3:5000/v2.0'
+
+functest tier run healthcheck
+
+###
+functest tier run vnf
+
+# centos_7 image doesn't exist on glance repository. Try downloading this image and upload on glance
+# the same for ubuntu_14.04 image
+
+# nova.exception.MemoryPageSizeForbidden
+# enabled Huge pages on compute nodes according to MOS NFV guide 9.1

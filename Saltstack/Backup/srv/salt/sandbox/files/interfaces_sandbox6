@@ -1,0 +1,25 @@
+auto lo
+iface lo inet loopback
+    # dns-* options are implemented by the resolvconf package, if installed
+
+auto br_dcn
+iface br_dcn inet static
+    address 10.128.108.103
+    netmask 255.255.255.224
+    bridge_ports eno50
+    bridge_stp off
+    bridge_fd 0
+    bridge_maxwait 0
+    up route add -net 10.128.4.0 netmask 255.255.252.0 gw 10.128.108.97
+    up route add -net 10.128.8.0 netmask 255.255.252.0 gw 10.128.108.97
+    up route add -net 10.188.4.0 netmask 255.255.254.0 gw 10.128.108.97
+    up route add -net 10.188.6.0 netmask 255.255.255.0 gw 10.128.108.97
+    up route add -net 10.188.14.0 netmask 255.255.254.0 gw 10.128.108.97
+    up route add -net 10.190.4.0 netmask 255.255.252.0 gw 10.128.108.97
+    mtu 1500
+
+# name of the bridge should be br0 as Salt Virt requires
+auto br0
+iface br0 inet dhcp
+    bridge_ports ens1f0
+

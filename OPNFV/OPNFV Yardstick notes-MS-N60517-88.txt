@@ -1,0 +1,41 @@
+Install python-openstackclient
+http://docs.openstack.org/user-guide/common/cli-install-openstack-command-line-clients.html
+
+apt-get install python-dev python-pip python-mock tcpreplay libpcap-dev
+
+sudo apt-get update && sudo apt-get install -y \
+    wget \
+    git \
+    sshpass \
+    qemu-utils \
+    kpartx \
+    libffi-dev \
+    libssl-dev \
+    python \
+    python-dev \
+    python-virtualenv \
+    libxml2-dev \
+    libxslt1-dev \
+    python-setuptools
+
+http://docs.openstack.org/image-guide/obtain-images.html
+mkdir test-images
+cd test-images
+wget http://download.cirros-cloud.net/0.3.4/cirros-0.3.4-x86_64-disk.img
+glance --os-image-api-version 1 image-create \
+--name cirros-0.3.4 --is-public true \
+--disk-format qcow2 --container-format bare \
+--file ~/test-images/cirros-0.3.4-x86_64-disk.img
+
+Yardstick uses the following environment variable by default
+{"EXTERNAL_NETWORK", "net04_ext"}
+In my MOS demo
+{"EXTERNAL_NETWORK", "admin_floating_net"}
+I should either export it manually or add to the openrc file.
+export EXTERNAL_NETWORK='admin_floating_net'
+
+source ~/yardstick_venv/bin/activate
+source ~/openrc
+cd ~/yardstick
+yardstick -v task start roman_tests/ping.yaml
+deactivate

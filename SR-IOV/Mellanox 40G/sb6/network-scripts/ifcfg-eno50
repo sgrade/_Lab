@@ -1,0 +1,7 @@
+DEVICE=eno50
+NAME=eno50
+TYPE=Ethernet
+BOOTPROTO=none
+UUID=7bf2a70f-5020-4959-8fd7-14d63840d6de
+ONBOOT=yes
+BRIDGE=br_dcn

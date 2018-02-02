@@ -1,0 +1,7 @@
+TYPE=Ethernet
+BOOTPROTO=none
+NAME=bond0-port1
+DEVICE=ens2f0
+ONBOOT=yes
+MASTER=bond0
+SLAVE=yes

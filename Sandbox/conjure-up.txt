@@ -1,0 +1,9 @@
+ubuntu openstack
+
+snap install conjure-up --classic
+conjure-up
+#if it doesn't start - it's because of the bug - https://github.com/conjure-up/conjure-up/issues/683
+#sudo snap refresh core --beta
+
+lxc list
+lxc exec ContainerName bash

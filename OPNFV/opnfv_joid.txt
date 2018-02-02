@@ -1,0 +1,52 @@
+# OPNFV joid install on VMs
+
+# 0. Prerequisites:
+# maas server installed
+# we use maas-cli, so it is installed (on a management desktop - NOT on maas server), maas profile configured (e.g. maas-server)
+# virtualization host (e.g. sandbox1) saltified and configured for maas
+# virtualization host is configured in maas as virsh pod
+
+# Get maas pod id
+maas maas-server pods read
+
+# in our case pod id is 6
+	Machine-readable output follows:
+	[
+		{
+	...
+		   "name": "sandbox1",
+	...
+			],
+			"id": 6
+		}
+	]
+
+
+# Compose jump node on virtualization host under maas management
+maas maas-server pod compose 6 cores=2 memory=8192 hostname=joid
+
+	Success.
+	Machine-readable output follows:
+	{
+		"system_id": "gdp33h",
+		"resource_uri": "/MAAS/api/2.0/machines/gdp33h/"
+	}
+
+# Wait until the jump node is commissioned by maas (2-3 minutes for me)
+
+# Deploy OS on jump node
+maas maas-server machine deploy gdp33h
+
+# Wait until jump node is deployed
+
+# prepare salt cloud profile for jump node
+# /etc/salt/cloud.profiles.d/joid.conf
+joid:
+    ssh_host: joid.maas
+    ssh_username: ubuntu
+    key_filename: '/home/roman/.ssh/id_rsa'
+    provider: my-saltify-config
+
+# saltify joid
+salt-cloud -p joid joid
+

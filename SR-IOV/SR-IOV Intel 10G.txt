@@ -1,0 +1,84 @@
+sudo nano /etc/default/grub
+ Change: GRUB_CMDLINE_LINUX=""
+ To: GRUB_CMDLINE_LINUX="iommu=pt intel_iommu=on"
+sudo update-grub
+sudo nano /sys/class/net/p1p1/device/sriov_numvfs
+  Change: 0
+  To: 7
+sudo nano /sys/class/net/p1p2/device/sriov_numvfs
+  Change: 0
+  To: 7
+lspci | grep Ethernet
+sudo nano /etc/rc.local
+	Ручной вариант: Add before 'exit 0': 
+		echo '7' > /sys/class/net/p1p1/device/sriov_numvfs
+		echo '7' > /sys/class/net/p1p2/device/sriov_numvfs
+	Альтернативный вариант: 
+		sudo bash -c 'sed --i "s/exit 0//g" /etc/rc.local' ; sudo bash -c 'echo "echo \"7\" > /sys/class/net/p1p1/device/sriov_numvfs" >> /etc/rc.local' ; sudo bash -c 'echo "exit 0" >> /etc/rc.local'
+    Ещё вариант через sudo su, но тогда будет добавляться после "exit 0", а надо до
+		sudo su -c 'echo "8021q" >> /etc/modules'
+virsh nodedev-list --cap pci
+virsh nodedev-dumpxml pci_0000_09_00_0
+virsh nodedev-dumpxml pci_0000_09_00_1
+
+# VF не заведется (ошибка видна в dmesg), если PF будет выключен. Чтобы завелось, надо сконфигурить PF - ниже
+auto p1p1
+iface p1p1 inet manual
+  up ifconfig p1p1 up
+
+
+ps -ef | grep qemu
+
+Can switch handle multiple LACP teams on the same ports
+https://serverfault.com/questions/546439/can-switch-handle-multiple-lacp-teams-on-the-same-ports
+
+Enable spoofchk control for SR-IOV ports
+https://specs.openstack.org/openstack/neutron-specs/specs/liberty/sriov-spoofchk.html
+
+NIC embedded switch
+• Some of them support VLAN (e.g. Intel 82599)
+# ip link set <PF> vf <VF_num> vlan <vid>
+
+https://wiki.libvirt.org/page/Networking#PCI_Passthrough_of_host_network_devices
+
+https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/6/html/Virtualization_Host_Configuration_and_Guest_Installation_Guide/chap-Virtualization_Host_Configuration_and_Guest_Installation_Guide-PCI_Device_Config.html#sect-Virtualization_Host_Configuration_and_Guest_Installation_Guide-PCI_Assignment-AI_device_to_a_host
+https://help.ubuntu.com/community/UbuntuBonding
+https://wiki.ubuntu.com/vlan
+https://docs.openstack.org/liberty/networking-guide/adv-config-sriov.html
+
+http://dpdk.org/doc/guides-16.04/nics/intel_vf.html
+
+Когда включаешь в виртуалке VLAN-ы  (8021q -> /etc/modules)
+	В виртуалке 
+		по dmesg ошибка (VF could not set VLAN 0)
+		по ethtool на bond0 и bond0.111 не поднимается линк (Link detected: no)
+Если убрать 8021q из /etc/modules, то линк на бонде поднимается
+
+		Ниже dmesg
+[    3.798457] 8021q: adding VLAN 0 to HW filter on device ens7
+[    3.829837] IPv6: ADDRCONF(NETDEV_UP): bond0: link is not ready
+[    3.829839] 8021q: adding VLAN 0 to HW filter on device bond0
+[    3.829847] IPv6: ADDRCONF(NETDEV_UP): bond0.111: link is not ready
+[    3.846060] 8021q: adding VLAN 0 to HW filter on device ens3
+[    3.909337] bond0: Adding slave ens8
+[    3.923865] ixgbevf 0000:00:08.0: NIC Link is Up 10 Gbps
+[    3.931186] 8021q: adding VLAN 0 to HW filter on device ens8
+[    3.933839] VF could not set VLAN 0
+[    3.946510] VF could not set VLAN 0
+[    3.948914] bond0: Couldn't add bond vlan ids to ens8
+[    4.068135] bond0: Adding slave ens6
+[    4.083811] ixgbevf 0000:00:06.0: NIC Link is Up 10 Gbps
+[    4.088088] 8021q: adding VLAN 0 to HW filter on device ens6
+[    4.088591] VF could not set VLAN 0
+[    4.098974] VF could not set VLAN 0
+[    4.101287] bond0: Couldn't add bond vlan ids to ens6
+[    4.223666] ixgbevf 0000:00:08.0: NIC Link is Up 10 Gbps
+[    4.225179] IPv6: ADDRCONF(NETDEV_UP): ens8: link is not ready
+[    4.225180] 8021q: adding VLAN 0 to HW filter on device ens8
+[    4.225682] VF could not set VLAN 0
+[    4.238458] IPv6: ADDRCONF(NETDEV_CHANGE): ens8: link becomes ready
+[    4.259670] ixgbevf 0000:00:06.0: NIC Link is Up 10 Gbps
+[    4.261185] IPv6: ADDRCONF(NETDEV_UP): ens6: link is not ready
+[    4.261186] 8021q: adding VLAN 0 to HW filter on device ens6
+[    4.261688] VF could not set VLAN 0
+[    4.274703] IPv6: ADDRCONF(NETDEV_CHANGE): ens6: link becomes ready

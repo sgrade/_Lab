@@ -1,0 +1,84 @@
+#####
+# Salt formula to install the necessary packages and system dependencies for NAPALM 
+# https://github.com/saltstack-formulas/napalm-install-formula
+
+mkdir -p /srv/formulas
+
+cd /srv/formulas
+
+sudo git clone https://github.com/saltstack-formulas/napalm-install-formula
+
+# /etc/salt/master
+file_roots:
+  base:
+    - /srv/salt
+    - /srv/formulas/napalm-install-formula
+
+sudo systemctl restart salt-master
+
+# /srv/pillar/top.sls
+base:
+  admin:
+    - napalm
+
+# /srv/pillar/napalm.sls
+napalm:
+  install:
+    - napalm-junos
+    - napalm-iosxr
+
+# on CentOS
+yum install epel-release
+yum install python-pip
+	
+# on target minion locally
+sudo salt-call state.sls napalm_install
+
+
+### Salt for network device management ###
+# https://github.com/napalm-automation/napalm-salt
+
+cd /srv/pillar
+
+[root@salt pillar]# cat top.sls
+base:
+  salt:
+    - napalm
+  vmx3-napalm:
+    - vmx3-napalm
+
+[root@salt pillar]# cat vmx3-napalm.sls
+proxy:
+  proxytype: napalm
+  driver: junos
+  host: 10.128.108.106
+  username: roman
+
+# To configure the minion to run as a service create the file /etc/systemd/system/salt-proxy@.service with the following:
+
+nano /etc/systemd/system/salt-proxy@.service
+
+[Unit]
+Description=Salt proxy minion
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/salt-proxy -l debug --proxyid=%i
+User=root
+Group=root
+Restart=always
+RestartPreventExitStatus=SIGHUP
+RestartSec=5
+
+[Install]
+WantedBy=default.target
+
+
+sudo salt-proxy --proxyid=vmx3-napalm -l debug
+
+salt-key -a vmx3-napalm
+Y
+
+sudo salt-proxy --proxyid=vmx3-napalm -d
+
