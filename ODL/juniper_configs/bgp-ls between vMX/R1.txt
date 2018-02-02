@@ -1,0 +1,53 @@
+set interfaces lt-0/0/0 unit 103 family inet address 8.31.1.103/24
+set interfaces lt-0/0/0 unit 103 encapsulation ethernet
+set interfaces lt-0/0/0 unit 103 peer-unit 101
+set interfaces lt-0/0/0 unit 103 family iso
+set interfaces lt-0/0/0 unit 103 family mpls
+set interfaces ge-0/0/1 unit 0 family inet address 8.42.1.102/24
+set interfaces ge-0/0/1 unit 0 family iso
+set interfaces ge-0/0/1 unit 0 family mpls
+set interfaces lo0 unit 1 family inet address 10.255.105.141/32
+set routing-options router-id 10.255.105.141
+set routing-options autonomous-system 65533
+set protocols rsvp interface all
+set protocols rsvp interface fxp0.0 disable
+set protocols mpls interface all
+set protocols mpls interface fxp0.0 disable
+set protocols bgp group ibgp type internal
+set protocols bgp group ibgp local-address 10.255.105.141
+set protocols bgp group ibgp family traffic-engineering unicast
+set protocols bgp group ibgp export nlri2bgp
+set protocols bgp group ibgp neighbor 10.255.105.137
+set protocols bgp group ebgp type external
+set protocols bgp group ebgp family traffic-engineering unicast
+set protocols bgp group ebgp neighbor 8.42.1.104 local-address 8.42.1.102
+set protocols bgp group ebgp neighbor 8.42.1.104 peer-as 65534
+set protocols isis interface ge-0/0/1.0 passive remote-node-iso 0102.5502.4211
+set protocols isis interface ge-0/0/1.0 passive remote-node-id 8.42.1.104
+set protocols ospf traffic-engineering
+set protocols ospf area 0.0.0.0 interface lo0.1
+set protocols ospf area 0.0.0.0 interface lt-0/0/0.103
+set protocols ospf area 0.0.0.0 interface ge-0/0/1.0 passive traffic-engineering remote-node-id 8.42.1.104
+set protocols ospf area 0.0.0.0 interface ge-0/0/1.0 passive traffic-engineering remote-node-router-id 10.255.105.139
+set policy-options policy-statement accept-all from family traffic-engineering
+set policy-options policy-statement accept-all then accept
+set policy-options policy-statement nlri2bgp term 1 from family traffic-engineering
+set policy-options policy-statement nlri2bgp term 1 then next-hop self
+set policy-options policy-statement nlri2bgp term 1 then accept
+
+
+set policy-options policy-statement policy_1 term 1 from protocol isis
+set policy-options policy-statement policy_1 term 1 then accept
+set policy-options policy-statement policy_1 term 2 from protocol ospf
+set policy-options policy-statement policy_1 term 2 then accept
+set protocols mpls traffic-engineering database import policy policy_1
+set protocols bgp group odl
+set protocols bgp group odl type external
+set protocols bgp group odl description “BGP-LS peering with ODL”
+set protocols bgp group odl local-address 172.16.2.32
+set protocols bgp group odl family inet unicast
+set protocols bgp group odl family traffic-engineering unicast
+set protocols bgp group odl export policy_1
+set protocols bgp group odl neighbor 172.16.2.4
+set protocols bgp group odl neighbor 172.16.2.4 hold-time 180
+set protocols bgp group odl neighbor 172.16.2.4 peer-as 64496

@@ -1,0 +1,31 @@
+set interfaces lt-0/0/0 unit 106 family inet address 8.64.1.106/24
+set interfaces lt-0/0/0 unit 106 encapsulation ethernet
+set interfaces lt-0/0/0 unit 106 peer-unit 104
+set interfaces lt-0/0/0 unit 106 family iso
+set interfaces lt-0/0/0 unit 106 family mpls
+set interfaces lo0 unit 1 family inet address 10.255.105.135/32
+set interfaces lo0 unit 1 family iso
+set routing-options router-id 10.255.105.135
+set routing-options autonomous-system 65534
+set protocols rsvp interface all
+set protocols rsvp interface fxp0.0 disable
+set protocols mpls interface all
+set protocols mpls interface fxp0.0 disable
+set protocols bgp group ibgp type internal
+set protocols bgp group ibgp local-address 10.255.105.135
+set protocols bgp group ibgp family traffic-engineering unicast
+set protocols bgp group ibgp neighbor 10.255.105.139
+set protocols isis interface lt-0/0/0.106 level 1 disable
+set protocols isis interface lo0.1
+set protocols ospf traffic-engineering
+set protocols ospf area 0.0.0.0 interface lo0.1
+set protocols ospf area 0.0.0.0 interface lt-0/0/0.106
+set policy-options policy-statement accept-all from family traffic-engineering
+set policy-options policy-statement accept-all then accept
+set policy-options policy-statement nlri2bgp term 1 from family traffic-engineering
+set policy-options policy-statement nlri2bgp term 1 then next-hop self
+set policy-options policy-statement nlri2bgp term 1 then accept
+set policy-options policy-statement ted2nlri term 1 from protocol isis
+set policy-options policy-statement ted2nlri term 1 from protocol ospf
+set policy-options policy-statement ted2nlri term 1 then accept
+set policy-options policy-statement ted2nlri term 2 then reject

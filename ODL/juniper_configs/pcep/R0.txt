@@ -1,0 +1,24 @@
+conf
+edit logical-systems R0
+
+set interfaces lt-0/0/0 unit 106 family inet address 20.31.1.2/24
+set interfaces lt-0/0/0 unit 106 encapsulation ethernet
+set interfaces lt-0/0/0 unit 106 peer-unit 100
+set interfaces lt-0/0/0 unit 106 family iso
+set interfaces lt-0/0/0 unit 106 family mpls
+set interfaces lt-0/0/0 unit 107 family inet address 20.31.2.1/24
+set interfaces lt-0/0/0 unit 107 encapsulation ethernet
+set interfaces lt-0/0/0 unit 107 peer-unit 203
+set interfaces lt-0/0/0 unit 107 family iso
+set interfaces lt-0/0/0 unit 107 family mpls
+set interfaces lo0 unit 100 family inet address 10.255.179.96/32
+set protocols rsvp interface all
+set protocols rsvp interface fxp0.0 disable
+set protocols mpls interface all
+set protocols mpls interface fxp0.0 disable
+set protocols isis level 1 disable
+set protocols isis interface all
+set protocols isis interface fxp0.0 disable
+set protocols isis interface lo0.0
+
+commit check

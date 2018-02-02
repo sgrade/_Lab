@@ -1,0 +1,25 @@
+conf
+edit logical-systems R1
+
+set system ports console log-out-on-disconnect
+set interfaces lt-0/0/0 unit 203 family inet address 20.31.2.2/24
+set interfaces lt-0/0/0 unit 203 encapsulation ethernet
+set interfaces lt-0/0/0 unit 203 peer-unit 107
+set interfaces lt-0/0/0 unit 203 family iso
+set interfaces lt-0/0/0 unit 203 family mpls
+set interfaces lt-0/0/0 unit 204 family inet address 20.31.8.1/24
+set interfaces lt-0/0/0 unit 204 encapsulation ethernet
+set interfaces lt-0/0/0 unit 204 peer-unit 102
+set interfaces lt-0/0/0 unit 204 family iso
+set interfaces lt-0/0/0 unit 204 family mpls
+set interfaces lo0 unit 101 family inet address 10.255.179.97/32
+set protocols rsvp interface all
+set protocols rsvp interface fxp0.0 disable
+set protocols mpls interface all
+set protocols mpls interface fxp0.0 disable
+set protocols isis level 1 disable
+set protocols isis interface all
+set protocols isis interface fxp0.0 disable
+set protocols isis interface lo0.0
+
+commit check

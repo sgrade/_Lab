@@ -1,0 +1,162 @@
+!! IOS XR Configuration 6.0.1
+!! Last configuration change at Mon Sep 12 10:07:04 2016 by CVAC
+!
+!  IOS-XR Config generated on 2016-09-11 10:15
+! by autonetkit_0.23.2
+hostname R8
+service timestamps log datetime msec
+service timestamps debug datetime msec
+telnet vrf default ipv4 server max-servers 10
+telnet vrf Mgmt-intf ipv4 server max-servers 10
+domain name virl.info
+domain lookup disable
+vrf Mgmt-intf
+ address-family ipv4 unicast
+ !
+ address-family ipv6 unicast
+ !
+!
+line template vty
+ timestamp
+ exec-timeout 720 0
+!
+line console
+ exec-timeout 0 0
+!
+line default
+ exec-timeout 720 0
+!
+vty-pool default 0 50
+control-plane
+ management-plane
+  inband
+   interface all
+    allow all
+   !
+  !
+ !
+!
+interface Loopback0
+ description Loopback
+ !ipv4 address 192.168.0.3 255.255.255.255
+ ipv4 address 2.2.0.8 255.255.255.255
+ ipv6 address 2002:2:2::8/128
+!
+interface MgmtEth0/0/CPU0/0
+ description OOB Management
+ ! Configured on launch
+ vrf Mgmt-intf
+ ipv4 address 172.16.1.54 255.255.255.0
+!
+interface GigabitEthernet0/0/0/0
+ shutdown
+!
+interface GigabitEthernet0/0/0/1
+ shutdown
+!
+interface GigabitEthernet0/0/0/2
+ description to R2
+ !ipv4 address 10.0.0.10 255.255.255.252
+ ipv4 address 2.2.28.8 255.255.255.0
+ ipv6 address 2002:2:2:28::8/64
+ dot1q vlan 28
+!
+interface GigabitEthernet0/0/0/3
+ shutdown
+!
+interface GigabitEthernet0/0/0/4
+ shutdown
+!
+interface GigabitEthernet0/0/0/5
+ shutdown
+!
+interface GigabitEthernet0/0/0/6
+ shutdown
+!
+interface GigabitEthernet0/0/0/7
+ description to R7
+ !ipv4 address 10.0.0.18 255.255.255.252
+ ipv4 address 2.2.78.8 255.255.255.0
+ ipv6 address 2002:2:2:78::8/64
+ dot1q vlan 78
+!
+!route-policy bgp_in
+  !pass
+!end-policy
+!
+!route-policy bgp_out
+  !pass
+!end-policy
+!
+!router isis 1
+ !net 49.1921.6800.0003.00
+ !address-family ipv4 unicast
+  !metric-style wide
+router isis abc
+ is-type level-1
+ net 47.0002.0000.0000.0008.00
+ address-family ipv4 unicast
+  metric-style wide
+ !
+ address-family ipv6 unicast
+  single-topology
+ !
+ interface Loopback0
+  !passive
+  !circuit-type level-2-only
+  address-family ipv4 unicast
+  !
+  address-family ipv6 unicast
+  !
+ !
+ interface GigabitEthernet0/0/0/2
+  !circuit-type level-2-only
+  !point-to-point
+  !hello-padding disable
+  address-family ipv4 unicast
+   !metric 1
+  address-family ipv6 unicast  
+  !
+ !
+ interface GigabitEthernet0/0/0/7
+  !circuit-type level-2-only
+  !point-to-point
+  !hello-padding disable
+  address-family ipv4 unicast
+   !metric 1
+  address-family ipv6 unicast
+  !
+ !
+!
+!router bgp 1
+ !bgp router-id 192.168.0.3
+ !address-family ipv4 unicast
+  !network 192.168.0.3/32
+ !
+  !iBGP
+  !iBGP peers
+ !neighbor 192.168.0.1
+  !remote-as 1
+  !description iBGP peer R2
+  !update-source Loopback0
+  !address-family ipv4 unicast
+  !
+ !
+ !neighbor 192.168.0.2
+  !remote-as 1
+  !description iBGP peer R7
+  !update-source Loopback0
+  !address-family ipv4 unicast
+  !
+ !
+ !neighbor 192.168.0.4
+  !remote-as 1
+  !description iBGP peer R9
+  !update-source Loopback0
+  !address-family ipv4 unicast
+  !
+ !
+!
+ssh server v2
+ssh server vrf Mgmt-intf
+end

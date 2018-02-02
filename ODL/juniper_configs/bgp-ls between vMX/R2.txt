@@ -1,0 +1,39 @@
+set interfaces lt-0/0/0 unit 104 family inet address 8.64.1.104/24
+set interfaces lt-0/0/0 unit 104 encapsulation ethernet
+set interfaces lt-0/0/0 unit 104 peer-unit 106
+set interfaces lt-0/0/0 unit 104 family iso
+set interfaces lt-0/0/0 unit 104 family mpls
+set interfaces ge-0/0/1 unit 0 family inet address 8.42.1.104/24
+set interfaces ge-0/0/1 unit 0 family iso
+set interfaces ge-0/0/1 unit 0 family mpls
+set interfaces lo0 unit 0 family inet address 10.255.105.139/32
+set interfaces lo0 unit 0 family iso
+set routing-options router-id 10.255.105.139
+set routing-options autonomous-system 65534
+set protocols rsvp interface all
+set protocols rsvp interface fxp0.0 disable
+set protocols mpls traffic-engineering database import policy ted2nlri
+set protocols mpls interface all
+set protocols mpls interface fxp0.0 disable
+set protocols bgp group ebgp type external
+set protocols bgp group ebgp family traffic-engineering unicast
+set protocols bgp group ebgp export nlri2bgp
+set protocols bgp group ebgp peer-as 65533
+set protocols bgp group ebgp neighbor 8.42.1.102
+set protocols isis level 1 disable
+set protocols isis interface lt-0/0/0.104
+set protocols isis interface ge-0/0/1.0 passive remote-node-iso 0102.5501.8181
+set protocols isis interface ge-0/0/1.0 passive remote-node-id 8.42.1.102
+set protocols isis interface lo0.0
+set protocols ospf traffic-engineering
+set protocols ospf area 0.0.0.0 interface ge-0/0/1.0 passive traffic-engineering remote-node-id 8.42.1.102
+set protocols ospf area 0.0.0.0 interface ge-0/0/1.0 passive traffic-engineering remote-node-router-id 10.255.105.141
+set policy-options policy-statement accept-all from family traffic-engineering
+set policy-options policy-statement accept-all then accept
+set policy-options policy-statement nlri2bgp term 1 from family traffic-engineering
+set policy-options policy-statement nlri2bgp term 1 then next-hop self
+set policy-options policy-statement nlri2bgp term 1 then accept
+set policy-options policy-statement ted2nlri term 1 from protocol isis
+set policy-options policy-statement ted2nlri term 1 from protocol ospf
+set policy-options policy-statement ted2nlri term 1 then accept
+set policy-options policy-statement ted2nlri term 2 then reject

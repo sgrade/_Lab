@@ -1,0 +1,25 @@
+set interfaces lt-0/0/0 unit 101 family inet address 8.31.1.101/24
+set interfaces lt-0/0/0 unit 101 encapsulation ethernet
+set interfaces lt-0/0/0 unit 101 peer-unit 103
+set interfaces lt-0/0/0 unit 101 family iso
+set interfaces lt-0/0/0 unit 101 family mpls
+set interfaces lo0 unit 101 family inet address 10.255.105.137/32
+set routing-options router-id 10.255.105.137
+set routing-options autonomous-system 65533
+set protocols rsvp interface all
+set protocols rsvp interface fxp0.0 disable
+set protocols mpls traffic-engineering database export policy accept-all
+set protocols mpls cross-credibility-cspf
+set protocols mpls label-switched-path to-R3-inter-as to 10.255.105.135
+set protocols mpls label-switched-path to-R3-inter-as bandwidth 40m
+set protocols mpls interface all
+set protocols mpls interface fxp0.0 disable
+set protocols bgp group ibgp type internal
+set protocols bgp group ibgp local-address 10.255.105.137
+set protocols bgp group ibgp family traffic-engineering unicast
+set protocols bgp group ibgp neighbor 10.255.105.141
+set protocols ospf traffic-engineering
+set protocols ospf area 0.0.0.0 interface lo0.0
+set protocols ospf area 0.0.0.0 interface lt-0/0/0.101
+set policy-options policy-statement accept-all from family traffic-engineering
+set policy-options policy-statement accept-all then accept

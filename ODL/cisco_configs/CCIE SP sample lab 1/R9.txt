@@ -1,0 +1,204 @@
+!! IOS XR Configuration 6.0.1
+!! Last configuration change at Wed Sep 14 15:28:35 2016 by cisco
+!
+!  IOS-XR Config generated on 2016-09-11 10:15
+! by autonetkit_0.23.2
+hostname R9
+service timestamps log datetime msec
+service timestamps debug datetime msec
+telnet vrf default ipv4 server max-servers 10
+telnet vrf Mgmt-intf ipv4 server max-servers 10
+domain name virl.info
+domain lookup disable
+vrf Mgmt-intf
+ address-family ipv4 unicast
+ !
+ address-family ipv6 unicast
+ !
+!
+line template vty
+ timestamp
+ exec-timeout 720 0
+!
+line console
+ exec-timeout 0 0
+!
+line default
+ exec-timeout 720 0
+!
+vty-pool default 0 50
+control-plane
+ management-plane
+  inband
+   interface all
+    allow all
+   !
+  !
+ !
+!
+interface Loopback0
+ description Loopback
+ !ipv4 address 192.168.0.4 255.255.255.255
+ ipv4 address 2.2.0.9 255.255.255.255
+ ipv6 address 2002:2:2::9/128
+!
+interface MgmtEth0/0/CPU0/0
+ description OOB Management
+ ! Configured on launch
+ vrf Mgmt-intf
+ ipv4 address 172.16.1.17 255.255.255.0
+!
+interface GigabitEthernet0/0/0/0
+ipv4 address 172.16.2.17 255.255.255.0
+! shutdown
+!
+interface GigabitEthernet0/0/0/1
+ shutdown
+!
+interface GigabitEthernet0/0/0/2
+ description to R2
+ !ipv4 address 10.0.0.14 255.255.255.252
+ ipv4 address 2.2.29.9 255.255.255.0
+ ipv6 address 2002:2:2:29::9/64
+!
+interface GigabitEthernet0/0/0/3
+ shutdown
+!
+interface GigabitEthernet0/0/0/4
+ shutdown
+!
+interface GigabitEthernet0/0/0/5
+ shutdown
+!
+interface GigabitEthernet0/0/0/6
+ ipv4 address 2.2.69.9 255.255.255.0
+ ipv6 address 2002:2:2:69::9/64
+ dot1q native vlan 69
+!
+interface GigabitEthernet0/0/0/7
+ description to R7
+ !ipv4 address 10.0.0.22 255.255.255.252
+ ipv4 address 2.2.79.9 255.255.255.0
+ ipv6 address 2002:2:2:79::9/64
+!
+route-policy default_policy_pass_all
+  pass
+end-policy
+!
+!route-policy bgp_in
+!pass
+!end-policy
+!route-policy bgp_out
+!pass
+!end-policy
+!router isis 1
+!net 49.1921.6800.0004.00
+!address-family ipv4 unicast
+!metric-style wide
+router isis abc
+ is-type level-1
+ net 47.0002.0000.0000.9999.00
+ address-family ipv4 unicast
+  metric-style wide
+ !
+ address-family ipv6 unicast
+  single-topology
+ !
+ interface Loopback0
+  !passive
+  !circuit-type level-2-only
+  !address-family ipv4 unicast
+  address-family ipv4 unicast
+  !
+  address-family ipv6 unicast
+  !
+ !
+ interface GigabitEthernet0/0/0/2
+  !circuit-type level-2-only
+  !point-to-point
+  !hello-padding disable
+  !address-family ipv4 unicast
+  ! metric 1
+  address-family ipv4 unicast
+  !
+  address-family ipv6 unicast
+  !
+ !
+ interface GigabitEthernet0/0/0/7
+  !circuit-type level-2-only
+  !point-to-point
+  !hello-padding disable
+  !address-family ipv4 unicast
+  !metric 1
+  address-family ipv4 unicast
+  !
+  address-family ipv6 unicast
+  !
+ !
+!
+router bgp 2
+ address-family ipv4 unicast
+  network 2.2.0.9/32
+ !
+ address-family ipv6 unicast
+  network 2002:2:2::9/128
+ !
+ neighbor 2.2.0.7
+  remote-as 2
+  update-source Loopback0
+  address-family ipv4 unicast
+   next-hop-self
+  !
+  address-family ipv6 unicast
+   next-hop-self
+  !
+ !
+ neighbor 2.2.69.6
+  remote-as 1002
+  address-family ipv4 unicast
+   route-policy default_policy_pass_all in
+   route-policy default_policy_pass_all out
+  !
+ !
+ neighbor 2002:2:2::7
+  remote-as 2
+  update-source Loopback0
+  address-family ipv6 unicast
+   next-hop-self
+  !
+ !
+ neighbor 2002:2:2:69::6
+  remote-as 1002
+  address-family ipv6 unicast
+   route-policy default_policy_pass_all in
+   route-policy default_policy_pass_all out
+  !
+ !
+!
+!router bgp 1
+!bgp router-id 192.168.0.4
+!address-family ipv4 unicast
+!network 192.168.0.4/32
+! iBGP
+! iBGP peers
+!neighbor 192.168.0.1
+!remote-as 1
+!description iBGP peer R2
+!update-source Loopback0
+!address-family ipv4 unicast
+!neighbor 192.168.0.2
+!remote-as 1
+!description iBGP peer R7
+!update-source Loopback0
+!address-family ipv4 unicast
+!neighbor 192.168.0.3
+!remote-as 1
+!description iBGP peer R8
+!update-source Loopback0
+!address-family ipv4 unicast
+ssh server v2
+ssh server netconf port 830
+ssh timeout 120
+netconf agent ssh
+ssh server vrf Mgmt-intf
+end

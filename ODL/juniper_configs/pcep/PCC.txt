@@ -1,0 +1,43 @@
+conf
+set system host-name vmx4
+set chassis fpc 0 lite-mode
+set chassis fpc 0 pic 0 tunnel-services
+set chassis fpc 0 pic 0 number-of-ports 4
+set interfaces fxp0 unit 0 family inet address 192.168.220.11/24
+set system services ssh
+
+set interfaces ge-0/0/0 unit 0 family inet address 172.16.2.18/24
+
+set interfaces lt-0/0/0 unit 101 family inet address 20.31.4.1/24
+set interfaces lt-0/0/0 unit 101 encapsulation ethernet
+set interfaces lt-0/0/0 unit 101 peer-unit 201
+set interfaces lt-0/0/0 unit 101 family iso
+set interfaces lt-0/0/0 unit 101 family mpls
+set interfaces lt-0/0/0 unit 100 family inet address 20.31.1.1/24
+set interfaces lt-0/0/0 unit 100 encapsulation ethernet
+set interfaces lt-0/0/0 unit 100 peer-unit 106
+set interfaces lt-0/0/0 unit 100 family iso
+set interfaces lt-0/0/0 unit 100 family mpls
+set interfaces lo0 unit 0 family inet address 10.255.179.95/32
+set protocols rsvp interface all
+set protocols rsvp interface fxp0.0 disable
+set protocols mpls lsp-external-controller pccd
+set protocols mpls label-switched-path PCC-to-R2 to 10.255.179.98
+set protocols mpls label-switched-path PCC-to-R2 bandwidth 10m
+set protocols mpls label-switched-path PCC-to-R2 priority 4 4
+set protocols mpls label-switched-path PCC-to-R2 primary to-R2-path
+set protocols mpls label-switched-path PCC-to-R2 lsp-external-controller pccd
+set protocols mpls path to-R2-path 20.31.1.2 strict
+set protocols mpls path to-R2-path 20.31.2.2 strict
+set protocols mpls interface all
+set protocols mpls interface fxp0.0 disable
+set protocols isis level 1 disable
+set protocols isis interface all
+set protocols isis interface fxp0.0 disable
+set protocols isis interface lo0.0
+set protocols pcep pce pce1 destination-ipv4-address 172.16.2.4
+set protocols pcep pce pce1 destination-port 4189
+set protocols pcep pce pce1 pce-type active
+set protocols pcep pce pce1 pce-type stateful
+
+commit check

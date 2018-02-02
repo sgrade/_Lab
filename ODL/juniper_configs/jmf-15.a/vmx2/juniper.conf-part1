@@ -1,0 +1,232 @@
+## Last changed: 2016-08-26 17:10:11 UTC
+version 16.1R1.7;
+system {
+    root-authentication {
+        encrypted-password "$5$wdqn3qYT$60dnqNVGnbivjK/SLafvhvLIZMy.n3j77O9CfJ3lZk5";
+    }
+    services {
+        ssh;
+        netconf {
+            ssh;
+        }
+    }
+    syslog {
+        user * {
+            any emergency;
+        }
+        file messages {
+            any notice;
+            authorization info;
+        }
+        file interactive-commands {
+            interactive-commands any;
+        }
+    }
+}
+logical-systems {
+    C3 {
+        interfaces {
+            lt-0/0/0 {
+                unit 114 {
+                    encapsulation ethernet;
+                    peer-unit 104;
+                    family inet {
+                        address 10.3.0.1/30;
+                    }
+                }
+            }
+        }
+        routing-options {
+            static {
+                route 0.0.0.0/0 next-hop 10.3.0.2;
+            }
+        }
+    }
+    R4 {
+        interfaces {
+            lt-0/0/0 {
+                unit 115 {
+                    encapsulation ethernet;
+                    peer-unit 105;
+                    family inet {
+                        address 172.17.23.25/30;
+                    }
+                    family iso;
+                }
+                unit 117 {
+                    encapsulation ethernet;
+                    peer-unit 107;
+                    family inet {
+                        address 172.17.23.21/30;
+                    }
+                    family iso;
+                }
+            }
+            ge-0/0/2 {
+                unit 0 {
+                    family inet {
+                        address 172.17.23.14/30;
+                    }
+                    family iso;
+                }
+            }
+            lo0 {
+                unit 4 {
+                    family inet {
+                        address 172.17.20.4/32;
+                    }
+                    family iso {
+                        address 49.4510.0000.0000.0004.00;
+                    }
+                }
+            }
+        }
+        protocols {
+            isis {
+                level 1 disable;
+                interface lt-0/0/0.115 {
+                    point-to-point;
+                }
+                interface lt-0/0/0.117 {
+                    point-to-point;
+                }
+                interface ge-0/0/2.0 {
+                    point-to-point;
+                }
+                interface lo0.4;
+            }
+        }
+    }
+    R5 {
+        interfaces {
+            lt-0/0/0 {
+                unit 107 {
+                    encapsulation ethernet;
+                    peer-unit 117;
+                    family inet {
+                        address 172.17.23.22/30;
+                    }
+                    family iso;
+                }
+                unit 116 {
+                    encapsulation ethernet;
+                    peer-unit 106;
+                    family inet {
+                        address 172.17.23.29/30;
+                    }
+                    family iso;
+                }
+            }
+            ge-0/0/3 {
+                unit 0 {
+                    family inet {
+                        address 172.17.23.18/30;
+                    }
+                    family iso;
+                }
+            }
+            lo0 {
+                unit 5 {
+                    family inet {
+                        address 172.17.20.5/32;
+                    }
+                    family iso {
+                        address 49.4510.0000.0000.0005.00;
+                    }
+                }
+            }
+        }
+        protocols {
+            isis {
+                level 1 disable;
+                interface lt-0/0/0.107 {
+                    point-to-point;
+                }
+                interface lt-0/0/0.116 {
+                    point-to-point;
+                }
+                interface ge-0/0/3.0 {
+                    point-to-point;
+                    level 2 metric 11;
+                }
+                interface lo0.5;
+            }
+        }
+    }
+    R6 {
+        interfaces {
+            lt-0/0/0 {
+                unit 104 {
+                    encapsulation ethernet;
+                    peer-unit 114;
+                    family inet {
+                        address 10.3.0.2/30;
+                    }
+                    family iso;
+                }
+                unit 105 {
+                    encapsulation ethernet;
+                    peer-unit 115;
+                    family inet {
+                        address 172.17.23.26/30;
+                    }
+                    family iso;
+                }
+                unit 106 {
+                    encapsulation ethernet;
+                    peer-unit 116;
+                    family inet {
+                        address 172.17.23.30/30;
+                    }
+                    family iso;
+                }
+            }
+            lo0 {
+                unit 6 {
+                    family inet {
+                        address 172.17.20.6/32;
+                    }
+                    family iso {
+                        address 49.4510.0000.0000.0006.00;
+                    }
+                }
+            }
+        }
+        protocols {
+            isis {
+                level 1 disable;
+                interface lt-0/0/0.104 {
+                    passive;
+                }
+                interface lt-0/0/0.105 {
+                    point-to-point;
+                }
+                interface lt-0/0/0.106 {
+                    point-to-point;
+                }
+                interface lo0.6;
+            }
+        }
+    }
+}
+chassis {
+    fpc 0 {
+        pic 0 {
+            tunnel-services;
+            number-of-ports 4;
+        }
+        lite-mode;
+    }
+}
+interfaces {
+    lt-0/0/0 {
+        description "units = interface numbers from JMF-15.a_LD.pdf page 4";
+    }
+    fxp0 {
+        unit 0 {
+            family inet {
+                address 192.168.220.9/24;
+            }
+        }
+    }
+}

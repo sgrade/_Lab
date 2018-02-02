@@ -1,0 +1,43 @@
+
+!! IOS XR Configuration version = 6.1.1
+!! Last configuration change at Thu Sep 15 19:07:31 2016 by admin
+!
+hostname xrv1
+username admin
+ group root-lr
+ group cisco-support
+ secret 5 $1$k1D8$JZOIEwTF/qfMOA9HltUhb/
+!
+call-home
+ service active
+ contact smart-licensing
+ profile CiscoTAC-1
+  active
+  destination transport-method http
+ !
+!
+interface MgmtEth0/RP0/CPU0/0
+ shutdown
+!
+interface GigabitEthernet0/0/0/0
+ ipv4 address 172.16.2.32 255.255.255.0
+!
+interface GigabitEthernet0/0/0/1
+ shutdown
+!
+interface GigabitEthernet0/0/0/2
+ shutdown
+!
+interface GigabitEthernet0/0/0/3
+ shutdown
+!
+xml agent tty
+!
+netconf agent tty
+!
+netconf-yang agent
+ ssh
+!
+ssh server v2
+ssh server netconf vrf default
+end

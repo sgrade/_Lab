@@ -1,0 +1,15 @@
+set policy-options policy-statement policy_1 term 1 from protocol isis
+set policy-options policy-statement policy_1 term 1 then accept
+set policy-options policy-statement policy_1 term 2 from protocol ospf
+set policy-options policy-statement policy_1 term 2 then accept
+set protocols mpls traffic-engineering database import policy policy_1
+set protocols bgp group odl
+set protocols bgp group odl type external
+set protocols bgp group odl description “BGP-LS peering with ODL”
+set protocols bgp group odl local-address 172.16.2.32
+set protocols bgp group odl family inet unicast
+set protocols bgp group odl family traffic-engineering unicast
+set protocols bgp group odl export policy_1
+set protocols bgp group odl neighbor 172.16.2.4
+set protocols bgp group odl neighbor 172.16.2.4 hold-time 180
+set protocols bgp group odl neighbor 172.16.2.4 peer-as 64496
