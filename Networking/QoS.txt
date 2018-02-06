@@ -1,0 +1,237 @@
+http://www.cisco.com/c/en/us/td/docs/solutions/Enterprise/Video/qosmrn.pdf
+Medianet QoS Design Strategy
+
+end user Quality of Service (QoS) rating as defined in ITU-T
+   Recommendation G.1010
+    Here is a short explanation of the end user QoS category as defined
+   in ITU-T Recommendation G.1010.  User traffic is divided into four
+   different categories, namely, interactive, responsive, timely, and
+   non-critical.  An example of interactive traffic is between two
+   humans and is most sensitive to delay, loss, and jitter.  Another
+   example of interactive traffic is between two servers where very low
+   delay and loss are needed.  Responsive traffic is typically between a
+   human and a server but can also be between two servers.  Responsive
+   traffic is less affected by jitter and can tolerate longer delays
+   than interactive traffic.  Timely traffic is either between servers
+   or servers and humans and the delay tolerance is significantly longer
+   than responsive traffic.  Non-critical traffic is normally between
+   servers/machines where delivery may be delay for period of time.
+   
+RFC 3246              An Expedited Forwarding PHB             March 2002
+https://tools.ietf.org/html/rfc3246
+Supplemental Information for the New Definition of the EF PHB (Expedited Forwarding Per-Hop Behavior)
+https://tools.ietf.org/html/rfc3247
+
+
+RFC 4594        Guidelines for DiffServ Service Classes      August 2006
+https://tools.ietf.org/html/rfc4594
+Updated by: 5865
+
+    The following are some traffic conditioners
+   that may be used in deployment of differentiated services:
+      o  For Expedited Forwarding (EF) PHB, a single token bucket meter to
+      provide a rate plus burst size control.
+   
+   The Assured Forwarding PHB [RFC2597] ... is intended for networks that offer
+   average-rate Service Level Agreements (SLAs)...
+   traffic is expected to
+   be "elastic" in nature.  The receiver will detect loss or variation
+   in delay in the network and provide feedback such that the sender
+   adjusts its transmission rate to approximate available capacity.
+   
+   The intent of Expedited Forwarding PHB [RFC3246] is to provide a
+   building block for low-loss, low-delay, and low-jitter services.
+   traffic remains
+   subject to loss due to line errors and reordering during routing
+   changes.  However, using queuing techniques, the probability of delay
+   or variation in delay is minimized.
+   To protect the network, at minimum one SHOULD police traffic at
+   various points to ensure that the design of a queue is not overrun,
+   and then the traffic SHOULD be given a low-delay queue (often using
+   priority, although it is asserted that a rate-based queue can do
+   this) to ensure that variation in delay is not an issue, to meet
+   application needs.
+   
+   1.5.5.  Admission Control
+   For VoIP (telephony) service, a common approach is to use signaling
+   protocols such as SIP, H.323, H.248, MEGACO, and Resource Reservation
+   Protocol (RSVP) to negotiate admittance and use of network transport
+   capabilities.
+   When a user has been authorized to send voice traffic,
+   this admission procedure has verified that data rates will be within
+   the capacity of the network that it will use.  Many RTP voice
+   payloads are inelastic and cannot react to loss or delay in any
+   substantive way.  For these voice payloads, the network SHOULD police
+   at ingress to ensure that the voice traffic stays within its
+   negotiated bounds.  Having thus assured a predictable input rate, the
+   network may use a priority queue to ensure nominal delay and
+   variation in delay.
+   Another approach that may be used in small and bandwidth-constrained
+   networks for limited number of flows is RSVP [RFC2205] [RFC2996].
+   However, there is concern with the scalability of this solution in
+   large networks where aggregation of reservations [RFC3175] is
+   considered to be required.
+
+    2.  Service Differentiation
+    2.1.  Service Classes
+      o  Real-Time Interactive service class is intended for interactive
+      variable rate inelastic applications that require low jitter and
+      loss and very low delay, such as interactive gaming applications
+      that use RTP/UDP streams for game control commands, and video
+      conferencing applications that do not have the ability to change
+      encoding rates or to mark packets with different importance
+      indications.
+   Comment from Cisco's qosmrn.pdf
+        Whenever technically possible and
+        administratively feasible, data sub-components of
+        this class can be separated out and assigned to the
+        УTransactional DataФ traffic class. Traffic in this class
+        should be marked CS4 and may be provisioned with
+        an EF PHB; as such, admission to this class should be
+        controlled. An example application is Cisco
+        TelePresence.
+      
+       ------------------------------------------------------------------
+   |  Service      | DSCP | Conditioning at   |   PHB   | Queuing| AQM|
+   |   Class       |      |    DS Edge        |  Used   |        |    |
+   |===============+======+===================+=========+========+====|
+   |---------------+------+-------------------+---------+--------+----|
+   |   Real-Time   | CS4  |Police using sr+bs | RFC2474 |  Rate  | No |
+   |   Interactive |      |                   |         |        |    |
+      o  "sr+bs" represents a policing mechanism that provides single rate
+      with burst size control.
+
+4.4.  Real-Time Interactive Service Class
+
+   The Real-Time Interactive service class is RECOMMENDED for
+   applications that require low loss and jitter and very low delay for
+   variable rate inelastic traffic sources.  Interactive gaming and
+   video conferencing applications that do not have the ability to
+   change encoding rates or to mark packets with different importance
+
+
+
+Babiarz, et al.              Informational                     [Page 37]
+ 
+RFC 4594        Guidelines for DiffServ Service Classes      August 2006
+
+
+   indications are such applications.  The traffic sources in this
+   traffic class do not have the ability to reduce their transmission
+   rate according to feedback received from the receiving end.
+
+   Typically, applications in this service class are configured to
+   negotiate the setup of RTP/UDP control session.  When a user/end-
+   point has been authorized to start a new session, the admission
+   procedure should have verified that the newly admitted data rates
+   will be within the engineered capacity of the Real-Time Interactive
+   service class.  The bandwidth in the core network and the number of
+   simultaneous Real-time Interactive sessions that can be supported
+   SHOULD be engineered to control traffic load for this service.
+
+   The Real-Time Interactive service class SHOULD use the Class Selector
+   (CS) PHB, defined in [RFC2474].  This service class SHOULD be
+   configured to provide a high assurance for bandwidth for CS4 marked
+   packets to ensure that they get forwarded.  The Real-Time Interactive
+   service class SHOULD be configured to use a Rate Queuing system such
+   as that defined in Section 1.4.1.2 of this document.  Note that this
+   service class MAY be configured as a second EF PHB that uses relaxed
+   performance parameter, a rate scheduler, and CS4 DSCP value.
+
+   The following applications SHOULD use the Real-Time Interactive
+   service class:
+
+   o  Interactive gaming and control.
+   o  Video conferencing applications without rate control or traffic
+      content importance marking.
+   o  IP VPN service that specifies single rate and mean network delay
+      that is slightly longer then network propagation delay.
+   o  Inelastic, interactive, time-critical, and mission-critical
+      applications requiring very low delay.
+
+   The following are traffic characteristics:
+
+   o  Variable size packets.
+   o  Variable rate, non-bursty.
+   o  Application is sensitive to delay variation between flows and
+      sessions.
+   o  Lost packets, if any, are usually ignored by application.
+
+   RECOMMENDED DSCP marking:
+
+   o  All flows in this service class are marked with CS4 (Class
+      Selector 4).
+      Applications or IP end points SHOULD pre-mark their packets with CS4
+   DSCP value.  If the end point is not capable of setting the DSCP
+   value, then the router topologically closest to the end point SHOULD
+   perform Multifield (MF) Classification, as defined in [RFC2475].
+
+   RECOMMENDED conditioning performed at DiffServ network edge:
+
+   o  Packet flow marking (DSCP setting) from untrusted sources (end
+      user devices) SHOULD be verified at ingress to DiffServ network
+      using Multifield (MF) Classification methods defined in [RFC2475].
+   o  Packet flows from untrusted sources (end user devices) SHOULD be
+      policed at ingress to DiffServ network, e.g., using single rate
+      with burst size token bucket policer to ensure that the traffic
+      stays within its negotiated or engineered bounds.
+   o  Packet flows from trusted sources (application servers inside
+      administered network) MAY not require policing.
+   o  Policing of packet flows across peering points SHOULD be performed
+      to the Service Level Agreement (SLA).
+
+   The fundamental service offered to "Real-Time Interactive" traffic is
+   enhanced best-effort service with controlled rate and delay.  The
+   service SHOULD be engineered so that CS4 marked packet flows have
+   sufficient bandwidth in the network to provide high assurance of
+   delivery.  Normally, traffic in this service class does not respond
+   dynamically to packet loss.  As such, Active Queue Management
+   [RFC2309] SHOULD NOT be applied to CS4 marked packet flows.
+
+   
+RFC 5865           DSCP for Capacity-Admitted Traffic           May 2010
+https://tools.ietf.org/html/rfc5865#page-7
+at access network speeds, [RFC4594] recommends the separation of video and voice into separate queues, while at optical speeds, [RFC5127] recommends that they use a common queue.
+
+https://tools.ietf.org/html/rfc2697
+The Single Rate Three Color Marker (srTCM) meters an IP packet stream
+   and marks its packets either green, yellow, or red.  Marking is based
+   on a Committed Information Rate (CIR) and two associated burst sizes,
+   a Committed Burst Size (CBS) and an Excess Burst Size (EBS).  A
+   packet is marked green if it doesn't exceed the CBS, yellow if it
+   does exceed the CBS, but not the EBS, and red otherwise.  The srTCM
+   is useful, for example, for ingress policing of a service, where only
+   the length, not the peak rate, of the burst determines service
+   eligibility.
+
+https://tools.ietf.org/html/rfc2698
+Two Rate Three Color Marker (trTCM) meters an IP packet stream and marks 
+   its packets based on two rates, Peak Information Rate (PIR) and
+   Committed Information Rate (CIR), and their associated burst sizes to
+   be either green, yellow, or red.  A packet is marked red if it
+   exceeds the PIR.  Otherwise it is marked either yellow or green
+   depending on whether it exceeds or doesn't exceed the CIR.
+
+Three color
+    conform, e.g. mark as AF21
+    exceed, e.g. mark as CS0
+    violate - -> drop
+
+  
+LLQ vs CBWFQ
+    LLQ we use bandwidth statement
+    CBWFQ we use priority statement
+
+#Cisco config
+class map
+    match
+        on access list / dscp value / protocol (e.g. bgp, rtp, telnet)
+policy map
+    class RTP
+        priority percent 10
+    class TELNET
+        bandwidth remaining percent 25
+int s0/0
+    service-policy output LLQ
+show policy-map interface serial 0/0
+P.S. ¬се что не попало в "Class-map: RTP" или "class-map TELNET", попадает в Class-map: class-default

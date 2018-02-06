@@ -1,0 +1,230 @@
+Veon's
+http://bgp.he.net/AS3216#_peers
+
+Configuring Advanced BGP Features
+http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/iproute_bgp/configuration/xe-3s/irg-adv-features.html
+	BGP Support for Next-Hop Address Tracking
+	BGP Next-Hop Address Tracking
+	Default BGP Scanner Behavior
+	Selective BGP Next-Hop Route Filtering
+	BGP Next_Hop Attribute
+	BGP Nonstop Forwarding Awareness
+	Cisco NSF Routing and Forwarding Operation
+	Cisco Express Forwarding for NSF
+	BGP Graceful Restart for NSF
+	BGP NSF Awareness
+	BGP Graceful Restart per Neighbor
+	BGP Peer Session Templates
+	BGP Route Dampening
+	BFD for BGP
+
+MED to influence inbound paths to our AS. Can do some primitive load balancing. Values are often translated from IGP metrics
+Чем меньше, тем лучше
+metric igp
+
+Это взял из статьи Riot, но не уверен, что правильно. Путают причину с BGP dampening?
+	BGP session age, a measure of how long a particular route has been in use. 
+	Imagine two routes between Riot and a particular ISP: a faster route A and a slower route B. 
+	If route A goes down, the traffic moves to route B certainly a reasonable shift as it's the best available route. 
+	The problem occurs when route A comes back up as the ISP will continue to use route B simply because its session age is older, 
+	and therefore automatically preferred. 
+	This is done because it's the default behavior of the protocol, 
+	and for ISPs with large amounts of peers it requires less work than manually rebalancing to the correct route. 
+	We've had to find workarounds such as taking route B down intentionally to move that traffic back to route A.
+		https://engineering.riotgames.com/news/fixing-internet-real-time-applications-part-ii
+		Riot's AS in US is AS (6507)
+		http://irrexplorer.nlnog.net/search/6507
+
+Understanding BGP Convergence
+http://blog.ine.com/2010/11/22/understanding-bgp-convergence/
+	
+BGP next hop (в EBGP будет адрес анонсирующего роутера, в IBGP не меняется) -> next-hop self / next hop peer-address
+	logical systems
+	routing table names
+	MPLS LSPs
+	xWDM? 
+
+show bgp summary
+show route terse
+show route hidden extensive
+show route protocol bgp extensive
+
+as-path-prepend
+
+!!! Policies based on RegExps
+	Examples: 
+		Find all routes originating in AS 1
+		Find all routes that transited AS 100
+		Find the routes originating in my own AS
+
+BGP security
+	атаки:
+		Prefix hijack
+	Защита:
+		Resource Certification (RPKI) is a community-driven system in which all Regional Internet Registries, 
+		open source software developers and several major router vendors participate. 
+		It uses open standards that were developed in the Secure Inter-Domain Routing (sidr) Working Group in the IETF.
+		https://www.ripe.net/manage-ips-and-asns/resource-management/certification/bgp-origin-validation
+        https://habrahabr.ru/post/211146/
+
+bgpmon (now part of OpenDNS (now part of Cisco))
+http://www.routeviews.org/ - anyone can download and investigate
+	Other analyses using route-views data include:
+		Cyclops A useful system for detecting routing anomalies involving your network.
+		BGP::Inspect An indexed subset (5 peers) of routeviews data with a simple query interface.
+		A tool for visualizing BGP routing changes
+		Geoff Huston's analysis of BGP routing table dynamics
+		Sean Mccreary's work on routing table growth
+		Bradley Huffaker's analysis of the geographic scope of routing announcements, mapping ASes, announced prefixes, 
+		and IPv4 address space to the country that is administratively responsible for routing them.
+
+
+RFC 1997               BGP Communities Attribute             August 1996
+https://tools.ietf.org/html/rfc1997
+Well-known Communities
+   The following communities have global significance and their
+   operations shall be implemented in any community-attribute-aware BGP
+   speaker.
+      NO_EXPORT (0xFFFFFF01)
+         All routes received carrying a communities attribute
+         containing this value MUST NOT be advertised outside a BGP
+         confederation boundary (a stand-alone autonomous system that
+         is not part of a confederation should be considered a
+         confederation itself).
+      NO_ADVERTISE (0xFFFFFF02)
+         All routes received carrying a communities attribute
+         containing this value MUST NOT be advertised to other BGP
+         peers.
+      NO_EXPORT_SUBCONFED (0xFFFFFF03)
+         All routes received carrying a communities attribute
+         containing this value MUST NOT be advertised to external BGP
+         peers (this includes peers in other members autonomous
+         systems inside a BGP confederation).
+
+
+RFC 4360           BGP Extended Communities Attribute      February 2006
+https://tools.ietf.org/rfc/rfc4360.txt
+5.  Route Origin Community
+   The Route Origin Community identifies one or more routers that inject
+   a set of routes (that carry this Community) into BGP.  This is
+   transitive across the Autonomous System boundary.
+   ...
+   One possible use of the Route Origin Community is specified in
+   [RFC4364].
+         
+         
+https://tools.ietf.org/html/rfc4364
+RFC 4364                    BGP/MPLS IP VPNs               February 2006
+   The Site of Origin attribute, if used, is encoded as a Route Origin
+   Extended Community [BGP-EXTCOMM].  The purpose of this attribute is
+   to uniquely identify the set of routes learned from a particular
+   site.  This attribute is needed in some cases to ensure that a route
+   learned from a particular site via a particular PE/CE connection is
+   not distributed back to the site through a different PE/CE
+   connection.  It is particularly useful if BGP is being used as the
+   PE/CE protocol, but different sites have not been assigned distinct
+   ASNs.
+         
+
+Anycast
+	Анонсируем одинаковый префикс с разных точек присутствия
+        http://ddiguru.com/blog/125-anycast-dns-part-5-using-bgp
+Timers
+    Cisco routers, this defaults to 60 and 180 respectively.
+    Quagga config: "timers bgp 4 16" - this command adjusts the network timers for keepalive and holddown timers.
+         a keepalive is sent every 4 seconds, and the router should wait 16 seconds for keepalive messages before it declares the peer dead.
+
+         
+RFC 4384          BGP Communities for Data Collection      February 2006
+https://tools.ietf.org/html/rfc4384
+
+   Communities are also used for a wide
+   variety of other applications, such as allowing customers to set
+   attributes such as LOCAL_PREF [RFC1771] by sending appropriate
+   communities to their service provider.  Other applications include
+   signaling various types of Virtual Private Networks (VPNs) (e.g.,
+   Virtual Private LAN Service (VPLS) [VPLS]), and carrying link
+   bandwidth for traffic engineering applications [RFC4360].
+
+   2. Definitions .....................................................3
+      2.1. Peers and Peering ..........................................3
+      2.2. Customer Routes ............................................3
+      2.3. Peer Routes ................................................3
+      2.4. Internal Routes ............................................4
+      2.5. Internal More Specific Routes ..............................4
+      2.6. Special Purpose Routes .....................................4
+      2.7. Upstream Routes ............................................4
+      2.8. National Routes ............................................4
+      2.9. Regional Routes ............................................4
+
+    2.3.  Peer Routes
+   Peer routes are those routes heard from peers via BGP, and not
+   propagated to other peers.  In particular, these routes are only
+   propagated to the service provider's customers.
+    2.4.  Internal Routes
+   Internal routes are those routes that a service provider originates
+   and passes to its peers and customers.  These routes are frequently
+   taken out of the address space allocated to a provider.
+    2.6.  Special Purpose Routes
+   Special purpose routes are those routes that do not fall into any of
+   the other classes described here.  In those cases in which such
+   routes need to be distinguished, a service provider may color such
+   routes with a unique value.  Examples of special purpose routes
+   include anycast routes and routes for overlay networks.
+    2.8.  National Routes
+   These are route sets that are sourced from and/or received within a
+   particular country.
+    2.9.  Regional Routes
+   Several global backbones implement regional policy based on their
+   deployed footprint and on strategic and business imperatives.
+   Service providers often have settlement-free interconnections with an
+   Autonomous System (AS) in one region, and that same AS is a customer
+   in another region.  This mandates use of regional routing, including
+   community attributes set by the network in question to allow easy
+   discrimination among regional routes.  For example, service providers
+   may treat a route set received from another service provider in
+   Europe differently than the same route set received in North America,
+   as it is common practice to sell transit in one region while peering
+   in the other.
+   
+   This memo follows the best current practice of using the basic format
+   <AS>:<Value>.  The values for the route categories are described in
+   the following table:
+       Category                                 Value
+     ===============================================================
+     Reserved                                 <AS>:0000000000000000
+     Customer Routes                          <AS>:0000000000000001
+     Peer Routes                              <AS>:0000000000000010
+     Internal Routes                          <AS>:0000000000000011
+     Internal More Specific Routes            <AS>:0000000000000100
+     Special Purpose Routes                   <AS>:0000000000000101
+     Upstream Routes                          <AS>:0000000000000110
+     Reserved                                 <AS>:0000000000000111-
+                                              <AS>:0000011111111111
+     National and Regional Routes             <AS>:0000100000000000-
+                                              <AS>:1111111111111111
+      Encoded as                               <AS>:<R><X><CC>
+      Reserved National and Regional values    <AS>:0100000000000000-
+                                               <AS>:1111111111111111
+   Where
+    <AS> is the 16-bit AS
+    <R>  is the 5-bit Region Identifier
+    <X>  is the 1-bit satellite link indication
+         X = 1 for satellite links, 0 otherwise
+    <CC> is the 10-bit ISO-3166-2 country code [ISO3166]
+   and <R> takes the values:
+    Africa (AF)                            00001
+    Oceania (OC)                           00010
+    Asia (AS)                              00011
+    Antarctica (AQ)                        00100
+    Europe (EU)                            00101
+    Latin America/Caribbean Islands (LAC)  00110
+    North America (NA)                     00111
+    Reserved                               01000-11111
+   That is:
+
+      0                   1                   2                   3
+      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     |            <AS>               |   <R>   |X|        <CC>       |
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+

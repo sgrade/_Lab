@@ -1,0 +1,133 @@
+RTBH
+RFC 5635                RTBH Filtering with uRPF             August 2009
+https://tools.ietf.org/html/rfc5635
+
+RFC 7999                   BLACKHOLE Community              October 2016
+https://tools.ietf.org/html/rfc7999
+   The IANA has registered BLACKHOLE in the "BGP Well-known Communities"
+   registry.
+      BLACKHOLE (= 0xFFFF029A)
+   The low-order two octets in decimal are 666, a value commonly
+   associated with BGP blackholing among network operators.
+
+DDoS (по презентации Александра Ильина MSK-IX - https://www.youtube.com/watch?v=fWJFZ3fAIQo)
+Blackhole filtering
+	Оператор анонсирует маршрут на атакуемые сетки / адреса со специальным community (666). 
+	Пиринговые партнеры и остальные кому маршрут дошел соответствующий трафик отправляют в блэкхол. 
+	Конечно, нужно, чтобы операторы данные префиксы не фильтровали.
+	Если у кого-то нет своей системы блэкхолинга, также в анонсе присутствует специальный адрес некстхопа, который разрешается в MAC 00:66:00:66:00:66. 
+	На коммутаторах интернет-эксченджа преднастроены фильтры, блокирующие трафик на данный адрес.
+	BGP Flowspec
+		Изначально Juniper+Arbor
+		Позже появилось в свежих версиях Cisco
+			Нашли такую вещь. Когда фильтр по Flowspec ставится, но потом аттакер меняет профиль атаки, атака проходит, устройства внутри сети начинают терять трафик, теряют связь с контроллером. Контроллер (из-за отсутствия запросов?) снимает фильтры. Внуть сети попадают уже и старые, и новые атаки. Решили механизмом BGP persistence, позволяющим сохранить на какое-то время настройки.
+		АLU
+	Межоператорское доверие
+		Если сложный фильтр послать на оборудование, которое его не понимает, оно вообще все фильтры может сбросить
+Более продвинутые системы типа МФИ-Софт Периметр, Arbor
+	Анализ Flow на лету
+DNS amplification, SNMP amplification
+	На DNS сервер хакер посылает запрос со спуфеным адресом источника. DNS-сервер отвечает бОльшим количеством байт (amplifications). 
+	Ответ идет атакуемому (адрес источкика спуфен)
+	Гасятся запретом передачи UDP на атакуемый адрес - атаку останавливаем, потом разбираемся. 
+	При таком подходе трафик к нам всё равно идет - магистральный канал забивается.
+Докладчик рекомендовал книгу "Интернет изнутри"
+
+https://habrahabr.ru/post/186566/
+	TCP Syn - отваливаются BGP-сессии
+	Основная идея защиты роутера состоит в фильтрации всего трафика предназначенного для RE. 
+	Создание фильтра позволит перенести нагрузку, создаваемую DDOS атакой, с CPU RE на CPU PFE роутера, 
+	что даст возможность RE обрабатывать только реальные пакеты и не тратить процессорное время на другой трафик. 
+	Для построения защиты необходимо определить, что фильтруем. 
+	Схема написания фильтров для IPv4 была взята из книги Douglas Hanks Jr. — Day One Book: Securing the Routing Engine on M, MX and T series.
+	Для написания фильтров в juniper существует удобный инструмент — prefix-list, который позволяет динамически 
+	составлять списки ip адресов/подсетей для подстановки в фильтры. 
+	Например, для создания списка адресов ipv4 BGP соседей указанных в конфиге, используется следующая структура: 
+prefix-list BGP-neighbors-v4 {
+         apply-path "protocols bgp group <*> neighbor <*.*>";
+}
+результат составления списка:
+show configuration policy-options prefix-list BGP-neighbors-v4 | display inheritance 
+...
+Далее необходимо применить фильтры на служебный интерфейс lo0.0. В системе JunOS этот интерфейс используется для передачи данных между PFE и RE.
+
+Защита от DDOS атак средствами BGP - https://habrahabr.ru/post/211176/
+	!Обязательно читать комменты!
+	UDP Amplification — разновидность DDOS атаки, для реализации которой используются сторонние сервера с открытыми 
+	UDP портами и службами SNMP, NTP, DNS. Как правило этот вид атаки направлен на пропускную способность канала жертвы.
+
+А через сколько минут\часов новые маршруты начнут применяться? Ведь вряд ли это всё произойдёт мгновенно.
+	Время установки префикса в такой (рекурсивный) Blackhole как правило 1-3 минуты, пока все провайдеры примут community. 
+	Blackhole у первого провайдера срабатывает через ~5-10 секунд, то есть трафик в Вашу AS уже перестанет попадать.
+
+BGP Flowspec
+	DDoS Mitigation Using BGP Flowspec - https://www.nanog.org/sites/default/files/tuesday_general_ddos_ryburn_63.16.pdf
+	Адаптация идет сложно, т.к. провайдеры не принимают от заказчиков Flowspec чере BGP. Даже внутри от систем типа Arbor не хотят принимать. 
+	Боятся, оборудование не поддерживает.
+	Day One: Deploying BGP Flowspec - https://www.juniper.net/us/en/training/jnbooks/day-one/networking-technologies-series/deploying-bgp-flowspec/
+
+    
+BGP security
+	атаки:
+		Prefix hijack
+    Как решить смотри в файле BGP
+    
+Tools
+	hping3
+
+Arbor report
+	NetFlow analyzers are the most commonly used tools to detect threats, followed by firewall logs. 
+	Respondents also indicated increased utilization of SNMP-based tools and inline DDoS detection/mitigation systems. 
+	NetFlow analyzers remain the most effective way of detecting threats, while firewall logs once again fare poorly in terms of effectiveness.
+
+Targeted DDoS
+Volumeric attacks
+Reflection / amplification protocols
+NTP
+SSDP
+Chargen
+SNMP
+Brute-force attack
+
+Configuring BGP to Block Denial-of-Service Attacks
+	https://tools.ietf.org/rfc/rfc3882.txt
+	
+
+L7 - like common users
+	E.g. Slowloris, Apache Killer, Cross-site scripting, SQL-injection, Remote file injection.
+	HTTP/S
+	DNS
+	VoIP
+	SMTP
+	POP
+Protocol - overload the system
+	Smurf DDos, SYN flood
+Multi-vector
+
+UDP
+	UDP-based attacks were mostly stateless. 
+	UDP is exposed to spoofing.
+
+Last year 2016 TCP-based attacks (stateful) were two times more than UDP-based
+
+Layer 7
+	берется «тяжелый» URL (с файлом PDF или запросом к крупной БД) и повторяется десятки или сотни раз в секунду.
+
+Объекты атаки
+	DNS 
+		Reflection: При атаках DNS Reflection цель подвергается массированным подложным ответам DNS. 
+		Amplification: Сам запрос DNS – это обычно менее 50 байт, ответ же раз в десять длиннее.
+
+Defence
+	CDN
+	Application-level firewall
+	Security on demand. In case of attach traffic is redirected to security system.
+	For DNS 
+		e.g. cloud service of traffic clearance (поискать как правильно перевести очистка трафика)
+		Monitoring (compare normal profile with abnormal situations)
+		Включение DNS Response Rate Limiting (RRL) снизит вероятность того, что сервер будет задействован в атаке DDoS Reflection – уменьшится скорость его реакции на повторные запросы. 
+		Managed DNS (Outsource DNS to reliable and secure external provider)
+	Overprovisioning
+	HA (Anycast)
+	
+	

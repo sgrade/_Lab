@@ -1,0 +1,51 @@
+RP/0/RP0/CPU0:XTC1#show run
+Mon Feb  5 10:06:49.012 UTC
+Building configuration...
+!! IOS XR Configuration version = 6.2.25
+!! Last configuration change at Tue Nov 28 09:51:24 2017 by roman
+!
+hostname XTC1
+username roman
+ group root-lr
+ group cisco-support
+ secret 5 $1$olHi$YGqyepo5EVxCf8b5tOsFy/
+!
+vrf oam
+ address-family ipv4 unicast
+ !
+!
+call-home
+ service active
+ contact smart-licensing
+ profile CiscoTAC-1
+  active
+  destination transport-method http
+ !
+!
+interface Loopback0
+ ipv4 address 172.16.3.1 255.255.255.255
+!
+interface MgmtEth0/RP0/CPU0/0
+ description OOB Management
+ cdp
+ vrf oam
+ ipv4 address 172.16.30.211 255.255.255.0
+!
+interface GigabitEthernet0/0/0/0
+ shutdown
+!
+interface GigabitEthernet0/0/0/1
+ ipv4 address 10.3.0.1 255.255.255.0
+!
+interface GigabitEthernet0/0/0/2
+ shutdown
+!
+router static
+ vrf oam
+  address-family ipv4 unicast
+   0.0.0.0/0 172.16.30.1
+  !
+ !
+!
+ssh server vrf oam
+end

@@ -1,0 +1,58 @@
+ISIS vs OSPF
+https://workshops.nsrc.org/dokuwiki/_media/2016/rwandanog-routing/08-isis-vs-ospf.pdf
+OSPF: Suits ISPs with central high speed core network linking regional PoPs
+ISIS: Suits ISPs with “stringy” networks, diverse infrastructure, etc, not fitting central core model of OSPF
+
+DIS election - if priority same, highest SNPA (Subnetwork Point of Attachment - MAC) wins
+
+
+####
+Cisco config:
+router isis
+net 49.0001.aabb.cc00.4800.00
+    e.g. 
+        49 - private
+        0001 - area ID
+        aabb.cc00.4800 - MAC address (Juniper recommends using IP address instead (add 0s when needed))
+        00 - network selector (should be 0)
+is-type level-1-2
+    or
+        level-1
+        level-2-only
+interface fa0/1
+ip router isis
+int lo 0
+ip router isis
+end
+
+show ip route isis
+show clns is-neighbors
+show isis database
+
+##########
+http://www.cisco.com/c/en/us/support/docs/ip/integrated-intermediate-system-to-intermediate-system-is-is/13796-route-leak.html
+"internal/external" is a bit field in the ISIS TLV 128/130 (narrow-metric) and TLV 135 (for wide-metric). 
+In TLV 135 the field name is actually (UP/DOWN). 
+Up means it can be "leaked" to another area, down means it won't be "leaked" to another area, this is to prevent routing loop.
+
+##########
+#Juniper
+show isis interface
+show isis adjacency
+show isis adjacency detail
+show isis spf log
+show isis statistics
+show isis route
+show route protocol isis
+show isis database extensive
+show isis database extensive | find tlv
+
+Level 1 route [IS-IS/15]
+Level 2 route [IS-IS/18]
+
+By default, external routes are not leaked between the Level 1 database and the Level 2 database
+IS-IS Level 1 internal routes are redistributed into the Level 2 database by default.
+
+######
+RFC 5305        IS-IS Extensions for Traffic Engineering    October 2008
+https://tools.ietf.org/search/rfc5305
