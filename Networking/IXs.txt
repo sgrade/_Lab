@@ -14,6 +14,3 @@ Route Server
 
 Veon's peers
 http://bgp.he.net/AS3216#_ix
-
-Riot's peers
-http://bgp.he.net/AS6507#_ix
