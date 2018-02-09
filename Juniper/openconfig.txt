@@ -1,0 +1,90 @@
+request system software add /var/tmp/junos-openconfig-x86-32-0.0.0.2.tgz
+show system yang package
+set openconfig-?
+
+set openconfig-bgp:bgp neighbors neighbor 172.17.1.2 config peer-as 65513
+set openconfig-bgp:bgp neighbors neighbor 172.17.1.2 config peer-group ext-peers
+set openconfig-bgp:bgp peer-groups peer-group ext-peers config local-as 65512
+set openconfig-bgp:bgp peer-groups peer-group ext-peers config peer-type EXTERNAL
+commit
+
+roman@vrdevice# run show configuration openconfig-bgp:bgp
+neighbors {
+    neighbor 172.17.1.2 {
+        config {
+            peer-group ext-peers;
+            peer-as 65513;
+        }
+    }
+}
+peer-groups {
+    peer-group ext-peers {
+        config {
+            local-as 65512;
+            peer-type EXTERNAL;
+        }
+    }
+}
+
+roman@vrdevice# run show configuration openconfig-bgp:bgp | display json
+{
+    "openconfig-bgp:bgp" : {
+        "neighbors" : {
+            "neighbor" : [
+            {
+                "neighbor-address" : "172.17.1.2",
+                "config" : {
+                    "peer-group" : "ext-peers",
+                    "peer-as" : 65513
+                }
+            }
+            ]
+        },
+        "peer-groups" : {
+            "peer-group" : [
+            {
+                "peer-group-name" : "ext-peers",
+                "config" : {
+                    "local-as" : 65512,
+                    "peer-type" : "EXTERNAL"
+                }
+            }
+            ]
+        }
+    }
+}
+
+roman@vrdevice# run show configuration | display translation-scripts
+## ... junos config than openconfig config
+openconfig-bgp:bgp {
+    neighbors {
+        neighbor 172.17.1.2 {
+            config {
+                peer-group ext-peers;
+                peer-as 65513;
+            }
+        }
+    }
+    peer-groups {
+        peer-group ext-peers {
+            config {
+                local-as 65512;
+                peer-type EXTERNAL;
+            }
+        }
+    }
+}
+
+
+roman@vrdevice# run show configuration | display translation-scripts translated-config
+protocols {
+    bgp {
+        group ext-peers {
+            type external;
+            local-as 65512;
+            neighbor 172.17.1.2 {
+                peer-as 65513;
+            }
+        }
+    }
+}
