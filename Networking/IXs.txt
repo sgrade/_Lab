@@ -14,3 +14,16 @@ Route Server
 
 Veon's peers
 http://bgp.he.net/AS3216#_ix
+
+bgpq3 - bgp filtering automation for Cisco and Juniper routers
+https://github.com/snar/bgpq3
+
+BIRD
+
+ARP Sponge
+listens on the ISP peering LAN for ARP traffic
+When the number of ARP Requests for a certain IP address exceeds a threshold, the ARP Sponge sends out an ARP Reply for that IP address using its own MAC address. 
+https://ams-ix.net/technical/specifications-descriptions/controlling-arp-traffic-on-ams-ix-platform
+
+The Internet Routing Registry (IRR) is a globally distributed routing information database.
+https://www.apnic.net/manage-ip/apnic-services/routing-registry/

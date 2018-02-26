@@ -1,3 +1,8 @@
+clear bgp neighbor
+clear bgp neighbor soft
+crear bgp neighbor soft-inbound
+
+
 Veon's
 http://bgp.he.net/AS3216#_peers
 

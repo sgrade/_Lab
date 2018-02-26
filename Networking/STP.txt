@@ -1,0 +1,85 @@
+Default bridge priority: 32768
+ID: 32768.MAC. In VLAN 10: 32778.MAC
+Cost (PVST):
+	10Gbps -> 2
+	1 Gbps -> 4
+	100 Mbps -> 19
+	10 Mbps -> 100
+Root path cost: 
+	From Root Bridge it will send BPDU with cost to Root Bridge as “0”. 
+	When this BPDU receive by any other switch it will add its own port cost (according to the above mentioned value). 
+	So if BPDU receive by a Fast Ethernet port (100 Mbps) it will calculate path cost to root as 19 (0+19).
+If same root path cost:
+	1. Lowest Sending Bridge ID
+	2. Lowest Port Priority (of sender)
+	3. Lowest Interface number (of sender)
+
+802.1d:
+	Port states:
+		Blocking, Listening, Learning, Forwarding
+	Convergence:
+		As a port is enabled, it must transition through the listening and learning states
+		before graduating to the forwarding state. 
+		STP allows two times the forwarding delay (15 seconds by default) for this transition to occur.
+	Reconvergence:
+		Approximately 50 seconds: 
+			20 seconds for a BPDU to age out, 15 seconds for the listening state, and 15 seconds for the learning state.
+		How:
+			Switch, which detected failure, sends TCN out root port every 2 seconds until receives TCN ACK (configuration BPDU)
+			Upstream switches (on the path too root) do the same 
+			Switches in the different tree branches do nothing
+
+STP and RSTP maintain the spanning tree differently. 
+	Both use BPDUs to communicate the current tree topology. 
+	With STP, the root bridge initiates these messages and they propagate throughout the tree every hello time interval. 
+	With RSTP, a non-root bridge sends a BPDU with its current information every hello time interval, 
+		regardless of receiving BPDUs from the root bridge.
+		RSTP BPDUs act as keepalives: designated ports send Configuration BPDUs every hello time (default of 2 seconds)
+
+RSTP:
+	Port roles:
+		Root
+		Designated
+		Alternate (for root port) - alternate path to the root bridge
+			Blocks traffic while receiving superior BPDUs from a neighboring switch
+		Backup (for designated port) - provides redundant path to a segment (on designated switches only)
+			Blocks traffic while a more preferred port functions as the designated port
+	Port states:
+		Discarding (instead of blocking and listening)
+		Learning
+		Forwarding
+	Convergence:
+		Ethernet interfaces operating in full-duplex mode are considered point-to-point links. 
+		Proposal-and-agreement handshake on point-to-point links instead of timers.
+		Nonedge-designated ports transition to the forwarding state once they receive explicit agreement.
+		If a switch port does not receive BPDUs from the connecting device, it automatically assumes the role of an edge port.
+		When receives configuration messages, changes to nonedge port.
+		Nonedge-designated ports transition to the forwarding state only after receipt of an explicit agreement from the attached switch.
+	Reconvergence:
+		If a neighboring bridge receives no BPDU withing 3 times the hello interval (3 x 2 = 6 seconds), 
+		connectivity to the neighbor is faulty
+		When a point-to-point link fails, the alternate link can transition to the forwarding state without waiting 
+			for any protocol timers to expire.
+		RSTP uses additional features and functionality, such as edge port definitions and 
+			rapid direct and indirect link failure detection and recovery.
+			RSTP generate TCNs only when nonedge ports transition to the forwarding state. 
+				Nonedge ports are typically defined as ports that interconnect switches.
+			RSTP also provides improved network stability because it does not generate a TCN when a port
+				transitions to the discarding state.
+			When a TCN is necessary and is generated, the initiating device floods all designated ports as well as the root port.
+			Unlike traditional STP, neighboring switches that are not in the path of the initiator to
+				the root bridge do not need to wait for this information from the root bridge. As the changes
+				propagate throughout the network, the switches flush the majority of the MAC addresses located in
+				their bridge tables. The individual switches do not, however, flush MAC addresses learned from their
+				locally-configured edge ports or MAC addresses learned from the port through which they received
+				the TCN.
+
+Protection:
+	BPDU protection
+		You can enable BPDU protection on switch interfaces where no BPDUs are expected. 
+		If a protected interface receives BPDUs, the switch disables the interface and stops forwarding frames by 
+		transitioning the interface to a blocking state.
+	The loop protection feature protects against Layer 2 loops by preventing the non-designated ports from becoming designated ports.
+
+
+

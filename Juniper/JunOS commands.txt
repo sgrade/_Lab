@@ -1,0 +1,11 @@
+show | no-more
+exit configuration-mode
+
+edit policy-options prefix-list configured-bgp-neighbors
+set apply-path "protocols bgp group <*> neighbor <*>"
+top edit firewall family inet filter protect-re
+set term BGP-allow from source-prefix-list configured-bgp-neighbors
+set term BGP-allow from protocol tcp
+set term BGP-allow from port bgp
+set term BGP-allow then accept
+
