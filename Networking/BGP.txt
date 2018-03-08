@@ -1,6 +1,48 @@
+TCP port 179
+Idle
+Connect - BGP is waiting for the transport protocol connection to be completed
+	If OK, send Open message, changes to OpenSent
+	If fails, restarts the ConnectRetryTimer, listens for incoming connections, changes to Active
+Active - initiating a transport protocol connection
+	If OK, send Open message, changes to OpenSent
+	If the local systemТs BGP state remains in the Active state, you should check physical connectivity as well as the configuration on both peers
+OpenSent - BGP waits for an OPEN message from its peer
+	When received, it is checked and verified to ensure that no errors exist. 
+	If an error is detected, back to Idle. 
+	If no errors are detected, BGP sends a Keepalive message.
+OpenConfirm - BGP waits for a KEEPALIVE or NOTIFICATION message.
+	If no KEEPALIVE received before the negotiated hold timer expires, the local system sends a NOTIFICATION message stating that the hold timer has expired 
+		and changes its state to Idle. 
+	If receives NOTIFICATION message, Idle. 
+	If receives KEEPALIVE message, Established.
+Established - BGP can exchange UPDATE, NOTIFICATION, and KEEPALIVE messages with its peer
+	When receives UPDATE or KEEPALIVE message, and negotiated hold timer value is nonzero, it restarts its hold timer.
+	If the negotiated hold timer reaches zero, the local system sends out a KEEPALIVE message and restarts the hold timer.
+
+ƒл€ каждого соседа может быть указано уникальное значение таймеров keepalive и hold. 
+	BGP выполн€ет проверку таймеров keepalive и hold, однако несовпадение этих параметров не вли€ет на установку отношений соседства.
+	≈сли выбранное значение таймера Hold равно нулю, то сообщени€ Keepalive отправл€тьс€ не будут.
+	
 clear bgp neighbor
 clear bgp neighbor soft
 crear bgp neighbor soft-inbound
+
+Attributes:
+	Next hop
+	Local preference
+	AS path
+	Origin
+	MED
+	Community
+
+route damping
+	route-map DAMP permit 10
+	set dampening 20 950 2500 80
+	Ќас интересует конструкци€ set, что за цифры она устанавливает.
+	20 Ч 20 минут принимает значение Half-Life-Time (по умолчанию 15)
+	950 Ч reuse limit
+	2500 Ч suppress limit
+	80 Ч max-life-time обычно это 4 x half-life-time
 
 
 Veon's

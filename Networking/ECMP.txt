@@ -1,0 +1,28 @@
+Equal-cost multi-path routing (ECMP) is a routing strategy where next-hop packet forwarding to a single
+destination can occur over multiple "best paths" which tie for top place in routing metric calculations.
+
+Various routing protocols, including Open Shortest Path First (OSPF), Intermediate System to Intermediate
+System (ISIS), Enhanced Interior Gateway RoutingProtocol (EIGRP), and Border GatewayProtocol (BGP)
+allow ECMP routing
+
+Before the ECMP algorithm can distribute packets over parallel links, routing protocols such as BGP must first be convinced to use multiple links in parallel. 
+There are three ways BGP and ECMP can work together:
+	Bundling the links at the Ethernet level, using IEEE 802.3ad or EtherChannel
+	With one BGP session over multiple links using loopback addresses
+	With a separate BGP session over each of the parallel links
+
+Per-packet load balancing causes reordering. 
+In theory, that’s fine, as TCP will simply buffer the reordered packets and deliver the data inside to the receiving application in the right order. 
+However, receiving packets out of order makes TCP think there was packet loss, so it retransmits packets and slows down its transmission rate. 
+To avoid such issues, routers and switches work hard to make sure that all packets that belong to the same TCP session (or UDP flow) are transmitted over the same link. 
+Of course this in turn has the downside that a single TCP session can only make use of one link; thus ECMP is only useful if the traffic consists of multiple TCP sessions.
+
+ECMP Per-Flow Load Balancing
+Load balancing is a forwarding mechanism that distributes traffic over multiple links based on certain
+parameters. ECMP Per-Flow Load Balancing distributes packets across multiple links based on Layer 3
+routing information. If the router discovers multiple paths to a destination, the routing table is updated with
+multiple entriesfor that destination.Per-flow load balancing allowsthe router to use multiple pathsto achieve
+load sharing across multiple source-destination host pairs. Packets for a given source-destination host pair
+are guaranteed to take the same path, even if multiple paths are available. Traffic streams destined for different
+pairs tend to take different paths.
+

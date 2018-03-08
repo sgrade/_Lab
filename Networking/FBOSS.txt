@@ -1,0 +1,20 @@
+https://code.facebook.com/posts/843620439027582/facebook-open-switching-system-fboss-and-wedge-in-the-open/
+
+L3 unicast routing for all traffic, with ECMP for balancing traffic across links, using BGP to configure the routes throughout the network. 
+We do not support multicast traffic within our data center, nor do we use features such as L2 overlays, spanning tree, or even trunking.
+
+Specifically, the FBOSS agent includes support for:
+Programming various tables within the Broadcom ASIC, such as L2, L3, and VLAN tables.
+Handling low-level control packets for host and neighbor learning (ARP, IPv6 NDP, DHCPv4/v6 relay, LLDP).
+Packet parsing/construction of ICMP/UDP packets.
+
+ICMP, warm boot
+https://code.facebook.com/posts/1802489260027439/wedge-100-more-open-and-versatile-than-ever/
+
+
+Works on:
+Wedge 40 (ToR), Wedge 100, 6-pack (modular)
+
+
+	Backpack (modular)
+	Voyager - DWDM

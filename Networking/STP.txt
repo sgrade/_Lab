@@ -8,7 +8,7 @@ Cost (PVST):
 Root path cost: 
 	From Root Bridge it will send BPDU with cost to Root Bridge as “0”. 
 	When this BPDU receive by any other switch it will add its own port cost (according to the above mentioned value). 
-	So if BPDU receive by a Fast Ethernet port (100 Mbps) it will calculate path cost to root as 19 (0+19).
+	So if BPDU received by a Fast Ethernet port (100 Mbps) it will calculate path cost to root as 19 (0+19).
 If same root path cost:
 	1. Lowest Sending Bridge ID
 	2. Lowest Port Priority (of sender)
@@ -19,7 +19,7 @@ If same root path cost:
 		Blocking, Listening, Learning, Forwarding
 	Convergence:
 		As a port is enabled, it must transition through the listening and learning states
-		before graduating to the forwarding state. 
+			before graduating to the forwarding state. 
 		STP allows two times the forwarding delay (15 seconds by default) for this transition to occur.
 	Reconvergence:
 		Approximately 50 seconds: 
@@ -28,6 +28,7 @@ If same root path cost:
 			Switch, which detected failure, sends TCN out root port every 2 seconds until receives TCN ACK (configuration BPDU)
 			Upstream switches (on the path too root) do the same 
 			Switches in the different tree branches do nothing
+			Root communicate topology change
 
 STP and RSTP maintain the spanning tree differently. 
 	Both use BPDUs to communicate the current tree topology. 
@@ -51,13 +52,24 @@ RSTP:
 	Convergence:
 		Ethernet interfaces operating in full-duplex mode are considered point-to-point links. 
 		Proposal-and-agreement handshake on point-to-point links instead of timers.
+			1. Upstream bridge sends a proposal out of a designated port. 
+				As a matter of fact, it just sets the proposal bit in outgoing configuration BPDUs.
+			2. Downstream bridge receives the proposal, and if it agrees with the upstream port role, 
+				it starts the process known as synchronization.
+			3. Synchronization implies the downstream bridge blocking all non-edge designated ports, 
+				prior to sending an agreement to the upstream bridge.
+			4. Synchronization is needed to make sure there are no loops in the topology, 
+				after the upstream bridge unblocks its designated port.
+			5. If the downstream bridge does not agree with the proposal, 
+				it will continues sending it’s own configuration BPDUs with the proposal bit set. 
+				Eventually one of the bridges will accept the superior information and send an agreement.
 		Nonedge-designated ports transition to the forwarding state once they receive explicit agreement.
 		If a switch port does not receive BPDUs from the connecting device, it automatically assumes the role of an edge port.
 		When receives configuration messages, changes to nonedge port.
 		Nonedge-designated ports transition to the forwarding state only after receipt of an explicit agreement from the attached switch.
 	Reconvergence:
 		If a neighboring bridge receives no BPDU withing 3 times the hello interval (3 x 2 = 6 seconds), 
-		connectivity to the neighbor is faulty
+			connectivity to the neighbor is faulty
 		When a point-to-point link fails, the alternate link can transition to the forwarding state without waiting 
 			for any protocol timers to expire.
 		RSTP uses additional features and functionality, such as edge port definitions and 
@@ -82,4 +94,42 @@ Protection:
 	The loop protection feature protects against Layer 2 loops by preventing the non-designated ports from becoming designated ports.
 
 
-
+MST
+	MSTP extends Spanning Tree Protocol (STP) and Rapid Spanning Tree Protocol (RSTP) functionality by mapping multiple
+	independent spanning-tree instances onto one physical topology. Each spanning-tree instance (STI) includes one or more
+	VLANs.
+	Unlike in STP and RSTP configurations, a port can belong to multiple VLANs and be dynamically blocked in one spanning-tree
+	instance but forwarding in another.
+	MSTP allows switches to be logically grouped into manageable clusters, known as multiple spanning tree (MST) regions. An
+	MST region is a group of switches that share the same region name, revision level, and VLAN-to-instance mapping
+	parameters.
+	Each MST region supports up to 64 MSTIs. MSTP greatly reduces the number of bridge protocol data units (BPDUs) on a LAN
+	by including the spanning tree information for all MSTIs in a single BPDU. MSTP encodes region information after the
+	standard RSTP BPDU along with individual MSTI messages. The MSTI configuration messages convey spanning tree
+	information for each instance.
+	MSTP elects a regional root bridge for each MSTI. The regional root bridge is elected based on the configured bridge priority
+	and calculates the spanning tree within its designated instance.
+	The common spanning tree (CST), which interconnects all MST regions as well as STP devices not bound to a particular
+	region, facilitates end-to-end paths within an MSTP environment. The CST facilitates backward compatibility with RSTP and
+	STP.
+	All MSTP environments contain a CST, which is used to interconnect individual MST regions and independent STP devices. All
+	bridges in the CST elect a single root bridge. The root bridge is responsible for the path calculation for the CST. As illustrated
+	on the slide, bridges outside of the MST region treat each MST region as a virtual bridge, regardless of the actual number of
+	devices participating in each MST region.
+	The common and internal spanning tree (CIST) is a single topology that connects all switches (RSTP and MSTP devices)
+	through an active topology. The CIST includes a single spanning tree as calculated by RSTP together with the logical
+	continuation of connectivity through MST regions. MSTP calculates the CIST and the CIST ensures connectivity between LANs
+	and devices within a bridged network.
+	Each MSTP region builds a spanning tree for the region, referred to as an internal spanning tree, based upon the remaining
+	BPDU fields. For a switch to participate in a region’s internal spanning tree and use the information in this portion of the
+	BPDU, it must be configured with the same configuration ID. Therefore, all switches in the same region must be configured
+	with the same configuration ID. This approach to configuration ensures that when MSTP switches outside of the local MSTP
+	region receive MSTP BPDUs, those switches will evaluate only the CST-related information (illustrated on the previous slide).
+	Once the internal spanning tree is built, by default, all traffic on all VLANs will follow it.
+	Without the use of MSTI configuration methods, traffic for all VLANs within a region flows along the path of the internal
+	spanning tree. To override this behavior and allow some VLANs to take one path through the region and let others take other
+	paths (64 paths are possible for each region), you must configure MSTIs as part of the router MSTI configuration. The
+	information carried in the MSTI configuration messages allows each switch to elect root bridges, root ports, designated
+	ports, designated bridges, and so forth for each MSTI. Each MSTI will have one or more VLANs associated with them. One
+	VLAN cannot be in more than one MSTI. Notice that the MSTI messages do not carry VLAN ID information. The VLAN-to-MSTI
+	mappings are configured locally on each switch and each switch configuration should use the same mappings.

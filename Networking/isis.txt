@@ -3,9 +3,52 @@ https://workshops.nsrc.org/dokuwiki/_media/2016/rwandanog-routing/08-isis-vs-osp
 OSPF: Suits ISPs with central high speed core network linking regional PoPs
 ISIS: Suits ISPs with “stringy” networks, diverse infrastructure, etc, not fitting central core model of OSPF
 
-DIS election - if priority same, highest SNPA (Subnetwork Point of Attachment - MAC) wins
+OSPF uses IP Protocol 89 as transport
+IS-IS is directly encapsulated in Layer 2
 
+https://sites.google.com/site/amitsciscozone/home/is-is/is-is-packets
+In ISO terminology, packets are referred to as Protocol Data Units (PDUs). There are 3 categories of IS-IS packets:
+	IS-IS Hello Packets (IIHs): These packets establish and maintain adjacencies between IS-IS neighbors.
+		Two kinds of IS-IS hellos PDUs exist: LAN hello PDUs and point-to-point hello PDUs. 
+		The LAN hello PDUs can be divided further into Level 1 and Level 2 hello PDUs. 
+		The format of the two types of LAN hello PDUs is identical.
+		By default, a DIS router sends hello packets every 3 seconds, and a non-DIS router sends hello packets every 9 seconds.
+	Link State PDUs (LSPs): These packets are responsible to distribute routing information between IS-IS nodes.
+		The 1-byte PDU type field denotes whether the PDU is Level 1 (value 18) or Level 2 PDU (value 20).
+			With this exception as well as different multicast destination addresses, the PDU contents and formats are identical to each other.
+		The IS-IS LSPs are flooded when either a network change occurs or often enough to keep the database from having stale information. 
+		Each LSP has a 2-byte field named the remaining lifetime. Each IS-IS router initializes this field to a certain value when the LSP is created. 
+		By default, this timer value is set to 1200 seconds, or 20 minutes. Each router takes this value and begins a countdown toward 0. 
+		Before the timer expires (at approximately 317 seconds), the originating system regenerates the LSP and floods it to all its neighbors.
+	Sequence Number PDUs (SNPs): These packets control the distribution of LSPs. SNPs provide mechanism to synchronize LSDBs between routers in the same area.
+		CSNP
+			CSNPs contain a complete description of all LSPs in the IS-IS database.
+			The DIS periodically multicast Complete SNP (CSNP) to describe all the LSPs in the Pseudonode database. 
+			L1 CSNPs are sent to all Level-1 ISs multicast address 01-80-C2-00-00-14, while 
+			L2 CSNPs are sent to all Level-2 ISs multicast address 01-80-C2-00-00-15.
+		PSNP
+			A receiver multicasts partial sequence number PDUs (PSNPs) when it detects that it is missing an LSP or when its LSP database is out of date. 
+			The receiver sends a PSNP to the system that transmitted the complete sequence number PDUs (CSNPs), 
+			effectively requesting that the missing LSP be transmitted. That router, in turn, forwards the missing LSP to the requesting router.
 
+DIS election
+	a value between 0 and 127 used for DIS election
+	The L1 priority is advertised in L1 hello PDUs, and the L2 priority is advertised in L2 hello PDUs.
+	The IS-IS DIS election process is achieved by assigning a Level 1 priority and a Level 2 priority on every IS-IS router interface
+	The Junos OS uses a default priority of 64 for both levels
+	if priority same, highest SNPA (Subnetwork Point of Attachment - MAC) wins
+
+Minimum protocol PDU - 1492
+
+Metric
+	Default - 10 (JunOS)
+	set protocol isis reference-bandwidth 1g
+	
+Unlike RIP and OSPF, IS-IS does not require a distinct protocol or a new version to support IPv6. 
+	Because IS-IS uses ISO addresses, the configuration for IPv6 and IPv4 is identical in the Junos OS implementation of IS-IS. 
+	For IS-IS to carry IPv6 routes, you only need to add IPv6 addresses to IS-IS enabled interfaces or include other IPv6 routes in your IS-IS export policy.
+	The only explicit configuration needed in IS-IS with regard to IPv6 is if you want to disable it. 
+			
 ####
 Cisco config:
 router isis
@@ -50,8 +93,20 @@ show isis database extensive | find tlv
 Level 1 route [IS-IS/15]
 Level 2 route [IS-IS/18]
 
-By default, external routes are not leaked between the Level 1 database and the Level 2 database
 IS-IS Level 1 internal routes are redistributed into the Level 2 database by default.
+To provide interarea reachability for Level 1 routers, an L1/L2 router with a Level 2 adjacency to a router in another area sets its attached bit in its Level 1 LSPs. 
+	Level 1 routers install a 0.0.0.0/0 default route to the metrically closest attached router when they detect Level 1 LSPs with the attached bit set.
+By default, external routes are not leaked between the Level 1 database and the Level 2 database
+Level 1 routes advertised as external routes into Level 1 are not advertised to any Level 2 routers by default; 
+	routing policy is needed to effect the leaking of Level 1 externals into the L2 backbone.
+	the use of wide-metrics-only alters the natural L1/L2 boundary in that routes are no longer distinguishable as being internal or external. 
+	The use of wide metrics therefore results in the automatic leaking of all Level 1 routes into Level 2, because they will all appear to be internal routes.
+Route leaking
+	Because the L1/L2 border router naturally stops the transmission of Level 2 routes into a Level 1 area, it is the logical location to override that default. 
+		You can accomplish this goal with a Junos routing policy.
+	The potential for route leaking-induced routing loops is averted by a bit in the LSP known as the up/down (U/D) bit. 
+	The purpose of this bit is to inform the L1/L2 routers whether a configured policy can advertise a route.
+	Only routes marked with the up direction are eligible for advertisement from Level 1 to Level 2. All internal Level 1 routes will have the up/down bit set in this manner.
 
 ######
 RFC 5305        IS-IS Extensions for Traffic Engineering    October 2008

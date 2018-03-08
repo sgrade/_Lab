@@ -1,0 +1,186 @@
+
+Special addresses:
+	::/0 - default route
+	::1/128 - loopback
+	0100::/64 - discard
+
+Linux:
+	ip -6 addr
+
+Types: 	unicast, multicast, anycase
+	Unicast:
+		Global: 2000::/3 (it's effectively 2000::/4 and 3000::/4)
+		Link-local: fe80::/64
+		Unique local: fc::/7. Note: "fc" is reserved, we can use "fd" addresses
+	Multicast:
+		ff00::/8
+			Solicited-node multicast: ff02::1:ff00:0/104
+			Link-local all-nodes: ff02::1
+	Anycast:
+		Anycast addresses are really unicast
+		Used in DNS, DHCP, ..., functions, that work anywhere
+
+If a port is required, then put the address in []
+	http://[2001:db8:cafe:5150::1]:80
+
+Zone ID - %
+	fe80::6085:be82:8442:9b54%4
+	2001:db8:cafe:5150::1
+	Typically the Zone IS will match the interface ID
+	So for a linux system it could be eth0 or en0 on OSX
+
+NDP (Neighbor Discovery Protocol)
+	Replaces ARP
+	Handles:
+		Host address auto configuration
+		Discovery of neighbor hosts
+		Determining link layer addresses of other hosts 
+		Duplicate address detection
+		Finding routers (through router advertisements)
+		Prefix discovery
+		Reachabiity of other hosts
+		Note: all of the above work on link layer (on link)
+	Defines:
+		Router Solicitation
+		Router advertisement (RA) - part of NDP
+			Automatic way to get the default gateway information
+				Note: DHCPv6 does not provide default gateway information, thus RAs are NOT optional
+			You can have several routers doing RAs
+				If same prefix, one should be given higher preference
+				VRRP is an alternative
+			RA guard - security option making sure only your router advertises RAs
+			Linux:
+				can obtain an IPv6 DNS resolver address via DHCPv6 or SLAAC (with RDNSS capabilities)
+		Neighbor Solicitation
+		Neighbor Advertisement
+		Redirect
+	Uses Solicited Node, Multicast and ICMPv6
+	Host address auto configuration:
+		SLAAC
+			1. RA from router or
+			2. RS from host
+			3. RA has A flag
+			4. Host learns prefix
+			5. Host builds address
+		Neighbor discovery: NS, NA
+		Duplicate address detection: NS from host to solicited node; no reply - host uses address OR conflict - host discards address
+	Leverages multicast to allow hosts to discover other hosts
+	IPv6 solicited node address - can be built for each IPv6 address on a host
+		The last 24 bits on an IPv6 address are appended to the SOLICITED NODE PREFIX
+			e.g. ff02::1:ff00:0/104 + 32:6ed3
+		Local host OS installs that multicast address on the NIC to listen for traffic
+	Services:
+		mDNS - Apple, name resolution on a local link without DNS server
+		LLMNR - Microsoft, same purpose. E.g. ff02::1:3 - multicast group to do local name resolution
+		Router Advertisements
+		Router Solicitation - to discover a router
+	Example:
+		power shell: netsh interface ipv6 show joins 4
+	Addresses:
+		ff0X::1 - all nodes
+			ff01::1 - interface-local all nodes (useful only for loopback transmission of multicast)
+			ff02::1 - link-local all nodes (like IPv4 broadcast; spans the same topological region as the corresponding unicast scope)
+		ff0X::2 - all routers
+			ff01::2 - interface-local all routers
+			ff02::2 - link-local all routers
+			ff05::2 - site-local all routers
+		ff02::5 - OSPF link-local
+		ff02::6 - OSPF DRs link-local
+		ff02::d - all PIM routers
+		ff02::c - link-local Simple Service Discovery Protocol
+		ff02::1:3 - LLMNR (link-local Multicast Name Resolution)
+		ff02::fb - mDNS (Apple's Bonjour Service)
+		ff02::101 - link-local NTP
+
+Ethernet 
+	EtherType
+		IPv4: 0x0800
+		IPv6: 0x86DD
+	Multicast MAC
+		33:33:xx:xx:xx:xx
+
+Jumbograms - layer 3 function. Through extension 
+Often confused with jumbo frames - layer 2 function		
+	
+Anycast
+	Use cases:
+		Global Anycast DNS
+		HA 
+		mitigate DDoS
+		stable address services for services
+		...
+	The closest server answers
+
+ICMPv6
+	IPv6 uses ICMPv6 to report errors and messages
+	Type and code fields are different from ICMP
+	Used:
+		Path MTU discovery
+			If router has smaller MTU than packet received, it sends "packet too big" ICMPv6 message
+		Neighbor discovery
+		...
+	On MS Windows: 
+		ping and tracert are the same
+		ping -6 cav6tf.org
+			Note: -6 only says that I am only interested in AAAA DNS record
+		tracert -6 cav6tf.org
+		mtupath -6 cav6tf.org
+			Note: mtupath is a 3rd-party tool
+		Get-NetIPv6Protocol | select IcmpRedirects, MldLevel, MLdVersion | ft -AutoSize
+	Linux:
+		ping6 instead of ping
+		traceroute -6 option
+		ip -6
+		ping6 -n -c2 cav6tf.org
+		ndisc6 - neighbor discovery tool, not natively installed
+			you must specify the interface
+			e.g.
+			ndisc6 2001:470:1f05:9a4:d532:e510:21f:38f5 eth0
+			it will tell what the MAC address is for IPv6 address
+			
+Subnetting - use natural nibble boundaries (count in increments of 4)
+	/48 - 1 subnets - 65536 /64 networks (VLANs)
+	/52 - 16 - 4096
+	/56 - 256 - 256
+	/60 - 4096 - 16
+	/64 - 65536 - 1
+			
+Prefix policy table - defines source address selection
+	OS version dependent (two different RFC: 3484 and 6724)
+	Windows:
+		netsh interface ipv6 show prefixpolicies
+	Linux:
+		Ubuntu/Debian
+			/etc/gai.conf
+		CentOS/Redhat
+			- blank file
+
+SLAAC - Stateless Address Autoconfiguration
+	leaves the hosts the ability to make the autoconfiguration by themselves without the need to communicate to anybody else on the network
+	host or router interface is assigned a 64-bit prefix, and then the last 64 bits of its address are derived by the host or router with help of EUI-64 process.
+			
+DNS
+	AAAA (quad A) resolves into IPv6 address
+		(Note: A record = 32 bits of IPv6, quad = 4*32 (128 bit))
+	PTR - ip6.arpa
+		in IPv4 reverse IPv4 zone is in-addr.arpa
+		So no special math, just a different DNS zone
+	Client IPv6 DNS
+		Windows: DNS resolver only obtained via DHCPv6
+		Linux: DHCPv6 or SLAAC
+		Android: no DHCPv6 client, only SLAAC. Note: should double check if this info is up to date
+	Server IPv6 DNS
+		multiple servers or daemons
+		default behavior is to listen on both IPv4 and IPv6
+	DNS tools
+		nslookup -type=AAAA cav6tf.org
+		dig cav6tf.org AAAA
+	Troubleshooting
+		ping6, traceroute -6, ifconfig
+		Google DNS: 2001:4860:4860::8888, 2001:4860:4860::8844
+		OpenDNS: 2620:0:ccd::2
+		
+
+	
+	
+	
