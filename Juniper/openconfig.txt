@@ -44,7 +44,7 @@ roman@vrdevice# run show configuration openconfig-bgp:bgp | display json
             "peer-group" : [
             {
                 "peer-group-name" : "ext-peers",
-                "config" : {
+                "config"  : {
                     "local-as" : 65512,
                     "peer-type" : "EXTERNAL"
                 }

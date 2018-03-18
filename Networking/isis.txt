@@ -3,6 +3,8 @@ https://workshops.nsrc.org/dokuwiki/_media/2016/rwandanog-routing/08-isis-vs-osp
 OSPF: Suits ISPs with central high speed core network linking regional PoPs
 ISIS: Suits ISPs with “stringy” networks, diverse infrastructure, etc, not fitting central core model of OSPF
 
+Connectionless Network Service (CLNS) is a Layer 3 protocol similar to IP version 4 (IPv4) for linking hosts (end systems) with routers (intermediate systems) in an Open Systems Interconnection (OSI) network.
+
 OSPF uses IP Protocol 89 as transport
 IS-IS is directly encapsulated in Layer 2
 

@@ -43,7 +43,8 @@ base:
 #on salt master
 sudo apt install libvirt-bin
 sudo salt-cloud --list-providers
-# WARNING ] The cloud driver, 'libvirt', configured under the 'kvm-via-ssh' cloud provider alias, could not be loaded. Please check your provider configuration files and ensure all required dependencies are installed for the 'libvirt' driver.
+# WARNING ] The cloud driver, 'libvirt', configured under the 'kvm-via-ssh' cloud provider alias, could not be loaded. 
+lease check your provider configuration files and ensure all required dependencies are installed for the 'libvirt' driver.
 sudo apt install python-libvirt
 sudo salt-cloud --list-providers
 

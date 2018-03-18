@@ -1,0 +1,6 @@
+sudo apt-get install python-dev
+
+# for python3, e.g. when default is python 2, but installing in in virtual environment with python3
+sudo apt-get install python3-dev
+
+pip install netifaces
