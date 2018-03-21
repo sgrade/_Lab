@@ -19,7 +19,26 @@ Established - BGP can exchange UPDATE, NOTIFICATION, and KEEPALIVE messages with
 	When receives UPDATE or KEEPALIVE message, and negotiated hold timer value is nonzero, it restarts its hold timer.
 	If the negotiated hold timer reaches zero, the local system sends out a KEEPALIVE message and restarts the hold timer.
 
-Для каждого соседа может быть указано уникальное значение таймеров keepalive и hold. 
+N WLLA OMNI (from CCNP ROUTE)
+
+	N = next hop reachability
+	W = weight, bigger is better
+	L = local preference, bigger is better
+	L = locally injected preferred over BGP learned
+	A = AS path length, shorter is better
+	O = origin, (igp is better than egp is better than incomplete)
+	M = MED, lower is better
+	N = neighbor type, ebgp better than ibgp
+	I = IGP metric to BGP next-hop, lower is better
+
+	Plus there are some additional steps. This where itХs tricky.
+
+	For eBGP, select the oldest route. If Тbgp compare router-idУ is enabled, skip this step.
+	For iBGP and eBGP with Тbgp compare router-idУ, lowest RID wins.
+	If itХs still a tie, prefer neighbor with shortest RR cluster list length (only applies to iBGP RRs)
+	If itХs still a tie, compare neighbor IP addresses, lowest wins.
+	
+длЯ каждого соседа может быть указано уникальное значение таймеров keepalive и hold. 
 	BGP выполняет проверку таймеров keepalive и hold, однако несовпадение этих параметров не влияет на установку отношений соседства.
 	Если выбранное значение таймера Hold равно нулю, то сообщения Keepalive отправляться не будут.
 	
@@ -66,10 +85,10 @@ http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/iproute_bgp/configuration/xe-3s
 	BFD for BGP
 
 MED to influence inbound paths to our AS. Can do some primitive load balancing. Values are often translated from IGP metrics
-Чем меньше, тем лучше
+чем меньше, тем лучше
 metric igp
 
-ќто взял из статьи Riot
+From Riot article
 	BGP session age, a measure of how long a particular route has been in use. 
 	Imagine two routes between Riot and a particular ISP: a faster route A and a slower route B. 
 	If route A goes down, the traffic moves to route B certainly a reasonable shift as it's the best available route. 
@@ -81,7 +100,13 @@ metric igp
 		https://engineering.riotgames.com/news/fixing-internet-real-time-applications-part-ii
 		Riot's AS in US is AS (6507)
 		http://irrexplorer.nlnog.net/search/6507
-
+	
+	My note: the above is relevant with multipath. 
+	When both paths are external, prefer the path that was received first (the oldest one).
+		"This step minimizes route-flap because a newer path does not displace an older one, even if the newer path would be 
+		the preferred route based on the next decision criteria (Steps 11, 12, and 13)."
+		https://www.cisco.com/c/en/us/support/docs/ip/border-gateway-protocol-bgp/13753-25.html
+	
 Understanding BGP Convergence
 http://blog.ine.com/2010/11/22/understanding-bgp-convergence/
 	

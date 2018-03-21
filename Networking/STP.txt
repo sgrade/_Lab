@@ -113,8 +113,8 @@ MST
 	region, facilitates end-to-end paths within an MSTP environment. The CST facilitates backward compatibility with RSTP and
 	STP.
 	All MSTP environments contain a CST, which is used to interconnect individual MST regions and independent STP devices. All
-	bridges in the CST elect a single root bridge. The root bridge is responsible for the path calculation for the CST. As illustrated
-	on the slide, bridges outside of the MST region treat each MST region as a virtual bridge, regardless of the actual number of
+	bridges in the CST elect a single root bridge. The root bridge is responsible for the path calculation for the CST. 
+	...bridges outside of the MST region treat each MST region as a virtual bridge, regardless of the actual number of
 	devices participating in each MST region.
 	The common and internal spanning tree (CIST) is a single topology that connects all switches (RSTP and MSTP devices)
 	through an active topology. The CIST includes a single spanning tree as calculated by RSTP together with the logical
@@ -124,7 +124,7 @@ MST
 	BPDU fields. For a switch to participate in a region’s internal spanning tree and use the information in this portion of the
 	BPDU, it must be configured with the same configuration ID. Therefore, all switches in the same region must be configured
 	with the same configuration ID. This approach to configuration ensures that when MSTP switches outside of the local MSTP
-	region receive MSTP BPDUs, those switches will evaluate only the CST-related information (illustrated on the previous slide).
+	region receive MSTP BPDUs, those switches will evaluate only the CST-related information.
 	Once the internal spanning tree is built, by default, all traffic on all VLANs will follow it.
 	Without the use of MSTI configuration methods, traffic for all VLANs within a region flows along the path of the internal
 	spanning tree. To override this behavior and allow some VLANs to take one path through the region and let others take other

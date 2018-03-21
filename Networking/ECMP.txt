@@ -21,7 +21,7 @@ ECMP Per-Flow Load Balancing
 Load balancing is a forwarding mechanism that distributes traffic over multiple links based on certain
 parameters. ECMP Per-Flow Load Balancing distributes packets across multiple links based on Layer 3
 routing information. If the router discovers multiple paths to a destination, the routing table is updated with
-multiple entries for that destination.Per-flow load balancing allows the router to use multiple paths to achieve
+multiple entries for that destination. Per-flow load balancing allows the router to use multiple paths to achieve
 load sharing across multiple source-destination host pairs. Packets for a given source-destination host pair
 are guaranteed to take the same path, even if multiple paths are available. Traffic streams destined for different
 pairs tend to take different paths.
