@@ -1,0 +1,107 @@
+
+
+
+df -h
+
+############ Mirantis ##############
+	https://docs.mirantis.com/mcp/latest/mcp-operations-guide/tshooting/tshoot-mcp-openstack/tshoot-contrail.html
+	
+
+
+############# JUNIPER ###############
+
+# Support URLs
+	http://www.juniper.net/techpubs/en_US/release-independent/contrail/information-products/pathway-pages/index.html
+	https://www.juniper.net/customers/support/?contrail
+	http://forums.juniper.net/t5/SDN/tkb-p/Contrail
+
+docker ps
+docker exec -it control_control_1 bash
+	
+# Contrail CLI commands
+	contrail-status
+	contrail-logs
+		contrail-logs --all
+		contrail-logs --module contrail-control
+		contrail-logs --category XMPP
+		contrail-logs --last 1h
+		contrail-logs --reverse
+	contrail-version
+		contrail-version | grep contrail
+	contrail-status | grep supervisor
+		service supervisor-webui status
+		service supervisor-webui restart
+
+# Fabric utility scripts
+	cd /opt/contrail/utils
+	fab --list
+	fab all_version
+	fab all_reboot
+	fab verify_<node type>
+	fab all_command:"ping -c 2 10.1.1.1"
+
+# vRouter commands and troubleshooting
+	pkt0 - tap interface between vRouter and vnswad daemon (alsa called vRouter agent)
+	vhost0 - tap interface between host OS and vRouter
+	When the contrail-interface-name package is installed, it uses the threefold naming scheme to provide consistent interface naming after reboots.
+	vRouter CLI tools:
+		• vif - Inspect vRouter interfaces associated with the vRouter module. The vRouter requires vRouter interfaces (vif) to forward traffic. Use the vif command to see the interfaces that are known by the vRouter. Note that
+		having interfaces only in the OS (Linux) is not sufficient for forwarding. The relevant interfaces must be added to vRouter. Typically, the set up of interfaces is handled by components like nova-compute or vRouter agent.
+		• flow - Display active flows in a system. Use -l option to list everything in the flow table.
+		• vrfstats - Display next hop statistics for a particular VRF. It is typically used to determine if packets are hitting the expected next hop.
+		• rt - Display routes in a VRF.
+		• dropstats - Inspect packet drop counters in the vRouter
+		• mpls - Display the input label map programmed into the vRouter.
+		• mirror - Display the mirror table entries. The mirror table can be dumped with the --dump option.
+		• vxlan - Dump the vxlan table. The vxlan table maps a network ID to a next hop, similar to an MPLS table. If a packet comes with a vxlan header and if the VNID is one of those in the table, the vRouter will use the next
+		hop identified to forward the packet.
+		• nh - Display the next hops that the vRouter knows. Next hops tell the vRouter the next location to send a packet in the path to its final destination.
+		• --help - Display all command options available for the current command.
+		More:
+			lsmod | grep vrouter	# status of vRouter module in kernel
+			modinfo vrouter	# more details about vrouter module
+			ip netns	# list of network namespaces: SNAT, Docker, LBaaS
+				vrouter-6f3cc973-7bcc-4481-9072-7aca5dac798b
+				ip netns exec vrouter-6f3cc973-7bcc-4481-9072-7aca5dac798b ifconfig
+			# Monitor traffic flow
+			ifconfig | grep tap
+				tape0ba098c-8e Link encap:Ethernet HWaddr 86:9f:38:1b:00:d8
+				tcpdump -i tape0ba098c-8e
+			# Traffic on compute
+			tcpdump -n -i eth0 proto gre
+			flow -l
+			# Determin next hop and interface
+			mpls --get 17
+				nh --get 22
+				vif --get3
+			# Case study
+			tcpdump tape0ba098c-8e
+				# there is echo request, but no reply
+				dropstats | grep Flow
+				# Flows are dropped due to no policy configured
+
+# Contrail Introspect - mechanism for querying information about some object; Sandesh is behind
+	Each Contrail daemon starts an HTTP server:
+		<control-ip>:8083 for contrail-control introspect
+		<compute-ip>:8085 for contrail-vrouter-agent introspect
+		<analytics-ip>:8089 for analytics introspect
+		<config-ip>:8084 for configuration node introspect
+	Introspect link in contrail Web UI
+
+# OpenStack CLI commands
+	source /etc/contrail/openstackrc
+	nova image-list
+	nova list --all-tenants
+	nofa flavor-list
+	nova hypervisor-list
+	neutron net-create network172
+	neutron subnet-create network172 172.16.0.0/12 --name network172
+	keystone tenant-list
+	keystone user-create --name contrail --tenant demo --pass contrail
+	glance image-list
+	glance image-show analyzer
+	# Logs
+	/var/log/neutron
+	/var/log/apache2
+	# Function: compute; Service: Console
+		/var/lib/nova/instances/instance-<instance id>/console.log

@@ -1,11 +1,1 @@
-
-maas maas-server pods read
-
-maas maas-server pod compose 6 cores=2 memory=8192 hostname=mcp1
-	Success.
-	Machine-readable output follows:
-	{
-		"system_id": "wt8bm6",
-		"resource_uri": "/MAAS/api/2.0/machines/wt8bm6/"
-
-maas maas-server machine deploy wt8bm6
+git remote add origin /home/ubuntu/mcp/.git/

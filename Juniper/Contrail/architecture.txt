@@ -1,0 +1,65 @@
+http://www.opencontrail.org/opencontrail-architecture-documentation/
+
+Configuration node:
+	A REST API Server that provides the north-bound interface to an Orchestration System or other application. This interface is used to install configuration state using the high-level data model.
+	A Redis [redis] message bus to facilitate communications amongst internal components.
+	A Cassandra [cassandra] database for persistent storage of configuration. Cassandra is a fault-tolerant and horizontally scalable database.
+	A Schema transformer that learns about changes in the high level data model over the Redis message bus and transforms (or compiles) these changes in the high level data model into corresponding changes in the low level data model.
+	An IF-MAP Server that provides a south bound interface to push the computed low-level configuration down to the Control nodes.
+	Zookeeper [zookeeper] (not shown in diagram) is used for allocation unique object identifiers and to implement transactions.
+
+Control nodes communicate with multiple other types of nodes:
+	Receive configuration state from the configuration nodes using IF-MAP.
+	Exchange routes with other control nodes using IBGP to ensure that all control nodes have the same network state.
+	Exchange routes with the vRouter agents on the compute nodes using XMPP. They also use XMPP to send configuration state such as routing instances and forwarding policy.
+	Proxy certain kinds of traffic on behalf of compute nodes. These proxy requests are also received over XMPP.
+	Exchange routes with the gateway nodes (routers and switches) using BGP.  They also send configuration state using Netconf.
+	
+Compute node
+	Two of the building blocks in a compute node implement a vRouter: 
+		vRouter Agent
+		vRouter Forwarding Plane.
+
+The analytics nodes contain the following components:
+	A Collector that exchanges Sandesh messages (see section 2.4.4) with components in control nodes and configuration nodes to collect analytics information
+	A NoSQL database for storing this information
+	A rules engine to automatically collect operational state when specific events occur
+	A REST API server that provides a northbound interface for querying the analytics database and for retrieving operational state.
+	A Query engine for executing the queries received over the northbound REST API. This engine provides the capability for flexible access to potentially large amounts of analytics data.
+
+	Sandesh carries two kinds of messages: asynchronous messages received by analytics nodes for the purpose of reporting logs, events, and traces; and synchronous messages whereby an analytics node can send requests and receive responses to collect specific operational state.
+	
+============
+
+
+OpenContrail’s implementation of VXLAN differs from the VLAN IETF draft in two significant ways. 
+	First, it only implements the packet encapsulation part of the IETF draft; it does not implement the flood-and-learn control plane; 
+	instead it uses the XMPP-based control plane described in this chapter; as a result, it does not require multicast groups in the underlay. 
+	Second, The Virtual Network Identifier (VNI) in the VXLAN header is locally unique to the egress vRouter instead of being globally unique.
+
+MPLS over UDP
+	It is a cross between the MPLS over GRE and the VXLAN encapsulation: it supports both L2 and L3 overlays, 
+	it uses an “inner” MPLS header with a locally significant MPLS label to identify the 
+	destination routing-instance (similar to MPLS over GRE), 
+	but it uses an outer UDP header with entropy for efficient multi-pathing in the underlay (like VLXAN).
+
+Currently the system proxies the following types of traffic (additional proxies will be added):
+	DHCP request.  The Control Node provides the DHCP response based on the configuration of the VM
+	ARP requests.  The Control Node provides the IP to MAC address mapping
+	DNS and MDNS requests.  The Control Node provides the name to IP address mapping
+
+The vRouter forwarding plane contains a flow table for multiple different functionality – firewall policies, load balancing, statistics, etc. 
+	The flow table contains flow entries that have a match criteria and associated actions.  
+	The match criteria can be a N-tuple match on received packets (wildcard fields are possible). 
+	The actions include dropping the packet, allowing the packet, or redirecting it to another routing instance. 
+	The flow entries are programmed in the forwarding plane by the vRouter Agent
+
+Service Chaining
+	OpenContrail supports a high-level policy language that allows virtual networks to be connected, subject to policy constraints. 
+	This policy language is similar to the Snort [snort] rules language
+The system creates additional routing instances for service virtual machines in addition to the routing instances for tenant virtual machines.  
+	Traffic is steered:
+		By manipulating the route targets for routes to influence importing and exporting routing from one routing instance to another routing instance.
+		By manipulating the next-hops and/or the labels of the routes as they are leaked from routing instance to routing instance to force the traffic through the right sequence of routing instances and the right sequence of corresponding virtual machines.
+
+		

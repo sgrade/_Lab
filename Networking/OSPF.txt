@@ -8,15 +8,15 @@ Redistribution rule:
 	E.g. in Juniper RIP has route preference 100, OSPF external (default route) - 150. 
 		When default redistributed to RIP and back, RIP version wins - the default route will 
 		point to RIP router, but should point to original ASBR in OSPF area. This is a loop.
-		To solve, modify route preference of OSPF external to 90 (lower, than RIP)
+		To solve, modify route preference of OSPF external to 90 (lower, than RIP).
 
 
 OSPFv3
-The protocol runs per link rather than per subnet
-Router and network LSAs do not carry prefix information
-Two new LSA types: link-LSA and intra-area-prefix-LSA
-Flooding scopes are link-local area and AS
-Link-local addresses are used for all neighbor exchanges except virtual links
-Two new option bits are included: R and V6
+	The protocol runs per link rather than per subnet
+	Router and network LSAs do not carry prefix information
+	Two new LSA types: link-LSA and intra-area-prefix-LSA
+	Flooding scopes are link-local area and AS
+	Link-local addresses are used for all neighbor exchanges except virtual links
+	Two new option bits are included: R and V6
 
 
