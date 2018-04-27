@@ -1,3 +1,28 @@
 LSP authentication can cause LSP exchanges to fail. 
 
 System field is not resolving the router’s host name with the show isis adjacency command on some adjacencies. This is also an indication of LSP authentication failure.
+
+[edit protocols isis]
+lab@R1# show traceoptions
+file lsp-auth-issue.log;
+flag error detail;
+flag csn;
+[edit protocols isis]
+lab@R1# commit
+
+[edit protocols isis]
+lab@R1# run show log lsp-auth-issue.log | match csn
+Jan 24 22:21:20.839779 Received L1 CSN, source 0172.0027.2553, interface ge-0/0/6.0
+Jan 24 22:21:20.839877 ERROR: CSN authentication failure
+Jan 24 22:21:20.839896 ERROR: L1 CSN from 0172.0027.2553 on ge-0/0/6.0 failed authentication
+Jan 24 22:21:21.547672 Received L1 CSN, source 0172.0027.2554, interface ae1.0
+Jan 24 22:21:21.547874 ERROR: CSN authentication failure
+Jan 24 22:21:21.547891 ERROR: L1 CSN from 0172.0027.2554 on ae1.0 failed authentication
+[edit protocols isis]
+lab@R1# deactivate traceoptions
+[edit protocols isis]
+lab@R1# commit
+
+[edit protocols isis]
+lab@R2# activate traceoptions
+...
