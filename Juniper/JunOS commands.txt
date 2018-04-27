@@ -9,3 +9,16 @@ set term BGP-allow from protocol tcp
 set term BGP-allow from port bgp
 set term BGP-allow then accept
 
+monitor traffic interface ge-0/0/3 detail no-resolve
+
+
+[edit interfaces]
+lab@R2# top edit protocols isis
+lab@R2# set traceoptions file isis-adj-issue.log
+lab@R2# set traceoptions flag error detail
+lab@R2# set traceoptions flag hello detail
+lab@R2# commit
+[edit protocols isis]
+lab@R2# run show log isis-adj-issue.log | match ae0
+lab@R2# deactivate traceoptions
+lab@R2# commit

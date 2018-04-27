@@ -1,0 +1,3 @@
+LSP authentication can cause LSP exchanges to fail. 
+
+System field is not resolving the router’s host name with the show isis adjacency command on some adjacencies. This is also an indication of LSP authentication failure.

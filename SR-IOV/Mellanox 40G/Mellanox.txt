@@ -1,0 +1,4 @@
+/etc/modprobe.d/mlx4.conf
+lspci -D | grep Mellanox
+ibdev2netdev -v
+ip link show
