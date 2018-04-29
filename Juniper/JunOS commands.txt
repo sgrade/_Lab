@@ -22,3 +22,9 @@ lab@R2# commit
 lab@R2# run show log isis-adj-issue.log | match ae0
 lab@R2# deactivate traceoptions
 lab@R2# commit
+
+
+show route resolution detail
+show route resolution summary
+show route resolution unresolved
+https://www.juniper.net/documentation/en_US/junos/topics/reference/command-summary/show-route-resolution.html
