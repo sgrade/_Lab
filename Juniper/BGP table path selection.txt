@@ -1,0 +1,15 @@
+https://www.juniper.net/documentation/en_US/junos/topics/reference/general/routing-protocols-address-representation.html
+
+BGP Table path selection
+The following parameters are followed for BGP's path selection
+
+Prefer the highest local-preference value.
+Prefer the shortest AS-path length.
+Prefer the lowest origin value.
+Prefer the lowest MED value.
+Prefer routes learned from an EBGP peer over an IBGP peer.
+Prefer best exit from AS.
+For EBGP-received routes, prefer the current active route.
+Prefer routes from the peer with the lowest Router ID.
+Prefer paths with the shortest cluster length.
+Prefer routes from the peer with the lowest peer IP address. Steps 2, 6 and 12 are the RPD criteria.

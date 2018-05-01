@@ -38,7 +38,7 @@ N WLLA OMNI (from CCNP ROUTE)
 	If itХs still a tie, prefer neighbor with shortest RR cluster list length (only applies to iBGP RRs)
 	If itХs still a tie, compare neighbor IP addresses, lowest wins.
 	
-длЯ каждого соседа может быть указано уникальное значение таймеров keepalive и hold. 
+для каждого соседа может быть указано уникальное значение таймеров keepalive и hold. 
 	BGP выполняет проверку таймеров keepalive и hold, однако несовпадение этих параметров не влияет на установку отношений соседства.
 	Если выбранное значение таймера Hold равно нулю, то сообщения Keepalive отправляться не будут.
 	
