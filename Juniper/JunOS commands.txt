@@ -28,3 +28,5 @@ show route resolution detail
 show route resolution summary
 show route resolution unresolved
 https://www.juniper.net/documentation/en_US/junos/topics/reference/command-summary/show-route-resolution.html
+
+show route active-path 111.111.1/24
