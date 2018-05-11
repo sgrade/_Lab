@@ -1,0 +1,6 @@
+DEVICE=eno1.81
+BOOTPROTO=none
+ONBOOT=yes
+VLAN=yes
+BRIDGE=br0
+

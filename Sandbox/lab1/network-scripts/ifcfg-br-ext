@@ -1,0 +1,7 @@
+DEVICE=br-ext
+BOOTPROTO=static
+ONBOOT=yes
+TYPE=Bridge
+IPADDR=172.16.29.1
+PREFIX=24
+

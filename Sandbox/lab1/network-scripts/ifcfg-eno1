@@ -1,0 +1,6 @@
+TYPE=Ethernet
+BOOTPROTO=none
+NAME=eno1
+UUID=427aa9c7-1c9d-4196-b7a8-3a749d816a97
+DEVICE=eno1
+ONBOOT=yes

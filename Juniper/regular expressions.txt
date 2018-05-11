@@ -1,0 +1,12 @@
+() - null AS path (originating in my AS)
+"." - single AS, e.g. ".1024"
+1234.* - AS path from neighbor 1234
+1024 - 1024* - 0 or more instances of 
+1024? - 0 or 1 instance of 1024
+1024{1,4} - 1 to 4 instances of 1024
+"-" - range
+.(56|78) - second AS must be 56 or 78
+.(56|78)? - second AS might be 56 or 78
+1 2 3+ - 1, then 2, then one or more instances of 3
+1+ 2+ 3+
+.* 4 5 6 .* - any path that contains 4 5 6

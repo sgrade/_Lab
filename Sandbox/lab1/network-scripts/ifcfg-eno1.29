@@ -1,0 +1,7 @@
+# Dummy interface used only to access virtual machines in 172.16.29.0/24 network (br-ext)
+DEVICE=eno1.29
+BOOTPROTO=none
+ONBOOT=yes
+VLAN=yes
+BRIDGE=br-ext
+
