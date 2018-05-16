@@ -1,0 +1,2 @@
+show route resolution unresolved
+# if any, solve with "next-hop self"
