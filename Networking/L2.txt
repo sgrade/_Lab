@@ -93,11 +93,9 @@ Access control
 		
 VRRP
 	https://tools.ietf.org/html/rfc3768
-	The virtual router MAC address associated with a virtual router is an
-	IEEE 802 MAC Address in the following format:
+	The virtual router MAC address associated with a virtual router is an IEEE 802 MAC Address in the following format:
       00-00-5E-00-01-{VRID} (in hex in internet standard bit-order)
-	The purpose of the VRRP packet is to communicate to all VRRP routers the 
-		priority and the state of the Master router associated with the Virtual Router ID.
+	The purpose of the VRRP packet is to communicate to all VRRP routers the priority and the state of the Master router associated with the Virtual Router ID.
 	VRRP packets are sent encapsulated in IP packets.  They are sent to the IPv4 multicast address assigned to VRRP: 224.0.0.18
 	The TTL MUST be set to 255.  A VRRP router receiving a packet with the TTL not equal to 255 MUST discard the packet.
 	A Backup router will not attempt to preempt the Master unless it has higher priority.
