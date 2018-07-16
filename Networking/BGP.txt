@@ -33,7 +33,7 @@ N WLLA OMNI (from CCNP ROUTE)
 
 	Plus there are some additional steps. This where it’s tricky.
 
-	For eBGP, select the oldest route. If “bgp compare router-id” is enabled, skip this step.
+	For eBGP, select the oldest route. If bgp compare router-id is enabled, skip this step.
 	For iBGP and eBGP with “bgp compare router-id”, lowest RID wins.
 	If it’s still a tie, prefer neighbor with shortest RR cluster list length (only applies to iBGP RRs)
 	If it’s still a tie, compare neighbor IP addresses, lowest wins.
@@ -47,12 +47,24 @@ clear bgp neighbor soft
 crear bgp neighbor soft-inbound
 
 Attributes:
-	Next hop
-	Local preference
-	AS path
-	Origin
-	MED
-	Community
+	Type_Code_value	Attribute_Name	Attribute_Type
+	1	ORIGIN				Well-known mandatory
+	2	AS_PATH				Well-known mandatory
+	3	NEXT_HOP			Well-known mandatory
+	4	MULTI_EXIT_DISC (MED)	Optional non-transitive
+	5	LOCAL_PREF			Well-known discretionary
+	6	ATOMIC_AGGREGATE	Well-known discretionary
+	7	AGGREGATOR			Optional transitive
+	8	COMMUNITY			Optional transitive
+	9	ORIGINATOR_ID		Optional non-transitive
+	10	Cluster List		Optional non-transitive
+	11	DPA					Designation Point Attribute
+	12	Advertiser			BGP/IDRP Route Server
+	13	RCID_PATH/CLUSTER_ID	BGP/IDRP Route Server
+	14	Multiprotocol Reachable NLRI	Optional non-transitive
+	15	Multiprotocol Unreachable NLRI	Optional non-transitive
+	16	Extended communities	
+	256	Reserved for future development	
 
 route damping
 	route-map DAMP permit 10
