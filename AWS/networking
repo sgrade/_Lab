@@ -26,4 +26,12 @@ Routing tables
     VGW (VPN gateway)
  
 Elastic network interfaces (ENI)
-  In security network preconfigure ENI. Allow access to the security network only via VGW. 
+  In security network preconfigure ENI. Allow access to the security network only via VGW.
+  
+Direct connect
+  10/1 Gbps lines from AWS. Sub-1Gbps from partners. 802.1Q, 1522B MTU. Virtual interface per VLAN. EBGP for routing exchange.
+  Direct connect locations are spread over the world.
+  Connection between customer router and AWS router uses VLANs.
+  Each interface can be assiciated with different AWS account.
+  Public/private IP, AS number, BGP authentication key.
+  Use cases: Big Data (to S3), Hybrid cloud, Latency (e.g. VoIP applications), Disaster recovery.
