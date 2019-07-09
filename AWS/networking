@@ -49,3 +49,13 @@ Route 53 Resolver
       Share rule set via CARS
       Accounts, OUs, organizations may be granted access to share
     When you create endpoint for VPC, IPs will be associated for all availability zones in the VPC. 
+
+Global accelerator (load balancer)
+  Without global accelerator: You access DNS names, attached to some IPs (resourses). Applications cache the IPs. 
+    If an IP is replaced, but cache has not expired yet, you cannot access the resource.
+  Global accelerator: Static accelerator IPs are between the application (accessing the resources) and the resources.
+    Automated healthchecking of the endpoints (resources), routing.
+  Getting started: Enter name, add listeners, 
+    add endpoint groups (one per region; set healthchecks per group, client affinity settings (source IP, ...)), 
+    add endpoints (different endpoints may have different weights).
+  
