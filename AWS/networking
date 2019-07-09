@@ -1,0 +1,29 @@
+VPC: region -> availability zone -> subnets
+VPC can span availability zones
+Regions (Ireland, Frankfurt, London, Paris, Stockholm)
+3 availability zones per region
+
+CloudFront - CDN
+  Select delivery method: 
+    Web (content and streaming via http/https; store files in S3 or Web server), 
+    RTMP - stream media files using Adobe Flash Media Servers' RTMP protocol (store media files in S3; 
+      to use CloudFront live streaming, create a web distribution)
+  Create distribution:
+    Origin domain name
+    Origin SSL protocols (TLS 1.2, 1.1, 1; SSLv3)
+    Origin protocol policy (http / https / match viewer)
+    You can have multiple origins with multiple behaviors
+  Use cases: caching, high availability, video streaming, security and ddos protection, dynamic and customized content, 
+    API acceleration, software destribution
+  To access the content, use DNS name of the distribution or your own CNAME
+
+Routing tables
+  Default RT is created for VPC CIDR block (which spans availability zones): 10.0.0.0/16 local
+  Public RT: 10.0.0.0/16 local, 0/0 IGW (Internet gateway). Use NAT or jump box (host with both public and private IPS) 
+    in public subnet to access private subnet IPs from outside.
+  Private RT: 10.0.0.0/16 local, 0/0 NAT-ID, 172.16.0.0/16 VGW. 
+    Disable source/destination checking for NAT instances (it is enabled by default).
+    VGW (VPN gateway)
+ 
+Elastic network interfaces (ENI)
+  In security network preconfigure ENI. Allow access to the security network only via VGW. 
