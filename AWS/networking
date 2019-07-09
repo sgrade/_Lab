@@ -35,3 +35,17 @@ Direct connect
   Each interface can be assiciated with different AWS account.
   Public/private IP, AS number, BGP authentication key.
   Use cases: Big Data (to S3), Hybrid cloud, Latency (e.g. VoIP applications), Disaster recovery.
+
+Route 53 Resolver
+  Before Route 53 to connect on-premise and cloud (AWS) DNSs you needed private DNS instance per VPC.
+    Consequences: you need to support the instances yourself. If an instance is down, applications wait for time outs. 
+  Route 53 - bidirectional resolver.
+    At least two private ENIs (elastic network interfaces). 
+    Getting started: Choose allowed direction (cloud->on-premises / back / both); choose a VPC; assign security group. 
+      Add at least two IP addresses to the endpoint - forwarding targets (two which on-premises DNS servers forward requests).
+      Forwarding source - from which IP requests come. Define forwarding rules.
+    Multiple accounts (VPCs) can be connected via VPC peering.
+    AWS Organizations Integration - policy-based, central management for multiple accounts:
+      Share rule set via CARS
+      Accounts, OUs, organizations may be granted access to share
+    When you create endpoint for VPC, IPs will be associated for all availability zones in the VPC. 
