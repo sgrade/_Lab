@@ -1,0 +1,77 @@
+AWS Certified Advanced Networking - Speciality
+Module 2: Design and Implement Hybrid IT Network Architectures. 1.0.1
+
+Connectivity options: public internet, VPN, DirectConnect
+
+VPN
+  Site-to-site VPN
+    AWS managed VPN (VGW - virtual private gateway)
+      Built-in HA. Amazon gives 2 IP addresses for 2 tunnels. So two VGWs connect to one customer gateway.
+      To avoid asymmetric routing: prepend as-path or set MED attribute
+      Cloud hop - when two corporate datacenters speak via VGW
+      Important points:
+        VGW doesn't initiate IPSec connection (thus, we cannot connect two VGW together)
+        On-demand dead peer detection (DPD): 10 seconds -> send "R-U-THERE" message -> if no response to 3 DPD, terminated
+        One PSK per tunnel
+      Accessing resources:
+        Can reach private IPs, EC2, RDS, RedShift, Lambda
+        Can't access: NLB, EFS, VPC endpoints, VPC DNS IP, AWS public IP range. 
+          Reason - you need to talk to something with ENI to access those resources.
+      Monitoring with CloudWatch: TunnelState, TunnelDataIn, TunnelDataOut
+      Up to 1.25 Gbps per tunnel
+    EC2: Something on top of Amazon EC2 instance (self-managed; self-managed HA and scalability)
+      BYO software: AWS Marketplace, open-source
+      Roughly about 2-2.5 Gbps
+      Detect failures: EC2 healthchecks, BFD, ping
+      Failover: some products from AWS marketplace can talk to AWS API -> move elastic IPs, change routing table, ...
+      Load balancing self-managed
+      Accessing resources: private IPs by default; the rest with NAT (you NAT incoming traffic from on-premise resources)
+      Horizontal scaling: You can scale up, but at some point you hit the 2-2.5 Gbps limit. So, scale out:
+        Route per on-premise destination. 
+        Attach different VPN GWs to different VPC subnets. 
+        Separate router and VPN GWs (use EC2 instance to route traffic between several VPN Gateways). 
+          Then the router can handle more traffic as it doesn't need to do encryption/decription.
+          To make it redundant, place the VPN GWs in different AZs, connect the router and the VPN GWs with GRE tunnels.
+      
+  Client-to-site VPN
+    VGW doesn't support client-to-site VPN
+    Host VPN software on EC2 instances.
+    Load balance: client software, DNS-based (Router 53)
+    
+  VPN use cases
+    On-premise to Amazon
+      IPSec - AWS managed VPN
+      Non-IPSec - (GRE, DMVPN) - EC2 software VPN
+      Advanced threat protection (DLP, IPS, IDS, etc.) - Amazon EC2 software VPN
+    L3 encryption
+      Between EC2 instances - host-based VPN sw
+      Over AWS direct connect - no support for TLS - AWS managed VPN over public VIF
+    Multicast
+      Amazon doesn't support it. Use GRE tunneling on end hosts.
+####
+
+DirectConnect (DX)
+  Now if you connected to one DX location, you get access to all AWS resources globally (in all regions).
+  Physical connectivity options:
+    Customer router in the same DX location
+    Curcuit between customer DC and DX location
+    Curcuit between customer DC and service provider
+  Set up: choose location, choose speed (1/10 with multiple virtual interfaces or 
+    sub-1G from partners with 1 virtual interface). Download letter of authorization.
+  Physical connectivity: 1000Base-LS or 10GBASE-LR; network must support VLANs and BGP; 
+    BFD recommended for fast failure detection and failover
+  Connecting to VPCs
+    Private VIFs (one per VLAN) to connect to VPCs. Public VIFs to connect to public AWS resources. BGP connection for each VIF.
+    Using DirectConnect gateway (DGW). Only one VLAN and BGP connection is required. DGW will route traffic to required region.
+  Public VIF
+    All Amazon public IPs will be advertised to client via BGP. Filter routes as appropriate. Subscribe for SNS for changes.
+      Use BGP communities to identify local/remote routes.
+    To advertise to AWS set BGP community tag on each public prefix to define the scope:
+      7224:9100 - local AWS region
+      7224:9200 - local continent
+      7224:9300 - Global
+    AWS DirectConnect applies the following BGP community tags
+      7224:8100 - local AWS region
+      7224:8200 - local continent
+      No Tag - Global
+  
