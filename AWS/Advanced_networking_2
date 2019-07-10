@@ -61,17 +61,34 @@ DirectConnect (DX)
   Physical connectivity: 1000Base-LS or 10GBASE-LR; network must support VLANs and BGP; 
     BFD recommended for fast failure detection and failover
   Connecting to VPCs
-    Private VIFs (one per VLAN) to connect to VPCs. Public VIFs to connect to public AWS resources. BGP connection for each VIF.
-    Using DirectConnect gateway (DGW). Only one VLAN and BGP connection is required. DGW will route traffic to required region.
+    Private VIFs (one per VLAN) to connect to VPCs. Public VIFs to connect to public AWS resources. 
+      BGP connection for each VIF.
+    Using DirectConnect gateway (DGW). Only one VLAN and BGP connection is required. 
+      DGW will route traffic to required region.
   Public VIF
     All Amazon public IPs will be advertised to client via BGP. Filter routes as appropriate. Subscribe for SNS for changes.
       Use BGP communities to identify local/remote routes.
-    To advertise to AWS set BGP community tag on each public prefix to define the scope:
+    To advertise to AWS set BGP community tag on each public prefix to define the scope. This will limit the advertisement 
+      of the client's IP range.
       7224:9100 - local AWS region
       7224:9200 - local continent
       7224:9300 - Global
-    AWS DirectConnect applies the following BGP community tags
+    AWS DirectConnect applies the following BGP community tags. The client can limit what he receives.
       7224:8100 - local AWS region
       7224:8200 - local continent
       No Tag - Global
+  You can establish connectivity to VGW via public VIF. Thus you can get your traffic encrypted.
+  Same for connectivity via elastic IP.
+
+Connecting to VPC: Multiple accounts
+  For second account we need another DGW. We don't need second physical connection to DirectConnect: 
+    it is just another DGW between the DirectConnect device and the VPCs.
+
+Connecting to VPC over Peering between VPCs is not possible.
+  Amazon does not allow traffic between VPCs via DGW
   
+LAG (link aggregation)
+  Same bandwidth for all links (1 or 10), up to 4 links, all connections must terminate on the same DX device.
+  Configure active/active (BGP multipath). Note: their mistake?
+
+Dual connections to single location (to two AWS DX device). Or two connections to two DX locations. 
