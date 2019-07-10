@@ -92,7 +92,17 @@ EC2 Networking
     25, 10, up to 10 Gbps between instances. Up to 5 Gbps out of VPC.
     Device pass-through (SR-IOV)
     Elastic Network Adapter (ENA) - new generation technology (hw checksum, multi-queue, receive-side steering). 
-      25 Gbps in a placement group. Amazon open-source driver.
-    
-    Intel DPDK
+      25 Gbps in a placement group. Amazon open-source driver. Advance tuning.
+    Intel DPDK. Supports both Intel 82599 Virtual Interface and ENA driver.
+  Placement groups
+    If two instances are in the same AZ, it doesn't mean that they are close. They might be in different datacenters 
+      relatively far from each other. Placement groups are to place the instances closer (e.g., for HPC) - to the same rack.
+    Use them if you need high consistent bandwidth. If you want to add a new instance, but there is no free places in 
+      the placement group, you may try to shut all the instances and start them again (Amazon will try to launch them closer).
+    May span peer VPCs, but bandwidth may not be full by-section.
+    All traffic is limited to 5Gbps when exists the VPC.
+  Jumbo frames
+    (9001 MTU instead of normal 1522 MTU) - between EC2 instances.
+
+Sample questions
   
