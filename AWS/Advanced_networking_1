@@ -1,0 +1,69 @@
+Module 1: Design and implement AWS networking
+
+AWS edge locations (peering points with ISPs) - 116 locations at the time of course creation
+  Services there: CloudFront with Amazon S3, Lambda@Edge, Route53, Web-application Firewall, Shield (Anti-DDoS service)
+AWS has 100GbE fiber network between edge locations
+A datacenter has availability zones (AZs). They are connected between each-other and 
+  each of them is connected to two transit centers.
+VPC spans the AZs. For each AZ we need subnet(s). We cannot have a VPC, which connect two regions.
+IP addresses: 
+  IPv6 is chosen for us by AWS from their range: /56 global unicast per VPC (/64 for a subnet in VPC).
+  IPv4 is required for instances. It is not possible to have IPv6 address without IPv4 on an instance. So, dual stack always.
+  Because IPv4 is required, we should plan IP addresses carefully.
+  Maximum of 6 CIDR ranges per VPC is allowed. Each CIDR range can be from /16 to /28
+  Reserved by AWS: first four addresses, e.g. .0 (network address), .1 (router), .2 (DNS resolver), .3 (just reserved)
+    and the broadcast address. Broadcasts are not supported in VPC, but the address is reserved. If network starts not from 0, 
+    then +0, +1, +2, +3 addresses and the last one.
+  IPv6:
+    Dual-stack: cannot disable support for IPv4
+    LLA (link-local address): /64 LLA prefix; Modified EUI-64 format obtained through a 48-bit MAC address
+    GUA (global unicast address): randomly assigned /56 per VPC; plan routing to allow or not access from Internet
+  DHCP option set: 
+    create, attached to VPC, cannot be modified; 
+    we can add domain name, 
+    DNS server addresses (we can use AWS DNS (.2) or add up to four our own DNS servers)
+    NTP server addresses (up to four)
+    NETBIOS name servers and node type. Note: multicast is not supported.
+  DNS:
+    two DNS addresses: .2 address in the network and 169.254.169.253 - second DNS server address, proxies the request to .2
+    IPv4 automatic DNS names are configured for every instance:
+      ip-private-ipv4-address.region.compute.internal
+      ec2-public-ipv4-address.region.amazonaws.com (optional)
+    no automatic IPv6 DNS names
+Security groups - stateful firewall rules
+  Inbound / outbound rules (from the EC2 instance viewpoint)
+  Default inbound does not exist (nothing is allowed). Default outbound - allow all.
+  No deny rule (what is not allowed, denied by default)
+  We can tier security groups (one security group can be used as a source in another security group). Thus, if we change 
+    IP addresses in the source security group, the changes will be automatically picked up by the tiered group.
+  Port ranges are allowed. However, comma-separated lists are not allowed - separate rules should be used instead. 
+  50 rules per security group, 5 groups per interface
+Network ACL - stateless firewall rules
+  No state, so both inbound and outbound rule should be create to allow traffic. 
+  No default ACL rules, so everything is allowed. Note: mind security groups - they stop traffic by default.
+  You can create deny rule
+  Rule number defines priority (rules are evaluate from top to bottom). * is the last rule (lowest priority).
+Route tables and gateways
+  +1 address is the AWS default gateway
+  First rule in the routing table is for VPC CIDR, target is local. It always has higher priority even if more specific exist.
+  VPC: Gateways:
+    Egress only internet gateway (IPv6 only). 
+    VPC peering connections
+    VPC endpoints
+    Virtual private gateway
+    Internet gateway (IGW). Only one IGW per VPC.
+    NAT gateway. Many NAT GWs per VPC - they are highly available within the AZ. If you need second NAT GW, it should be in 
+      another subnet - another private route table. Or load balance by destinations (so, there is another routing entry).
+      Needs IGW to go to Internet. AZ specific. Requires elastic IP. Scales up to 45 Gbps per NAT GW.
+  Public route table
+    Has entry with 0/0 via Internet gateway
+  Private route table
+    Has entry with 0/0 via NAT gateway
+  EC2 instance (e.g. IDS/IPS) as in-line next-hop: 
+    Method 1: Specify elastic IP in another subnet as a target (next-hop).
+    Method 2: Add the routing entry pointing to the target host on the EC2 instance itself
+  VPC endpoints for AWS services:
+    Interface (powered by PrivateLink; elastic IP with private address): Amazon Kinezis, Elastic Load Balancing API, 
+      Amazon EC2 API, AWS Systems Manager, AWS Service Catalog, Amazon SNS, AWS KMS (key management service)
+      One interface (ENI) per AZ; no endpoint policies; security groups; access via DirectConnect (but not through AWS VPN)
+    Gateway: for S3 and DynamoDB
