@@ -1,3 +1,4 @@
+AWS free course for Advanced networking certification
 Module 1: Design and implement AWS networking
 
 AWS edge locations (peering points with ISPs) - 116 locations at the time of course creation
@@ -6,6 +7,7 @@ AWS has 100GbE fiber network between edge locations
 A datacenter has availability zones (AZs). They are connected between each-other and 
   each of them is connected to two transit centers.
 VPC spans the AZs. For each AZ we need subnet(s). We cannot have a VPC, which connect two regions.
+
 IP addresses: 
   IPv6 is chosen for us by AWS from their range: /56 global unicast per VPC (/64 for a subnet in VPC).
   IPv4 is required for instances. It is not possible to have IPv6 address without IPv4 on an instance. So, dual stack always.
@@ -30,11 +32,12 @@ IP addresses:
       ip-private-ipv4-address.region.compute.internal
       ec2-public-ipv4-address.region.amazonaws.com (optional)
     no automatic IPv6 DNS names
+
 Security groups - stateful firewall rules
   Inbound / outbound rules (from the EC2 instance viewpoint)
   Default inbound does not exist (nothing is allowed). Default outbound - allow all.
   No deny rule (what is not allowed, denied by default)
-  We can tier security groups (one security group can be used as a source in another security group). Thus, if we change 
+  We can tier security groups (one security group can be used as a source / dest in another security group). Thus, if we change 
     IP addresses in the source security group, the changes will be automatically picked up by the tiered group.
   Port ranges are allowed. However, comma-separated lists are not allowed - separate rules should be used instead. 
   50 rules per security group, 5 groups per interface
@@ -43,6 +46,7 @@ Network ACL - stateless firewall rules
   No default ACL rules, so everything is allowed. Note: mind security groups - they stop traffic by default.
   You can create deny rule
   Rule number defines priority (rules are evaluate from top to bottom). * is the last rule (lowest priority).
+
 Route tables and gateways
   +1 address is the AWS default gateway
   First rule in the routing table is for VPC CIDR, target is local. It always has higher priority even if more specific exist.
@@ -66,4 +70,29 @@ Route tables and gateways
     Interface (powered by PrivateLink; elastic IP with private address): Amazon Kinezis, Elastic Load Balancing API, 
       Amazon EC2 API, AWS Systems Manager, AWS Service Catalog, Amazon SNS, AWS KMS (key management service)
       One interface (ENI) per AZ; no endpoint policies; security groups; access via DirectConnect (but not through AWS VPN)
+      To access the endpoint using normal (public) DNS name, configure private zone in Route 53
     Gateway: for S3 and DynamoDB
+      Supports multiple AZs
+      Traffic goes via VPC GW (+1 address)
+      There will be prefix-list(s) in the route table for the services.
+      VPC endpoint policy: allowing some instances some operations (e.g. get/put) on some endpoints (e.g. S3 backup-bucket)
+        In the VPC endpoint policy we cannot refer to the source instances IP addresses. We can only refer to source endpoint. 
+   Control VPC access to S3
+      1. Route table association, 2. VPCE policy, 3. Bucket policy, 4. EC2 security groups with prefix list
+   DynamoDB doesn't have bucket policy
+
+EC2 Networking
+  EC2 instance always have at least one ENI (elastic network interface). You can add a second ENI and then move it to another 
+    instance. Usually second (third, ...) are from different subnets.
+  ENI can have private IP(s) and public IP(s).
+  On common instances bandwidth is shared between applications.
+  On EBS (elastic block storage) instances there is a dedicated guaranteed bandwidth/throughput 
+    (different per instance type: c4.large, c4.2xlarge, etc.).
+  Network performance
+    25, 10, up to 10 Gbps between instances. Up to 5 Gbps out of VPC.
+    Device pass-through (SR-IOV)
+    Elastic Network Adapter (ENA) - new generation technology (hw checksum, multi-queue, receive-side steering). 
+      25 Gbps in a placement group. Amazon open-source driver.
+    
+    Intel DPDK
+  
