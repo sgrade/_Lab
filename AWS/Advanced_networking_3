@@ -1,0 +1,99 @@
+AWS Certified Advanced Networking - Speciality
+Module 3: Configure Network Integration with Application Services. 1.0.1
+
+Services: Route 53, Elastic Load Balancing, CloudFront, Lambda@Edge
+
+Route 53
+  Domain registrar: Amazon registrar or Gandi
+  Health Checks: http/https, TCP, string matching; Status of CloudWatch alarms; Status of other health checks
+  Traffic flow: 
+    Traffic Policy
+    Traffic policy records
+    Traffic Endpoints
+  Examples
+    Simple Routing Policy - health
+    Weighted Routing Policy: route to multiple resources in proportions that you specify. Blue/green deployments...
+    Combinign Routing Policy: health + weight
+    Geo-Fencing: if you are in Europe, go to this location
+    Geolocation Routing Policy: Location is [Continent[Country[Subdivision]]]
+    Latency Routing Policy: how far is your client from the regions, which I set. 
+      Note: the client and DNS resolver it uses (e.g. OpenDNS) may be in the different locations. 
+      The resolver can implement DNS extension, which puts the client's IP in the DNS request. Not many implement this, but if it 
+      is implemented, Route 53 can check the client IP.
+      Use case: Cross-Region Failover: Latency rule + Helth-check
+    Geoproximity Routing Policy
+      Latency-based (fine tuned). I can move bias (e.g. +50) - tune. Use latitude/longtitude.
+    Multi-Value Answer Routing Policy - return multiple addresses on one request. So, clients behind the DNS resolver can be balanced.
+  Private DNS in VPC
+  Hybrid DNS - integration between on-premises and AWS
+    From on-premises to AWS: conditional forwarders to redirect queries from on-premises to AWS
+      E.g. Request from on-premises client goes to a Microsoft AD server in VPC, which redirects it to Route53 resolver (+2 address in 
+        a VPC network), then the responce goes back. 
+    From AWS to on-premises: VPC Directory Services forwards to redirect queries to on-premises DNS forwarders
+###
+
+Elastic Load Balancing
+  Flavors: Classic, Application, Network
+  
+  Classic Load Balancer
+    TCP, HTTP/HTTPS
+    Supports EC2 Classic as well as VPC
+    Operates on Layer 4
+    Disadvantages: cannot balance between different ports on the same EC2 instance; one load balancer per DNS name; 
+      register EC2 instances in the load balancer itself - so, you cannot choose interface
+  
+  Application Load Balancer
+    Overview
+      Routing decisions on Application Layer (layer 7)
+      Ideal for HTTP/HTTPS
+      Advanced routing targeted at delivery of modern application architectures
+    Advantages: 
+      One load balancer for several DNS names; register
+      EC instances in target groups (roles: images - one target group, orders - another target group); 
+      Can share EC2 instances between target groups
+      Integrages with Auto Scaling to manage the scaling of each target group independently; 
+      Full integration with Amazon ECS (EC2 Container Servers) - containers means more than one port on the EC2 instance
+      ECS will automatically register tasks with the load balancer using a dynamic port mapping
+      Can be used with other container technologies
+      Containers can be included in the target group
+      Host-based routing
+        Based on host field in HTTP header
+    Integration with WAF
+      Available not in every region
+      Blacklist based on conditions, e.g. IP addresses. Note: normal network ACLs on EC2 instance support not many IP addresses
+    Pre-defined Serucity Policies (cannot be modified, like on Classic Load Balancer). Specify which cyphers clients can use (TLS 1.0/ 
+      TLS 1.1/ 1.2., SSL)
+    Server Name Indication (SNI)
+      The load balancer need to return right certificate to establish TLS connection.
+      Part of the TLS protocol itself. There is a specific SNI header, which helps us choose right sertificate. 
+    Application Load Balancer Sample Architecture
+      Load balancer -> Listeners -> For each Listener Rules (e.g. everything that contains */img/* should be sent to target group) -> 
+        target group (EC2 instances, ECS (EC2 Container Server), IP (see below)) -> Health checks
+      IP as a target
+        You can send traffic to on-premise servers. If there is a traffic spike, then send some traffic to Amazon.
+  
+  Network Load Balancer
+    Overview
+      Routing decisions on Transport Layer (Layer 4)
+      Millions of requests per second, ultra-low latencies
+      Uses a single static IP address per AZ
+      Ability to add External IP
+    Features
+      Implemented in the AWS network stack (there is no need to provision extra appliance in the AWS backend)
+        Can help with firewall ports
+      Source IP preserved
+      Integrated with Auto Scaling and Amazon ECS
+      Health checks at TCP/application level
+    Static IP
+      Assign an Elastic IP per AZ to get Static IP
+      Helps with white-listing firewalls
+    AZ Fail-over
+      Throuth DNS in Route53
+    Cross-zone load balancing
+      Disabled by default, but you can enable it
+      You have two load balancers (one per AZ). However each of them can send requests to both zones' EC2 instances.
+      Because you cannot control DNS requests, without cross-zone EC2 instances behind one of the load balancers can be overloaded. 
+        With cross-zone, it is not the case
+      Don't enable it if you care about latency. And if you care about price - traffic between AZs cost money.
+    Network Load Balancer Architecture
+      NLB -> Listeners -> targets (EC2 instances or IP addresses)
