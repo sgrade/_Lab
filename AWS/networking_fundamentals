@@ -42,7 +42,7 @@ Route 53 Resolver
   Route 53 - bidirectional resolver.
     At least two private ENIs (elastic network interfaces). 
     Getting started: Choose allowed direction (cloud->on-premises / back / both); choose a VPC; assign security group. 
-      Add at least two IP addresses to the endpoint - forwarding targets (two which on-premises DNS servers forward requests).
+      Add at least two IP addresses to the endpoint - forwarding targets (to which on-premises DNS servers forward requests).
       Forwarding source - from which IP requests come. Define forwarding rules.
     Multiple accounts (VPCs) can be connected via VPC peering.
     AWS Organizations Integration - policy-based, central management for multiple accounts:
@@ -55,7 +55,8 @@ Global accelerator (load balancer)
     If an IP is replaced, but cache has not expired yet, you cannot access the resource.
   Global accelerator: Static accelerator IPs are between the application (accessing the resources) and the resources.
     Automated healthchecking of the endpoints (resources), routing.
-  Getting started: Enter name, add listeners, 
+  Getting started: 
+    enter name, add listeners, 
     add endpoint groups (one per region; set healthchecks per group, client affinity settings (source IP, ...)), 
     add endpoints (different endpoints may have different weights).
   
