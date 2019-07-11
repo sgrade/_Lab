@@ -42,7 +42,7 @@ Elastic Load Balancing
     Disadvantages: cannot balance between different ports on the same EC2 instance; one load balancer per DNS name; 
       register EC2 instances in the load balancer itself - so, you cannot choose interface
   
-  Application Load Balancer
+  Application Load Balancer (ALB)
     Overview
       Routing decisions on Application Layer (layer 7)
       Ideal for HTTP/HTTPS
@@ -72,7 +72,7 @@ Elastic Load Balancing
       IP as a target
         You can send traffic to on-premise servers. If there is a traffic spike, then send some traffic to Amazon.
   
-  Network Load Balancer
+  Network Load Balancer (NLB)
     Overview
       Routing decisions on Transport Layer (Layer 4)
       Millions of requests per second, ultra-low latencies
@@ -96,4 +96,63 @@ Elastic Load Balancing
         With cross-zone, it is not the case
       Don't enable it if you care about latency. And if you care about price - traffic between AZs cost money.
     Network Load Balancer Architecture
-      NLB -> Listeners -> targets (EC2 instances or IP addresses)
+      NLB -> Listeners -> targets (EC2 instances or IP addresses) -> Health checks
+  
+  Choosing LB
+    ALB - HTTP, HTTPS, HTTP/2; no static IP; SSL offloading; path-based routing, host-based routing; WebSockets; Container Support
+    NLB - TCP; Static IP; no SSL offloading; no path-based routing, host-based routing; WebSockets; Container Support
+    Security groups in backend instances behind ALB and NLB are different
+  
+  Healt Checks
+    Network and Application Target health checks
+    Applied at TargetGroup level (if you need same health check for another TargetGroup, create new one).
+  
+  CloudWatch Metrics
+    ELB sends metrics to CloudWatch
+    Provided for each load balancer
+    1-minute granularity
+    Metrics: ActiveFlowCount, NewFlowCOunt, ProcessedBytes, TCP_Client_Reset_count, TCP_ELB_Reset_Count, TCP_Target_Reset_Count
+###
+
+CloudFront
+  CDN - Content Delivery Network 
+  Acceleration
+    Latency-based routing
+    Collapse multiple requests
+    TCP window scaling
+    Persistent TCP connections to origin
+      Without it, before we can talk to the origin, we need to establish TCP connection, SSL connection - it takes time
+ Behaviors
+  Path pattern matching: vary behavior (how long we cache, ...) depending on how client behave
+  Origin selection
+  Headers: GET, PUT, HEAD, OPTIONS, Accept-Language, User Agent (mobile phone or laptop), Protocol (HTTP or HTTPS). 
+  Query strings / cookies: ?lang=en, ?lang=fr
+  Signed URL: origin can require authentication, but CloudFront caches, so anybody can see without authentication?
+    EC2 Auth Server replies with authenticated URL (Expires=...&Signature=...&Key-Pair-Id=...). Too much overhead if many URLs. Then 
+    Signed Cookies
+  SSL Certificates
+    Custom SSL options; SNI custom SSL (SNI - Server Name Indication); Dedicated IP custom SSL
+  Protocol enforcement
+    Redirect HTTP to HTTPS, match client, ...
+  Time To Live (TTL)
+    How long we should cache. Default minimum is 0. Short TTL = dynamic content. Long TTL = static content. Reduce load on origin. 
+    Invalidation request (you should pay for it) - it expires content on CloudFront
+    If-Modified-Since (last user request?)
+      200 - returns data
+      304 - load it from cache
+  GZIP compression
+    Faster downloads, server is not doing compression
+  Components:
+    Restrictions, Errors, Tags
+    Restrictions
+      Whitelist or blacklist based on locations
+    Caching error Pages, custom page
+  Pricing
+    Gigabytes Transferred. In some regions it is more expensive than in others.
+    Price classes: Best coverage (68* PoPs), Lowest cost (45* PoPs), Great coverage and optimized cost (62* PoPs)
+  CloudFront Components: Example Architecture
+    Cost components: between AWS and cache - 0$; between cache and clients - $
+      If you don't use CloudFront, traffic goes between AWS and clients - $$ (more expensive than with cache)
+  ###
+  
+  AWS Lambda@Edge: Serverless Edge Computing
