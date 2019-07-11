@@ -92,3 +92,47 @@ LAG (link aggregation)
   Configure active/active (BGP multipath). Note: their mistake?
 
 Dual connections to single location (to two AWS DX device). Or two connections to two DX locations. 
+
+Routing preference VPC
+  Local routes to VPC
+  Longest prefix
+  Static
+  Dynamic
+    DX BGP
+      Longest prefix
+      Shortest AS path
+      Equivalent are balanced
+    VPN static (defined on VPN connection)
+    BGP from VPN
+      Shortest AS path
+      MED
+###
+
+VPN DirectConnect outside of VPC
+
+  No transitive routing supported: Traffic from one VPC can go to another VPC's resources, 
+    but not through another VPC to a third VPC. Packet's source or destination IP should be in the VPC you talk to.
+  From DirectConnect you can go to Interface VPC endpoint. But not to Gateway VPC endpoint (S3, DynamoDB).
+  Solutions:
+    Edge-to-edge via proxy: if you connect to ELB, then to proxy (fleet) in the intermediary VPC, then 
+      the proxy connects to the third VPC. We can also communicate to Internet this way.
+      Hub/spoke VPC. Bastion host (jump box) in Hub VPC.
+    Software VPN
+      Use EC2 instance as the transit point
+      
+  Transit VPC (Hub VPC)
+    Use cases: reduce number of VPN connections, L7 security, ...
+    Detached VGW - connects DirectConnect device and the VPN instances in the Hub VPC
+      Use for 1 Gbps DirectConnect
+    VPN software on spokes:
+      VGW: fully managed, built-in HA, but traffic have to go via IGW (because VGW has public IPs)
+      Your own software on EC2: traffic can go via VPC peering
+    Spoke-to-spoke:
+      Different trust zones:
+        Trusted - use VPC peering
+        Untrusted - use transit VPC
+      Routing
+        Static route via VPC peering preffered over VGW propagated route
+    DGW between DX device and spoke VPC
+    Two transit VPCs can help, for example, if you want to build one in North America and second in Europe
+    
