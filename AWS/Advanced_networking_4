@@ -4,7 +4,11 @@ Module 4: Design and Implement for Security and Compliance
 IAM (Identity and Account management) - who can access inside your account
   IAM users (authentication part): root account -> create users
   IAM Groups: group users
-  IAM Policies (authorization part - what you are allowed to do and not allowed to do)
+  IAM 
+  
+  
+  
+  ies (authorization part - what you are allowed to do and not allowed to do)
   IAM Roles:
     An application may need to talk to AWS, create VPN connection, monitor something in AWS from on-premise
     It doesn't have credentials, but does have authentication. IAM policies take care of authorization.
@@ -94,7 +98,7 @@ Monitoring and Compliance
     Archive and compare
   Config Rules
     You can:
-      Assess changes against your seruciryt policy
+      Assess changes against your serucurity policy
       Enforce best practices
       Trigger additional workflow
     Periodic or event-driven config changes 
