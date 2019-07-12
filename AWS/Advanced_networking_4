@@ -4,11 +4,7 @@ Module 4: Design and Implement for Security and Compliance
 IAM (Identity and Account management) - who can access inside your account
   IAM users (authentication part): root account -> create users
   IAM Groups: group users
-  IAM 
-  
-  
-  
-  ies (authorization part - what you are allowed to do and not allowed to do)
+  IAM Policies (authorization part - what you are allowed to do and not allowed to do)
   IAM Roles:
     An application may need to talk to AWS, create VPN connection, monitor something in AWS from on-premise
     It doesn't have credentials, but does have authentication. IAM policies take care of authorization.
@@ -73,8 +69,9 @@ Monitoring and Compliance
   CloudWatch, CloudTrail, VPC Flow Logs, AWS Config and Config Rules, Trusted Advisor
   
   CloudWatch is a set of services: 
-    logs; metrics and filters; alarms and notifications; trigger automated actions; integrate with your eisting ticketing systems; 
+    Logs; Metrics and filters; Alarms and notifications; trigger automated actions; integrate with your eisting ticketing systems; 
     CloudWatch Events - trigger on event (e.g. call a Lambda function)
+    Supports VPN, DirectConnect, ELB, Route 53 Health Checks, EC2
   
   CloudTrail - record (log) API calls
     Enable globally for all AWS Regions;
