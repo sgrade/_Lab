@@ -1,0 +1,34 @@
+AWS Certified Advanced Networking - Speciality
+Module 6: Manage, Optimize, and Troubleshoot the Network
+
+Monitoring
+  Amazon CloudWatch, VPC Flow Logs
+
+Optimization
+  Enable Enhanced Networksing
+    SR-IOV, no additional charge, available on certain instance ttypes
+  Placement groups
+    Logical grouping of instance types; recommended for applications tht benefit from low latency
+  Jumbo MTU
+    1500 is the largest MTU for most of the Internate; available on many instance types
+    Need to be enabled as a rule inside the security group
+    Cannot leave VPC
+  DirectConnect for performance
+    In comparison to VPN gives more performance; no jitter (VPN will go over the Internet, so there is a jitter)
+  Optimizing for cost
+    Internet versus Direct Connect egress - DX charge is cheaper in terms of data transfer, but also take into account price of getting 
+      to the DX location
+    Inter-region data transfer out
+      Inside the region use private IPs to avoid data transfer costs!
+        So whithin AZ with private IPs no cost.
+      Within AZ if you use public IPs, there will be data transfer cost, because traffic will go up and back (?IGW?)
+      Between AZ with private AZ - there is a charge (for example, in case of cross-zone load balancing)
+
+Troubleshooting
+  Load testing
+    ELB with Auto Scaling groups - you need to test those
+    Tools like Bees with Machine Guns are useful
+  Tcpdump and PCAP
+    Can be used on AWS instances (EC2); -W parameter allows captures to file (to be used with Wireshark)
+  Agent-based
+
