@@ -1,0 +1,61 @@
+AWS Certified Advanced Networking - Speciality
+Module 4: Design and Implement for Security and Compliance
+
+IAM (Identity and Account management) - who can access inside your account
+  IAM users (authentication part): root account -> create users
+  IAM Groups: group users
+  IAM Policies (authorization part - what you are allowed to do and not allowed to do)
+  IAM Roles:
+    An application may need to talk to AWS, create VPN connection, monitor something in AWS from on-premise
+    It doesn't have credentials, but does have authentication. IAM policies take care of authorization.
+  Organizations:
+    If you have hierarchy of accounts. Can help with billing per account. Policies can be applied to hierarchy levels.
+  Federating with your existing directory services: SAML - Active Directory Federation Service, OpenID connect
+    You (your directory service) can say who can become this role. AWS roles can say, since they become this role, what can they do.
+
+Layers of Access Control
+  After you got into the account (after IAM)
+  AWS implement IDS, IPS, Firewalls and other security services separately (one tool does one thing best).
+  Layers:
+    AWS Shield (DDoS protection) -> 
+    CloudFront, WAF* -> 
+    DMZ Public subnet (security group) -> 
+    IDS/IPS WAF private subnet (security groups for IPS/IDS, ELB, WAF** autoscaling) -> 
+    Front-end servers Private subnet (Security groups for ELB , Web app tier auto scaling)
+  * Edge location WAF is the first layer of advanced protection - stops attacks, that less intelligent firewalls cannot stop
+  ** Second WAF - learns, what traffic is normal, defends the origin
+
+  IDS/IPS
+    Host-based IDS/IPS - true way to scale. 
+      Most scalable - In this case you don't need to take care about auto-scaling
+      Agents send data to centralized policy servers, logging/reporting servers
+      Trend Micro, Symantec, Check Point
+    Third-party SaaS providers
+    Inline IPS/IDS (WAF)
+      Protect from cross-site scripting, SQL injection, ...
+  
+  Protection at the edge
+    WAF - Can block layer 7 attacks 
+      Web-traffic filtering
+      Starts with a condition, e.g. set of IP addresses. It is different from security groups, which have limit of 250 rules. 
+      Condition could also be a pattern. 
+      In the conditions you can only add AND statements.
+      In rules you can also add OR statements.
+      You can also specify rate limiting rules, e.g. how many requests a client can send per second.
+      Web-ACL is a set of rules. You can associate with a CloudFront distribution.
+      Example: automation using AWS WAF API
+        Users' traffic passes AWS WAF and goes to CloudFront. Access logs are stored in S3 Bucket. 
+        Threat analysis, e.g. AWS Lambda scripts (or AI) analyses the logs (HTTP flowwd, Bad requests (4xx, 5xx), bots, scrapers)) ->
+        Detect malicious IPs ->
+        Send notifications via Amazon SNS ->
+        Update IP blacklists and WAF rules using AWS WAF API
+    Shield - block DDoS attacks
+      Shield Standard (free): quick detection using network flow-based monitoring; protection against most common L3/L3 attacks;
+        mitigates attacks using packet filtering, traffic shaping, and prioritization - without affecting application performance; 
+        available in all regions; ...
+      Shield Advanced (3000 per month with minimum commitment per year):
+        comprehensive protection against sophisticated large-scale attacks; 24x7 support from the DDoS response team; 
+        Available for Amazon CloudFront, ...
+        
+      
+      
