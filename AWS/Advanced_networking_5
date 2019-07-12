@@ -1,0 +1,70 @@
+AWS Certified Advanced Networking - Speciality
+Module 5: Automation
+
+Benefits of automation: consistency and repeatability; security; governance; speed
+
+AWS Automation Tools
+
+AWS CloudFormation
+  Template; Engine; Stack
+  Template
+    JSON-formatted file describing the resources to be created; treated as source code: put in your repository
+    Anatomy: dscription, metadata, parameters, mappings, conditions, resources, outputs
+    From the template we can create a stack - set of services
+  Supported services
+    Route 53, ...
+  Custom resources - do with Lambda functions
+  
+  AWS Service Catalog - portfolio of CloudFormation templates
+    Admin creates portfolio -> then products in the portfolio -> grants access to users -> 
+    users will browse products -> launch products -> deploy stacks -> Admin and users monitor events
+  
+AWS CLI
+  Unified tool to manage AWS services; Script repeatable tasks; Monitor
+
+APIs and AWS SDKs
+  Integrate into existing ticketing systems, suck as ServiceNow and Remedy
+  Integrate with third-party automation systems (Ansible, Chef, Puppet, etc.)
+  Build your own
+
+Auditing with AWS Config, Amazon SNS, and AWS Lambda
+  Define normal or common best practices, evaluate, notification of noncompliance
+
+Jump-Start Application Deployment
+  Automate repeatable tasks
+  Reduce time to deploy applications
+  Go from development to test
+
+Example problems
+  AWS CF Template: App Deployment
+    Resources:
+      VPC:
+        ...
+      Properties:
+        CidrBlock:
+        EnableDNSSupport:
+      Subnet:
+        Type: AWS::EC2::Subnet
+        Properties:
+          CidrBlock: '10.0.0.0/24'
+
+  Reduce Overlapping Networks: IPAM
+    IPAMFunction:
+      Type: 
+      Properties:
+        Code:
+          S3Bucket: '<bucket-name>'
+          S3Key: 'ipam_lambda.zip'
+        Handler: 'ipam_lambda.lambda_handler'
+        Runtime: python2.7
+        Timeout: 10
+    IpamAPI:
+      Type: 'Custom::CIDRs"
+      Properties:
+        ServiceToken: !GetAtt IPAMFunction.Arn
+        subnet_id: 78
+        mask: !Ref 'VpcMask'
+ 
+  Enforce Security Policies
+    AWS Config -> AWS Config Rules
+    
