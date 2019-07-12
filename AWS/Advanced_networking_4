@@ -12,6 +12,7 @@ IAM (Identity and Account management) - who can access inside your account
     If you have hierarchy of accounts. Can help with billing per account. Policies can be applied to hierarchy levels.
   Federating with your existing directory services: SAML - Active Directory Federation Service, OpenID connect
     You (your directory service) can say who can become this role. AWS roles can say, since they become this role, what can they do.
+###
 
 Layers of Access Control
   After you got into the account (after IAM)
@@ -49,13 +50,63 @@ Layers of Access Control
         Detect malicious IPs ->
         Send notifications via Amazon SNS ->
         Update IP blacklists and WAF rules using AWS WAF API
+    
     Shield - block DDoS attacks
+      Deterministic filtering; traffic prioritization based on scoring; advanced routing policies
       Shield Standard (free): quick detection using network flow-based monitoring; protection against most common L3/L3 attacks;
         mitigates attacks using packet filtering, traffic shaping, and prioritization - without affecting application performance; 
         available in all regions; ...
       Shield Advanced (3000 per month with minimum commitment per year):
         comprehensive protection against sophisticated large-scale attacks; 24x7 support from the DDoS response team; 
-        Available for Amazon CloudFront, ...
-        
-      
-      
+        Available for Amazon CloudFront, Route 53, ELB, Elastic IP (single EC2 instance). 
+        DDoS cost protection (if traffic exploded because DDoS) for ELB, CloudFront, Route 53
+        Cost of AWS WAF is included for Layer 7 protection
+        Real-time metrics via Amazon CloudWatch for analysis and alerts
+        Available in some regions
+###
+
+Monitoring and Compliance
+  CloudWatch, CloudTrail, VPC Flow Logs, AWS Config and Config Rules, Trusted Advisor
+  
+  CloudWatch is a set of services: 
+    logs; metrics and filters; alarms and notifications; trigger automated actions; integrate with your eisting ticketing systems; 
+    CloudWatch Events - trigger on event (e.g. call a Lambda function)
+  
+  CloudTrail - record (log) API calls
+    Enable globally for all AWS Regions;
+    Management concole talks to API; SDK talks to API; CLI talks to SDK, which talk to API. 
+    Those logs you can see in CloudTrail in 90 days OR you can export them to CloudWatch, S3 Bucket to store/archive
+    You see in CloudTrail: who (user), when, what, where to (Region), where from (from which IP)
+  
+  VPC Flow Logs - see all your traffic
+    Agentless
+    From full VPC logging to a single NIC
+    Logged to Amazon CloudWatch Logs, so you can create alarms when metrics are breached
+    Create your own network alarms
+    Monitor traffic flows: interface, source IP, port, protocol, packets
+    CloudWatch Alarms: as soon as threshold breached, alarm is generated
+    Automation: Compliance app -> Flow Log group -> Metric filter (Filter on all RDP reject) -> CloudWatch alarm (if > 100, then) -> 
+      Amazon SNS -> AWS Lambda -> Source IP / ENI is blocked OR phone somebody
+  
+  AWS Config
+    Record configuration changes continuously
+    Time-series view of resource changes
+    Archive and compare
+  Config Rules
+    You can:
+      Assess changes against your seruciryt policy
+      Enforce best practices
+      Trigger additional workflow
+    Periodic or event-driven config changes 
+    Rules: Pre-built AWS rules; Custom rules using AWS Lambda
+    Dashboard for visualizing compliance and identifying offending changes
+    
+  Considerations for Multiple VPCs
+    Get data, centralize data, from there do some automation
+  
+  Trusted adviser
+    Sends emails (every week?) about the below:
+    Scans your AWS infrastructure, compares it to AWS best practices in four categories (50+ checks) and provides recommended actions
+  
+  AWS Cloud Architecture for NIST-based Assurance Frameworks
+    What you can do to become NIST-compliant, PCI compliant
