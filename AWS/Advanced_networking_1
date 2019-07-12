@@ -103,6 +103,8 @@ EC2 Networking
     All traffic is limited to 5Gbps when exists the VPC.
   Jumbo frames
     (9001 MTU instead of normal 1522 MTU) - between EC2 instances.
+    Between regions you cannot do Jumbo frames
+    Between VPCs only via VPC peering connection
 
 Sample questions
   
