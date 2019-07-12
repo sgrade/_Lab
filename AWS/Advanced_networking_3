@@ -149,10 +149,27 @@ CloudFront
     Caching error Pages, custom page
   Pricing
     Gigabytes Transferred. In some regions it is more expensive than in others.
+    Requests
     Price classes: Best coverage (68* PoPs), Lowest cost (45* PoPs), Great coverage and optimized cost (62* PoPs)
+    Custom SSL certificate
   CloudFront Components: Example Architecture
     Cost components: between AWS and cache - 0$; between cache and clients - $
       If you don't use CloudFront, traffic goes between AWS and clients - $$ (more expensive than with cache)
-  ###
-  
-  AWS Lambda@Edge: Serverless Edge Computing
+###
+
+AWS Lambda@Edge: Serverless Edge Computing
+  Is an extension of AWS Lambda, that allows you to run Node.js at edge locations. No other programming languages at the Edge.
+  It can be also considered as CloudFront extension.
+  Triggered by (from CloudFront cache view):
+    Viewer request, Origin request, Viewer Response, Origin Response
+  Lambda@Edge Events
+    Request Events: Lambda can change the object, ...
+    Response Events
+  Functionality
+    Read and Write accessto headers, URIs, ...
+  Authorization: Enforce paywalls at the Edge
+  Limited access to the content: if authentication times out
+  Response Generation at the Edge
+  Modify response header; CloudFront response generation; CloudFront HTTP redirect; A/B testing; 
+    Simple remote call at origin-facing hooks; Cacheable content generation
+    
