@@ -28,7 +28,7 @@ Route 53
   Hybrid DNS - integration between on-premises and AWS
     From on-premises to AWS: conditional forwarders to redirect queries from on-premises to AWS
       E.g. Request from on-premises client goes to a Microsoft AD server in VPC, which redirects it to Route53 resolver (+2 address in 
-        a VPC network), then the responce goes back. 
+        a VPC network), then the response goes back. 
     From AWS to on-premises: VPC Directory Services forwards to redirect queries to on-premises DNS forwarders
 ###
 
