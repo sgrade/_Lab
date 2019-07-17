@@ -20,7 +20,7 @@ Route 53
       Note: the client and DNS resolver it uses (e.g. OpenDNS) may be in the different locations. 
       The resolver can implement DNS extension, which puts the client's IP in the DNS request. Not many implement this, but if it 
       is implemented, Route 53 can check the client IP.
-      Use case: Cross-Region Failover: Latency rule + Helth-check
+      Use case: Cross-Region Failover: Latency rule + Health-check
     Geoproximity Routing Policy
       Latency-based (fine tuned). I can move bias (e.g. +50) - tune. Use latitude/longtitude.
     Multi-Value Answer Routing Policy - return multiple addresses on one request. So, clients behind the DNS resolver can be balanced.
