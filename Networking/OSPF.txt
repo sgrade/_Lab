@@ -1,15 +1,36 @@
-Mutual redistribution (e.g specific routes from RIP to OSPF, default route from OSPF to RIP)
-Redistribution rule:
-	Source route has a lower preference:
-		- no problem
-	Source route has a higher preference:
-		- sub-optimal routing
-		- routing loops
-	E.g. in Juniper RIP has route preference 100, OSPF external (default route) - 150. 
-		When default redistributed to RIP and back, RIP version wins - the default route will 
-		point to RIP router, but should point to original ASBR in OSPF area. This is a loop.
-		To solve, modify route preference of OSPF external to 90 (lower, than RIP).
+OSPF packet types:
+  Hello: Sent by each router to form and maintain adjacencies with its neighbors.
+  Database description: Used during the adjacency formation. Contains the header information for the contents of the LSDB on the router.
+  Link-state request: Used by the router to request an updated copy of a neighbor’s LSA.
+  Link-state update: Used by the router to advertise LSAs into the network. Link-State update packets carry one or more LSAs.
+  Link-state acknowledgment: Used by the router to ensure the reliable flooding of LSAs throughout the network.
 
+LSA Types
+  Type 1 (Router LSA): Sent by each router. Describes state and cost of the router's interfaces. Area scope.
+    Link types:
+      Point-to-Point
+      Transit (connection to a broadcast segment)
+      Stub (when a subnet does not connect to any ospf neighbors). Occurs for loopback, passive (and point-to-point) interfaces
+      Virtual link - between an ABR connected to Area 0 and an ABR that is not connected to Area 0.
+  Type 2 (Network LSA): Sent by the DR on the broadcast network. Describes all routers attached. Area scope. 
+    Consists of network mask and attached router.
+  Types 3 and Type 4 (Summary LSA): Sent by an ABR to describe routes or other information from one area into another.
+    Type 3 - Originated by ABRs; describes networks external to the area; area scope.
+    Type 4 - Originated by ABRs; describes ASBRs external to the area; area scope.
+  Type 5 (AS external LSA): Sent by an ASBR to describe routes external to the OSPF domain. 
+    Domain scope.
+  Type 7 (NSSA LSA): Sent by an ASBR in a not-so-stubby area (NSSA) to describe routes external to the OSPF domain. 
+    Area scope. Translated into Type 5 by the ABR. When multiple ABRs exist, the ABR with the highest RID performs the translation.
+  Type 9, 10 (Opaque LSAs): 
+    Type 9 - Junos uses for graceful restart. Link-local scope.
+    Type 10 - Junos uses for MPLS traffic engineering. Area scope.
+
+OSPF External routes
+	E1 or External Type Routes – cost of the external metric plus the internal cost within OSPF to reach that network.
+	E2 or External Type2 Routes (default) – The cost will always be the external metric (no notice of the internal cost to reach that network)
+	
+	If an E1 and E2 route exist to the same destination the E1 route will always be preferred irrespective of the metric.
+	If two external type 2 routes exist with the same metric to the same destination, the route with the lowest metric to the ASBRwill be used. 
 
 OSPFv3
 	The protocol runs per link rather than per subnet
@@ -19,4 +40,8 @@ OSPFv3
 	Link-local addresses are used for all neighbor exchanges except virtual links
 	Two new option bits are included: R and V6
 
-
+OSPF Metrics
+  Routers can disagree about the cost on a network link. Can result in asymmetric routing. 
+  Overload
+    Sets metric to 65535 in router LSA on all transit links.
+    Can be set permanently or with a timeout.
