@@ -5,14 +5,15 @@ Connect - BGP is waiting for the transport protocol connection to be completed
 	If fails, restarts the ConnectRetryTimer, listens for incoming connections, changes to Active
 Active - initiating a transport protocol connection
 	If OK, send Open message, changes to OpenSent
-	If the local system’s BGP state remains in the Active state, you should check physical connectivity as well as the configuration on both peers
+	If the local systemвЂ™s BGP state remains in the Active state, you should check physical connectivity as well as the configuration 
+		on both peers
 OpenSent - BGP waits for an OPEN message from its peer
 	When received, it is checked and verified to ensure that no errors exist. 
 	If an error is detected, back to Idle. 
 	If no errors are detected, BGP sends a Keepalive message.
 OpenConfirm - BGP waits for a KEEPALIVE or NOTIFICATION message.
-	If no KEEPALIVE received before the negotiated hold timer expires, the local system sends a NOTIFICATION message stating that the hold timer has expired 
-		and changes its state to Idle. 
+	If no KEEPALIVE received before the negotiated hold timer expires, the local system sends a NOTIFICATION message stating that 
+		the hold timer has expired and changes its state to Idle. 
 	If receives NOTIFICATION message, Idle. 
 	If receives KEEPALIVE message, Established.
 Established - BGP can exchange UPDATE, NOTIFICATION, and KEEPALIVE messages with its peer
@@ -31,16 +32,16 @@ N WLLA OMNI (from CCNP ROUTE)
 	N = neighbor type, ebgp better than ibgp
 	I = IGP metric to BGP next-hop, lower is better
 
-	Plus there are some additional steps. This where itХs tricky.
+	Plus there are some additional steps. This where itГ•s tricky.
 
 	For eBGP, select the oldest route. If bgp compare router-id is enabled, skip this step.
-	For iBGP and eBGP with Тbgp compare router-idУ, lowest RID wins.
-	If itХs still a tie, prefer neighbor with shortest RR cluster list length (only applies to iBGP RRs)
-	If itХs still a tie, compare neighbor IP addresses, lowest wins.
+	For iBGP and eBGP with Г’bgp compare router-idГ“, lowest RID wins.
+	If itГ•s still a tie, prefer neighbor with shortest RR cluster list length (only applies to iBGP RRs)
+	If itГ•s still a tie, compare neighbor IP addresses, lowest wins.
 	
-для каждого соседа может быть указано уникальное значение таймеров keepalive и hold. 
-	BGP выполняет проверку таймеров keepalive и hold, однако несовпадение этих параметров не влияет на установку отношений соседства.
-	Если выбранное значение таймера Hold равно нулю, то сообщения Keepalive отправляться не будут.
+Г¤Г«Гї ГЄГ Г¦Г¤Г®ГЈГ® Г±Г®Г±ГҐГ¤Г  Г¬Г®Г¦ГҐГІ ГЎГ»ГІГј ГіГЄГ Г§Г Г­Г® ГіГ­ГЁГЄГ Г«ГјГ­Г®ГҐ Г§Г­Г Г·ГҐГ­ГЁГҐ ГІГ Г©Г¬ГҐГ°Г®Гў keepalive ГЁ hold. 
+	BGP ГўГ»ГЇГ®Г«Г­ГїГҐГІ ГЇГ°Г®ГўГҐГ°ГЄГі ГІГ Г©Г¬ГҐГ°Г®Гў keepalive ГЁ hold, Г®Г¤Г­Г ГЄГ® Г­ГҐГ±Г®ГўГЇГ Г¤ГҐГ­ГЁГҐ ГЅГІГЁГµ ГЇГ Г°Г Г¬ГҐГІГ°Г®Гў Г­ГҐ ГўГ«ГЁГїГҐГІ Г­Г  ГіГ±ГІГ Г­Г®ГўГЄГі Г®ГІГ­Г®ГёГҐГ­ГЁГ© Г±Г®Г±ГҐГ¤Г±ГІГўГ .
+	Г…Г±Г«ГЁ ГўГ»ГЎГ°Г Г­Г­Г®ГҐ Г§Г­Г Г·ГҐГ­ГЁГҐ ГІГ Г©Г¬ГҐГ°Г  Hold Г°Г ГўГ­Г® Г­ГіГ«Гѕ, ГІГ® Г±Г®Г®ГЎГ№ГҐГ­ГЁГї Keepalive Г®ГІГЇГ°Г ГўГ«ГїГІГјГ±Гї Г­ГҐ ГЎГіГ¤ГіГІ.
 	
 clear bgp neighbor
 clear bgp neighbor soft
@@ -69,11 +70,11 @@ Attributes:
 route damping
 	route-map DAMP permit 10
 	set dampening 20 950 2500 80
-	Ќас интересует конструкция set, что за цифры она устанавливает.
-	20 — 20 минут принимает значение Half-Life-Time (по умолчанию 15)
-	950 — reuse limit
-	2500 — suppress limit
-	80 — max-life-time обычно это 4 x half-life-time
+	ВЌГ Г± ГЁГ­ГІГҐГ°ГҐГ±ГіГҐГІ ГЄГ®Г­Г±ГІГ°ГіГЄГ¶ГЁГї set, Г·ГІГ® Г§Г  Г¶ГЁГґГ°Г» Г®Г­Г  ГіГ±ГІГ Г­Г ГўГ«ГЁГўГ ГҐГІ.
+	20 вЂ” 20 Г¬ГЁГ­ГіГІ ГЇГ°ГЁГ­ГЁГ¬Г ГҐГІ Г§Г­Г Г·ГҐГ­ГЁГҐ Half-Life-Time (ГЇГ® ГіГ¬Г®Г«Г·Г Г­ГЁГѕ 15)
+	950 вЂ” reuse limit
+	2500 вЂ” suppress limit
+	80 вЂ” max-life-time Г®ГЎГ»Г·Г­Г® ГЅГІГ® 4 x half-life-time
 
 
 Veon's
@@ -97,7 +98,7 @@ http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/iproute_bgp/configuration/xe-3s
 	BFD for BGP
 
 MED to influence inbound paths to our AS. Can do some primitive load balancing. Values are often translated from IGP metrics
-чем меньше, тем лучше
+Г·ГҐГ¬ Г¬ГҐГ­ГјГёГҐ, ГІГҐГ¬ Г«ГіГ·ГёГҐ
 metric igp
 
 From Riot article
@@ -122,7 +123,7 @@ From Riot article
 Understanding BGP Convergence
 http://blog.ine.com/2010/11/22/understanding-bgp-convergence/
 	
-BGP next hop (в EBGP будет адрес анонсирующего роутера, в IBGP не меняется) -> next-hop self / next hop peer-address
+BGP next hop (Гў EBGP ГЎГіГ¤ГҐГІ Г Г¤Г°ГҐГ± Г Г­Г®Г­Г±ГЁГ°ГіГѕГ№ГҐГЈГ® Г°Г®ГіГІГҐГ°Г , Гў IBGP Г­ГҐ Г¬ГҐГ­ГїГҐГІГ±Гї) -> next-hop self / next hop peer-address
 	logical systems
 	routing table names
 	MPLS LSPs
@@ -184,9 +185,9 @@ Cisco:
 	
 
 BGP security
-	атаки:
+	Г ГІГ ГЄГЁ:
 		Prefix hijack
-	Защита:
+	Г‡Г Г№ГЁГІГ :
 		Resource Certification (RPKI) is a community-driven system in which all Regional Internet Registries, 
 		open source software developers and several major router vendors participate. 
 		It uses open standards that were developed in the Secure Inter-Domain Routing (sidr) Working Group in the IETF.
@@ -253,7 +254,7 @@ RFC 4364                    BGP/MPLS IP VPNs               February 2006
          
 
 Anycast
-	Анонсируем одинаковый префикс с разных точек присутствия
+	ГЂГ­Г®Г­Г±ГЁГ°ГіГҐГ¬ Г®Г¤ГЁГ­Г ГЄГ®ГўГ»Г© ГЇГ°ГҐГґГЁГЄГ± Г± Г°Г Г§Г­Г»Гµ ГІГ®Г·ГҐГЄ ГЇГ°ГЁГ±ГіГІГ±ГІГўГЁГї
         http://ddiguru.com/blog/125-anycast-dns-part-5-using-bgp
 Timers
     Cisco routers, this defaults to 60 and 180 respectively.
