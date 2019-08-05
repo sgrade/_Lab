@@ -1,14 +1,51 @@
 MPLS FAQ from Cisco - https://www.cisco.com/c/en/us/support/docs/multiprotocol-label-switching-mpls/mpls/4649-mpls-faq-4649.html
 
-MPLS header - 32 bit:
+MPLS shim header - 32 bit:
   Label - 20 bit
   Traffic class (formerly Experimental bits) - 3 bit
   Bottom-of-stack - 1 bit. Set to 1 if this is the last label before the payload
   TTL - 8 bit. By default IP TTL is copied.
+
 Reserved labels:
   0 - IPv4 Explicit NULL. Label stack must be popped, and the packet forwarding must be based on the IPv4 header. 
     This helps to keep Exp bits safe until the egress router. It is used in MPLS based QoS
   1 - Router Alert
   2 - IPv6 Explicit NULL. Label stack must be popped, and the packet forwarding must be based on the IPv6 header.
-  3 - Implicit NULL. Egress LSR initially send a special label value of 3 to “next-to-last LSR” (called the penultimate LSR). 
+  3 - Implicit NULL. Internal label, only used withing signaling protocols (MPLS frames are never sent with label value 3).
+    Egress LSR initially send a special label value of 3 to “next-to-last LSR” (called the penultimate LSR). 
     When an LSR receives an MPLS header in which the label is set to 3, it always POPs the header i.e., it removes the top label.
+
+LDP
+  Follows best IGP path, so does not allow traffic engineering
+  Now used mainly by applications, requiring full mesh of LSP between routers
+  
+RSVP
+  Allows traffic engineering, reserving bandwidth along the path
+  Uses IP as its network layer (protocol number 46)
+  Message types:
+    Path: create or periodic refresh for an LSP
+    Resv: reserve resources
+    PathTear: remove path and corresponding reservation
+    ResvTear: remove reservation
+    PathErr: error message sent upstream to sender
+    ResvErr: error message sent downstream
+  RSVP LSP establishment:
+    Ingress router sends PATH message; the PATH message is forwarded towards egress, creating a state on every router as it traverses
+      Some objects in the PATH messag:
+        Session ID
+        Session attributes: priority, preemtion, link/node protection
+        Sender T_Spec: requested bandwidth reservation
+        RSVP hop: the previous hop the PATH message traversed
+        Label request: request for label binding
+        Record route: nodes, traversed by the LSP
+        Explicit route object: specify the path the LSP should take
+    Once the PATH message reaches the egress LSR, a RESV message, which includes the allocated label, is sent back towards the ingress.
+      Each transit router, receiving a RESV message, allocates a new local label, relay it upstream, and install new entry in the LIB.
+        E.g. egress LSR assigns label 3 (asks the PHP remove the label), PHP asks previous router to use label 5432 to reach him...
+        Objects, includes in the RESV message:
+          Session ID
+          Label: label, allocated by the previous hop
+          STYLE: reservation style (FF, SE)
+          Record route: nodes and interfaces traversed
+          RSVP-hop: the IP address of the previous hop
+        
