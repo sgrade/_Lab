@@ -1,4 +1,8 @@
+https://www.digitalocean.com/community/tutorials/how-to-inspect-kubernetes-networking
+Note: kubectl works from controller node, but vrouters are only on compute nodes
+
 On compute node:
+
 [centos@ip-172-25-1-250 ~]$ vif
 Usage: vif [--create <intf_name> --mac <mac>]
            [--add <intf_name> --mac <mac> --vrf <vrf>
@@ -11,4 +15,35 @@ Usage: vif [--create <intf_name> --mac <mac>]
            [--get <intf_id>][--kernel][--core <core number>][--rate] [--get-drop-stats]
            [--set <intf_id> --vlan <vlan_id> --vrf <vrf_id>]
            [--list][--core <core number>][--rate]
-           [--help]
+           [--help]           
+
+[root@ip-172-25-1-250 centos]# nsenter --help
+
+Usage:
+ nsenter [options] <program> [<argument>...]
+
+Run a program with namespaces of other processes.
+
+Options:
+ -t, --target <pid>     target process to get namespaces from
+ -m, --mount[=<file>]   enter mount namespace
+ -u, --uts[=<file>]     enter UTS namespace (hostname etc)
+ -i, --ipc[=<file>]     enter System V IPC namespace
+ -n, --net[=<file>]     enter network namespace
+ -p, --pid[=<file>]     enter pid namespace
+ -U, --user[=<file>]    enter user namespace
+ -S, --setuid <uid>     set uid in entered namespace
+ -G, --setgid <gid>     set gid in entered namespace
+     --preserve-credentials do not touch uids or gids
+ -r, --root[=<dir>]     set the root directory
+ -w, --wd[=<dir>]       set the working directory
+ -F, --no-fork          do not fork before exec'ing <program>
+ -Z, --follow-context   set SELinux context according to --target PID
+
+ -h, --help     display this help and exit
+ -V, --version  output version information and exit
+
+For more details see nsenter(1).
+
+
+
