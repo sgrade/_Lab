@@ -1,0 +1,14 @@
+MPLS FAQ from Cisco - https://www.cisco.com/c/en/us/support/docs/multiprotocol-label-switching-mpls/mpls/4649-mpls-faq-4649.html
+
+MPLS header - 32 bit:
+  Label - 20 bit
+  Traffic class (formerly Experimental bits) - 3 bit
+  Bottom-of-stack - 1 bit. Set to 1 if this is the last label before the payload
+  TTL - 8 bit. By default IP TTL is copied.
+Reserved labels:
+  0 - IPv4 Explicit NULL. Label stack must be popped, and the packet forwarding must be based on the IPv4 header. 
+    This helps to keep Exp bits safe until the egress router. It is used in MPLS based QoS
+  1 - Router Alert
+  2 - IPv6 Explicit NULL. Label stack must be popped, and the packet forwarding must be based on the IPv6 header.
+  3 - Implicit NULL. Egress LSR initially send a special label value of 3 to “next-to-last LSR” (called the penultimate LSR). 
+    When an LSR receives an MPLS header in which the label is set to 3, it always POPs the header i.e., it removes the top label.
