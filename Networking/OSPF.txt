@@ -47,3 +47,6 @@ OSPF Metrics
   Overload
     Sets metric to 65535 in router LSA on all transit links.
     Can be set permanently or with a timeout.
+
+224.0.0.5 - All OSPF routers
+224.0.0.6 - All DRs
