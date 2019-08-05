@@ -1,0 +1,14 @@
+On compute node:
+[centos@ip-172-25-1-250 ~]$ vif
+Usage: vif [--create <intf_name> --mac <mac>]
+           [--add <intf_name> --mac <mac> --vrf <vrf>
+                --type [vhost|agent|physical|virtual|monitoring]
+                --transport [eth|pmd|virtual|socket]
+                --xconnect <physical interface name>
+                --policy, --vhost-phys, --dhcp-enable]
+                --vif <vif ID> --id <intf_id> --pmd --pci]
+           [--delete <intf_id>|<intf_name>]
+           [--get <intf_id>][--kernel][--core <core number>][--rate] [--get-drop-stats]
+           [--set <intf_id> --vlan <vlan_id> --vrf <vrf_id>]
+           [--list][--core <core number>][--rate]
+           [--help]
