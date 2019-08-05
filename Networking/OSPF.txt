@@ -1,3 +1,5 @@
+OSPF uses IP Protocol 89 as transport
+
 OSPF packet types:
   Hello: Sent by each router to form and maintain adjacencies with its neighbors.
   Database description: Used during the adjacency formation. Contains the header information for the contents of the LSDB on the router.
