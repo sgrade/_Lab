@@ -18,6 +18,18 @@ Reserved labels:
 LDP
   Follows best IGP path, so does not allow traffic engineering
   Now used mainly by applications, requiring full mesh of LSP between routers
+  FEC - group of packets that should be forwarded in the same way (e.g. going to the same router). LDP router advertises one label for FEC.
+  LDP message types:
+    Discovery: Basic (224.0.0.2, UDP port 646); Extended (Specific address, UDP port 646)
+    Session: TCP session initiated by the node with the higher IP address
+    Advertisement
+    Notification
+  LDP tunneling (targeted LDP)
+    Combines RSVP traffic engineering with LDP label distribution
+      Targeted LDP session is established between RSVP endpoints
+      Forwarding will use label stacking
+  Graceful restart
+    Maintains forwarding state during router restart or reboot. Requires helper mode on adjacent routers.
   
 RSVP
   Allows traffic engineering, reserving bandwidth along the path
@@ -29,23 +41,33 @@ RSVP
     ResvTear: remove reservation
     PathErr: error message sent upstream to sender
     ResvErr: error message sent downstream
+  
   RSVP LSP establishment:
     Ingress router sends PATH message; the PATH message is forwarded towards egress, creating a state on every router as it traverses
-      Some objects in the PATH messag:
-        Session ID
-        Session attributes: priority, preemtion, link/node protection
-        Sender T_Spec: requested bandwidth reservation
-        RSVP hop: the previous hop the PATH message traversed
-        Label request: request for label binding
-        Record route: nodes, traversed by the LSP
-        Explicit route object: specify the path the LSP should take
     Once the PATH message reaches the egress LSR, a RESV message, which includes the allocated label, is sent back towards the ingress.
       Each transit router, receiving a RESV message, allocates a new local label, relay it upstream, and install new entry in the LIB.
         E.g. egress LSR assigns label 3 (asks the PHP remove the label), PHP asks previous router to use label 5432 to reach him...
-        Objects, includes in the RESV message:
-          Session ID
-          Label: label, allocated by the previous hop
-          STYLE: reservation style (FF, SE)
-          Record route: nodes and interfaces traversed
-          RSVP-hop: the IP address of the previous hop
         
+    Some objects in the PATH messag:
+      Session ID
+      Session attributes: priority, preemtion, link/node protection
+      Sender T_Spec: requested bandwidth reservation
+      RSVP hop: the previous hop the PATH message traversed
+      Label request: request for label binding
+      Record route (RRO): nodes, traversed by the LSP. 
+        Every node adds the address of the interface on which the PATH message has been received. This address becomes the 
+          MPLS next-hop in the RESV step
+        If a node receives a PATH messagee with one of its local addresses in the RRO, it sends back a PathErr message, indicating
+          "Routing Loop Detected"
+      Explicit route object (ERO): specify the path the LSP should take (e.g. {R7 LOOSE, R4 STRICT})
+    Objects, includes in the RESV message:
+      Session ID
+      Label: label, allocated by the previous hop
+      STYLE: reservation style (FF, SE)
+      Record route (RRO): nodes and interfaces traversed. 
+      RSVP-hop: the IP address of the previous hop
+      
+    For faster LSP failure detection use BFD
+    RSVP graceful restart maintains forwarding state during a router restart or reboot. Requires helper mode in adjacent nodes.
+      
+      
