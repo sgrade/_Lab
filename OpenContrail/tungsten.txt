@@ -1,0 +1,18 @@
+https://tungstenfabric.github.io/website/Tungsten-Fabric-15-minute-deployment-with-k8s-on-AWS.html
+
+Login to Carbid dashboard
+  user: admin
+  pass: tungsten (I chose this password in CloudFormation console)
+
+Login to Tungsten web-interface:
+  username: admin
+  pass: contrail123 (standard pass)
+
+4 EC2 instances will be installed by default:
+  master-node - t2.medium
+  aws_control1 - t2.xlarge
+  aws_compute1 - t2.xlarge
+  aws_compute2 - t2.xlarge
+The instructions how to connect to the control node will be provided via web-page after installation
+To connect to other nodes, find their DNS names in AWS EC2 console. Use the same credentials (username: centos, key-based auth)
+
