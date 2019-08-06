@@ -1,6 +1,9 @@
 https://www.digitalocean.com/community/tutorials/how-to-inspect-kubernetes-networking
 Note: kubectl works from controller node, but vrouters are only on compute nodes
 
+Juniper's docs for vRouter CLI
+https://www.juniper.net/documentation/en_US/contrail5.1/topics/task/configuration/vrouter-cli-utilities-vnc.html
+
 On compute node:
 
 [centos@ip-172-25-1-250 ~]$ vif
