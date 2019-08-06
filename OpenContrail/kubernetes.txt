@@ -1,0 +1,59 @@
+https://kubernetes.io/docs/tutorials/kubernetes-basics
+
+sudo -s
+
+kubectl cluster-info
+kubectl get nodes
+kubectl get nodes --help
+kubectl run kubernetes-bootcamp --image=gcr.io/google-samples/kubernetes-bootcamp:v1 --port=8080
+kubectl get deployments
+
+kubectl get - list resources
+kubectl describe - show detailed information about a resource
+kubectl logs - print the logs from a container in a pod
+kubectl exec - execute a command on a container in a pod
+
+[root@ip-172-25-1-136 centos]# kubectl get services
+NAME         TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
+kubernetes   ClusterIP   10.96.0.1    <none>        443/TCP   1h
+
+[root@ip-172-25-1-136 centos]# kubectl expose deployment/kubernetes-bootcamp --type="NodePort" --port 8080
+service "kubernetes-bootcamp" exposed
+
+[root@ip-172-25-1-136 centos]# kubectl delete service -l run=kubernetes-bootcamp
+service "kubernetes-bootcamp" deleted
+
+You can confirm that the app is still running with a curl inside the pod
+[root@ip-172-25-1-136 centos]# kubectl exec -ti $POD_NAME curl localhost:8080
+Hello Kubernetes bootcamp! | Running on: kubernetes-bootcamp-5dbf48f7d4-rqrbz | v=1
+
+
+[root@ip-172-25-1-136 centos]# kubectl get deployments
+NAME                  DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+kubernetes-bootcamp   1         1         1            1           1h
+
+[root@ip-172-25-1-136 centos]# kubectl scale deployments/kubernetes-bootcamp --replicas=4
+deployment "kubernetes-bootcamp" scaled
+
+[root@ip-172-25-1-136 centos]# kubectl get deployments
+NAME                  DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+kubernetes-bootcamp   4         4         4            4           1h
+
+[root@ip-172-25-1-136 centos]# kubectl get pods -o wide
+NAME                                   READY     STATUS    RESTARTS   AGE       IP              NODE
+kubernetes-bootcamp-5dbf48f7d4-5p4wz   1/1       Running   0          1m        10.47.255.247   ip-172-25-1-215.eu-west-1.compute.internal
+kubernetes-bootcamp-5dbf48f7d4-6q2m2   1/1       Running   0          1m        10.47.255.248   ip-172-25-1-61.eu-west-1.compute.internal
+kubernetes-bootcamp-5dbf48f7d4-gnlld   1/1       Running   0          1m        10.47.255.249   ip-172-25-1-61.eu-west-1.compute.internal
+kubernetes-bootcamp-5dbf48f7d4-rqrbz   1/1       Running   0          1h        10.47.255.250   ip-172-25-1-215.eu-west-1.compute.internal
+
+kubectl describe deployments/kubernetes-bootcamp
+
+
+To update the image of the application to version 2, use the set image command, followed by the deployment name and the new image version:
+
+[root@ip-172-25-1-136 centos]# kubectl set image deployments/kubernetes-bootcamp kubernetes-bootcamp=jocatalin/kubernetes-bootcamp:v2
+deployment "kubernetes-bootcamp" image updated
+
+[root@ip-172-25-1-136 centos]# kubectl rollout status deployments/kubernetes-bootcamp
+deployment "kubernetes-bootcamp" successfully rolled out
+
