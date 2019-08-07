@@ -1,3 +1,4 @@
 QFX5110 - Broadcom’s Trident 2+
+QFX5120 - Broadcom's Trident 3
 QFX5200 - Broadcom’s StrataXGS Tomahawk
 QFX10000 - Q5
