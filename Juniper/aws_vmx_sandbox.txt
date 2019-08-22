@@ -4,6 +4,8 @@ yum install -y epel-release
 S3 endpoint in VPC
 Full Access - Allow access by any user or service within the VPC using credentials from any AWS accounts to any resources in this AWS service. All policies — IAM user policies, VPC endpoint policies, and AWS service-specific policies (e.g. Amazon S3 bucket policies, any S3 ACL policies) — must grant the necessary permissions for access to succeed.
 
+Using an IAM Role to Grant Permissions to Applications Running on Amazon EC2 Instances 
+https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-ec2.html
 Manage Credentials for Applications Running on Amazon EC2 Instances
 https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-iam-template.html#using-iam-template-manage-creds
 
