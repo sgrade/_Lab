@@ -9,6 +9,9 @@ https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-ec2.ht
 Manage Credentials for Applications Running on Amazon EC2 Instances
 https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-iam-template.html#using-iam-template-manage-creds
 
+AWS::IAM::Role
+https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iam-role.html#cfn-iam-role-templateexamples
+
 pip install awscli
 aws s3 sync s3://juniper-vmx/test.txt .
 
