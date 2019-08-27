@@ -16,6 +16,16 @@ https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-iam-templat
 
 SSH to the instance and login as 'centos' using the key specified at launch. Additional information may be found at : http://wiki.centos.org/Cloud/AWS
 
+https://docs.ansible.com/ansible/latest/modules/yum_module.html#notes
+[centos@ip-172-31-1-5 yum]$ yum group list hidden ids | grep virtualization
+Нет установленного файла групп.
+Maybe run: yum groups mark convert (see man yum)
+   Хост виртуализации (virtualization-host-environment)
+   Гипервизор виртуализации (virtualization-hypervisor)
+   Клиент виртуализации (virtualization-client)
+   Платформа виртуализации (virtualization-platform)
+   Средства виртуализации (virtualization-tools)
+
 pip install awscli
 aws s3 sync s3://juniper-vmx/test.txt .
 
