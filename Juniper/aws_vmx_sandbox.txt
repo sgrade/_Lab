@@ -40,10 +40,6 @@ packages:
 - git
 # epel-release is a repository with python-pip
 - epel-release
-- python-pip
-# Run arbitrary commands
-runcmd:
-- [pip install -U pip]
 
 pip install awscli
 aws s3 sync s3://juniper-vmx/test.txt .
