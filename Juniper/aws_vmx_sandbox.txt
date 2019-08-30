@@ -33,6 +33,34 @@ aws-cli/1.14.28 Python/2.7.5 Linux/3.10.0-862.3.2.el7.x86_64 botocore/1.8.35
 Alternative way to install awscli
 pip install awscli
 
+[centos@ip-172-31-1-5 ~]$ localectl status
+   System Locale: LANG=en_US.UTF-8
+       VC Keymap: us
+      X11 Layout: us
+[centos@ip-172-31-1-5 ~]$ locale
+locale: Cannot set LC_CTYPE to default locale: No such file or directory
+locale: Cannot set LC_MESSAGES to default locale: No such file or directory
+locale: Cannot set LC_ALL to default locale: No such file or directory
+LANG=C.UTF-8
+LC_CTYPE="C.UTF-8"
+LC_NUMERIC="C.UTF-8"
+LC_TIME="C.UTF-8"
+LC_COLLATE="C.UTF-8"
+LC_MONETARY="C.UTF-8"
+LC_MESSAGES="C.UTF-8"
+LC_PAPER="C.UTF-8"
+LC_NAME="C.UTF-8"
+LC_ADDRESS="C.UTF-8"
+LC_TELEPHONE="C.UTF-8"
+LC_MEASUREMENT="C.UTF-8"
+LC_IDENTIFICATION="C.UTF-8"
+LC_ALL=
+[centos@ip-172-31-1-5 ~]$ cat /etc/locale.conf
+LANG=en_US.UTF-8
+
+[centos@ip-172-31-1-5 ~]$ printenv PATH
+/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/home/centos/.local/bin:/home/centos/bin
+
 Groupinstall automation
 https://docs.ansible.com/ansible/latest/modules/yum_module.html#notes
 Use the ids in ()
