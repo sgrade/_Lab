@@ -60,6 +60,8 @@ LANG=en_US.UTF-8
 
 [centos@ip-172-31-1-5 ~]$ printenv PATH
 /usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/home/centos/.local/bin:/home/centos/bin
+[centos@ip-172-31-1-5 ~]$ python --version
+Python 2.7.5
 
 Groupinstall automation
 https://docs.ansible.com/ansible/latest/modules/yum_module.html#notes
