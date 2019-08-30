@@ -1,4 +1,5 @@
-sudo -s
+AWS CloudFormation to provision the host.
+CentOS is the target host OS.
 
 Current elrepo link
 # yum install -y https://www.elrepo.org/elrepo-release-7.0-4.el7.elrepo.noarch.rpm
@@ -8,6 +9,7 @@ Manage Credentials for Applications Running on Amazon EC2 Instances
 https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-iam-template.html#using-iam-template-manage-creds
 
 SSH to the instance and login as 'centos' using the key specified at launch. Additional information may be found at : http://wiki.centos.org/Cloud/AWS
+sudo -s
 
 Cloud-init to set basic things on the EC2 instance
 # https://cloudinit.readthedocs.io/en/latest/topics/examples.html
@@ -31,7 +33,7 @@ aws-cli/1.14.28 Python/2.7.5 Linux/3.10.0-862.3.2.el7.x86_64 botocore/1.8.35
 Alternative way to install awscli
 pip install awscli
 
-Groupinstall with Ansible
+Groupinstall automation
 https://docs.ansible.com/ansible/latest/modules/yum_module.html#notes
 Use the ids in ()
 [centos@ip-172-31-1-5 ~]$ yum group list hidden ids | grep virtualization
