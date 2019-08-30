@@ -74,6 +74,39 @@ Use the ids in ()
    Virtualization Platform (virtualization-platform)
    Virtualization Tools (virtualization-tools)
 
+[centos@ip-172-31-1-5 ~]$ yum groups info "Virtualization Host"
+...
+Environment Group: Virtualization Host
+ Environment-Id: virtualization-host-environment
+ Description: Minimal virtualization host.
+ Mandatory Groups:
+   +base
+   +core
+   +virtualization-hypervisor
+   +virtualization-tools
+ Optional Groups:
+   +debugging
+   +network-file-system-client
+   +remote-system-management
+   +virtualization-platform
+[centos@ip-172-31-1-5 ~]$ yum groups info "Virtualization Platform"
+...
+Group: Virtualization Platform
+ Group-Id: virtualization-platform
+ Description: Provides an interface for accessing and controlling virtualized guests and containers.
+ Mandatory Packages:
+   +libvirt
+   +libvirt-client
+   +virt-who
+ Optional Packages:
+   fence-virtd-libvirt
+   fence-virtd-multicast
+   fence-virtd-serial
+   libvirt-cim
+   libvirt-java
+   libvirt-snmp
+   perl-Sys-Virt
+
 # Access 
 aws s3 sync s3://juniper-vmx/test.txt .
 
