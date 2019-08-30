@@ -110,3 +110,6 @@ Group: Virtualization Platform
 # Access 
 aws s3 sync s3://juniper-vmx/test.txt .
 
+vMX install guide asks to add this path to /etc/profile. So, I wanted to know, what is there.
+[centos@ip-172-31-1-5 ~]$ ls /opt/rh/python27/root/usr/bin/
+easy_install  easy_install-2.7  pip  pip2  pip2.7  pydoc  python  python-config  python2  python2-config  python2.7  python2.7-config
