@@ -1,0 +1,6 @@
+gsutil cp gs://cloud-training/gcpnet/cdn/cdn.png gs://[your-storage-bucket]
+gsutil acl ch -u AllUsers:R gs://[your-storage-bucket]/cdn.png
+
+export LB_IP_ADDRESS=<Enter the IP address of the load balancer>
+Run the following command 3 times for consecutive HTTP requests:
+for i in {1..3};do curl -s -w "%{time_total}\n" -o /dev/null http://$LB_IP_ADDRESS/cdn.png; done
