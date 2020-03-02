@@ -1,0 +1,5 @@
+Private Google Access
+https://cloud.google.com/vpc/docs/private-access-options#pga-supported
+From internal IPs access external IPs of Google APIs and services
+Enabled on subnet by subnet basis
+Cloud NAT does not implement inbound NAT

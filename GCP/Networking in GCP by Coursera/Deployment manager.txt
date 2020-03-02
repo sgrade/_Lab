@@ -1,0 +1,39 @@
+https://cloud.google.com/deployment-manager/docs/configuration/supported-resource-types
+gcloud deployment-manager types list | grep network
+gcloud deployment-manager types list | grep subnetwork
+gcloud deployment-manager types list | grep firewall
+
+autonetwork.jinja
+resources:
+- name: {{ env["name"] }}
+  type: compute.v1.network
+  properties:
+    autoCreateSubnetworks: true
+
+firewall.jinja
+resources:
+- name: {{env["name"] }}
+  type: compute.v1.firewall
+  properties:
+    network {{ properties["network"] }}
+    sourceRanges: ["0.0.0.0/0"]
+    allowed:
+    - IPProtocol: {{ properties["IPProtocol"] }}
+      ports: {{ properties["Port"] }}
+
+config.yaml
+import:
+- path: autonetwork.jinja
+- path: firewall.jinja
+
+resources:
+- name: mynetwork
+  type: autonetwork.jinja
+
+- name: mynetwork-allow-http
+  type: firewall.jinja
+  properties:
+    network: $(ref.mynetwork.selfLink)
+    IPProtocol: TCP
+    Port: [80]
+

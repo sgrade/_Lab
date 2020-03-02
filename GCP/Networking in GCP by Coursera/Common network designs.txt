@@ -1,0 +1,13 @@
+Increase availability with multiple zones
+
+Globalization with multiple regions. Global load balancer.
+
+Instance isolation with bastion host
+https://cloud.google.com/solutions/connecting-securely#bastion
+
+Access internal load balancer using HTTP(S) load balancer
+
+Access internal load balancer using CloudVPN or Interconnect
+
+Shared VPC network with inline security appliance for next-generation forewall
+https://cloud.google.com/security/partners/

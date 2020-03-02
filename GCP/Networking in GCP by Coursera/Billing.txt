@@ -1,0 +1,46 @@
+Attach labels to VMs, e.g.
+
+location: EU, server: web
+location: EU, server: image
+location: US, server: web
+location: US, server: image
+-----
+
+Export logs to BigQuery
+-----
+
+Analyse network spend with BigQuery
+
+Query examples:
+
+SELECT
+sku.description,
+SUM(cost)
+FROM
+`dataset_name`
+GROUP BY
+sku.description
+ORDER BY
+sum(cost) DESC
+
+
+SELECT
+labels.value as location,
+SUM(cost) as cost
+FROM
+`dataset_name`
+LEFT JOIN UNNEST(labels) as labels
+ON labels.key = "location"
+GROUP BY location
+ORDER BY cost DESC
+
+
+SELECT
+labels.value as server,
+SUM(cost) as cost
+FROM
+`dataset_name`
+LEFT JOIN UNNEST(labels) as labels
+ON labels.key = "server"
+GROUP BY server
+ORDER BY cost DESC
