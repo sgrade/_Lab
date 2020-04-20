@@ -9,5 +9,5 @@ Access internal load balancer using HTTP(S) load balancer
 
 Access internal load balancer using CloudVPN or Interconnect
 
-Shared VPC network with inline security appliance for next-generation forewall
+Shared VPC network with inline security appliance for next-generation firewall
 https://cloud.google.com/security/partners/
