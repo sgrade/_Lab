@@ -1,8 +1,0 @@
-
-https://peering.google.com/#/options/peering
-
-PeeringDB Google LLC
-https://www.peeringdb.com/asn/15169
-
-Peering DB Google LLC AS36040
-https://www.peeringdb.com/net/4319
