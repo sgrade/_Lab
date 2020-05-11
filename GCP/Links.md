@@ -1,16 +1,24 @@
+## GCP Networking
+
 [Networking documentation](https://cloud.google.com/docs#section-18)
-
-[Cloud router documentation](https://cloud.google.com/router/docs)
-
-[ANdromeda - Google network virtualization stack](https://cloudplatform.googleblog.com/2014/04/enter-andromeda-zone-google-cloud-platforms-latest-networking-stack.html)
 
 [GCP pricing calculator](https://cloud.google.com/products/calculator/)
 
-[Network tiers pricing](https://cloud.google.com/network-tiers/pricing]
+[Network pricing](https://cloud.google.com/compute/all-pricing#network_pricing)
 
-[Internet ingress pricing](https://cloud.google.com/compute/all-pricing#internet_egress)
+[Network tiers pricing](https://cloud.google.com/network-tiers/pricing)
+
+## Best practices
 
 [Best practices and reference architectures for VPC design](https://cloud.google.com/solutions/best-practices-vpc-design)
+
+[Securely connecting to VM instances](https://cloud.google.com/solutions/connecting-securely)
+
+[Best Practices for Floating IP Addresses](https://cloud.google.com/solutions/best-practices-floating-ip-addresses)
+
+## Google networking
+
+[Andromeda - Google network virtualization stack](https://cloudplatform.googleblog.com/2014/04/enter-andromeda-zone-google-cloud-platforms-latest-networking-stack.html)
 
 [Google peering](https://peering.google.com/#/options/peering)
 
