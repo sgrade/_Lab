@@ -1,5 +1,7 @@
 
-Mount local folder, so "configure" can store credentials in there
+[AWS CLI version 2 Docker](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2-docker.html)
+
+Mount local folder, so "configure" can store credentials in there:
 
 docker run --rm -it -v ~/.aws:/root/.aws amazon/aws-cli configure
 
