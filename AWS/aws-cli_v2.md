@@ -1,11 +1,11 @@
 # AWS CLI v2 in Docker image
-[AWS CLI version 2 Docker](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2-docker.html)
+[Relevant AWS docs](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2-docker.html)
 
-## credentials
+## Credentials
 
-In below commands the credentials stored locally in ~/.aws
+Below commands use credentials stored locally in ~/.aws
 
-and mounted to the docker container, so they are accessible from there
+This folder is mounted to the docker container, so the credentials are accessible from there
 
 ## Configure
 
