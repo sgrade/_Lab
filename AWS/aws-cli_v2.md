@@ -17,14 +17,23 @@ This folder is mounted to the docker container, so the credentials are accessibl
 
 `docker run --rm -it -v ~/.aws:/root/.aws amazon/aws-cli configure --profile PROFILE_NAME`
 
-Note: change PROFILE_NAME to name of your profile
+Note: change PROFILE_NAME to the name of your profile
 
 ## Use
 
-`alias aws='docker run --rm -it -v ~/.aws:/root/.aws -v $(pwd):/aws amazon/aws-cli --profile PROFILE_NAME'`
+### Alias
+Below alias allows to use simple 'aws' instead of the long string
 
-Note:
+`alias aws='docker run --rm -it -v ~/.aws:/root/.aws -v $(pwd):/aws amazon/aws-cli`
 
-The alias will disappear after reboot.
-
+Note: The alias will disappear after reboot.
 To make it permanent, add it to ~/.bash_aliases
+
+### Profile
+
+"By default, the SDK checks the AWS_PROFILE environment variable to determine which profile to use. If no AWS_PROFILE variable is set, the SDK uses the default profile."
+[Source](https://docs.aws.amazon.com/sdk-for-go/v1/developer-guide/configuring-sdk.html)
+
+`export AWS_PROFILE=PROFILE_NAME`
+
+Note: change PROFILE_NAME to the name of your profile
