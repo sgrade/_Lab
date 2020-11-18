@@ -22,3 +22,9 @@ Note: change PROFILE_NAME to name of your profile
 ## Use
 
 `alias aws='docker run --rm -it -v ~/.aws:/root/.aws -v $(pwd):/aws amazon/aws-cli --profile PROFILE_NAME'`
+
+Note:
+
+The alias will disappear after reboot.
+
+To make it permanent, add it to ~/.bash_aliases
