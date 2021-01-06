@@ -5,16 +5,16 @@ Connect - BGP is waiting for the transport protocol connection to be completed
 	If fails, restarts the ConnectRetryTimer, listens for incoming connections, changes to Active
 Active - initiating a transport protocol connection
 	If OK, send Open message, changes to OpenSent
-	If the local system’s BGP state remains in the Active state, you should check physical connectivity as well as the configuration 
+	If the local system’s BGP state remains in the Active state, you should check physical connectivity as well as the configuration
 		on both peers
 OpenSent - BGP waits for an OPEN message from its peer
-	When received, it is checked and verified to ensure that no errors exist. 
-	If an error is detected, back to Idle. 
+	When received, it is checked and verified to ensure that no errors exist.
+	If an error is detected, back to Idle.
 	If no errors are detected, BGP sends a Keepalive message.
 OpenConfirm - BGP waits for a KEEPALIVE or NOTIFICATION message.
-	If no KEEPALIVE received before the negotiated hold timer expires, the local system sends a NOTIFICATION message stating that 
-		the hold timer has expired and changes its state to Idle. 
-	If receives NOTIFICATION message, Idle. 
+	If no KEEPALIVE received before the negotiated hold timer expires, the local system sends a NOTIFICATION message stating that
+		the hold timer has expired and changes its state to Idle.
+	If receives NOTIFICATION message, Idle.
 	If receives KEEPALIVE message, Established.
 Established - BGP can exchange UPDATE, NOTIFICATION, and KEEPALIVE messages with its peer
 	When receives UPDATE or KEEPALIVE message, and negotiated hold timer value is nonzero, it restarts its hold timer.
@@ -27,22 +27,24 @@ N WLLA OMNI (from CCNP ROUTE)
 	L = local preference, bigger is better
 	L = locally injected preferred over BGP learned
 	A = AS path length, shorter is better
-	O = origin, (igp is better than egp is better than incomplete)
+	O = origin, (IGP is better than EGP is better than ?(incomplete))
+			On Cisco routers, the origin is set to “i” (IGP) if a route is injected into BGP using a network statement and to
+			“?” (incomplete) if static or connected routes or routes from another routing protocol are redistributed in BGP.
 	M = MED, lower is better
 	N = neighbor type, ebgp better than ibgp
 	I = IGP metric to BGP next-hop, lower is better
 
-	Plus there are some additional steps. This where itÕs tricky.
+	Plus there are some additional steps. This where it is tricky.
 
 	For eBGP, select the oldest route. If bgp compare router-id is enabled, skip this step.
 	For iBGP and eBGP with Òbgp compare router-idÓ, lowest RID wins.
-	If itÕs still a tie, prefer neighbor with shortest RR cluster list length (only applies to iBGP RRs)
-	If itÕs still a tie, compare neighbor IP addresses, lowest wins.
-	
-äëÿ êàæäîãî ñîñåäà ìîæåò áûòü óêàçàíî óíèêàëüíîå çíà÷åíèå òàéìåðîâ keepalive è hold. 
+	If it is still a tie, prefer neighbor with shortest RR cluster list length (only applies to iBGP RRs)
+	If it is still a tie, compare neighbor IP addresses, lowest wins.
+
+äëÿ êàæäîãî ñîñåäà ìîæåò áûòü óêàçàíî óíèêàëüíîå çíà÷åíèå òàéìåðîâ keepalive è hold.
 	BGP âûïîëíÿåò ïðîâåðêó òàéìåðîâ keepalive è hold, îäíàêî íåñîâïàäåíèå ýòèõ ïàðàìåòðîâ íå âëèÿåò íà óñòàíîâêó îòíîøåíèé ñîñåäñòâà.
 	Åñëè âûáðàííîå çíà÷åíèå òàéìåðà Hold ðàâíî íóëþ, òî ñîîáùåíèÿ Keepalive îòïðàâëÿòüñÿ íå áóäóò.
-	
+
 clear bgp neighbor
 clear bgp neighbor soft
 crear bgp neighbor soft-inbound
@@ -64,8 +66,8 @@ Attributes:
 	13	RCID_PATH/CLUSTER_ID	BGP/IDRP Route Server
 	14	Multiprotocol Reachable NLRI	Optional non-transitive
 	15	Multiprotocol Unreachable NLRI	Optional non-transitive
-	16	Extended communities	
-	256	Reserved for future development	
+	16	Extended communities
+	256	Reserved for future development
 
 route damping
 	route-map DAMP permit 10
@@ -102,32 +104,32 @@ MED to influence inbound paths to our AS. Can do some primitive load balancing. 
 metric igp
 
 From Riot article
-	BGP session age, a measure of how long a particular route has been in use. 
-	Imagine two routes between Riot and a particular ISP: a faster route A and a slower route B. 
-	If route A goes down, the traffic moves to route B certainly a reasonable shift as it's the best available route. 
-	The problem occurs when route A comes back up as the ISP will continue to use route B simply because its session age is older, 
-	and therefore automatically preferred. 
-	This is done because it's the default behavior of the protocol, 
-	and for ISPs with large amounts of peers it requires less work than manually rebalancing to the correct route. 
+	BGP session age, a measure of how long a particular route has been in use.
+	Imagine two routes between Riot and a particular ISP: a faster route A and a slower route B.
+	If route A goes down, the traffic moves to route B certainly a reasonable shift as it's the best available route.
+	The problem occurs when route A comes back up as the ISP will continue to use route B simply because its session age is older,
+	and therefore automatically preferred.
+	This is done because it's the default behavior of the protocol,
+	and for ISPs with large amounts of peers it requires less work than manually rebalancing to the correct route.
 	We've had to find workarounds such as taking route B down intentionally to move that traffic back to route A.
 		https://engineering.riotgames.com/news/fixing-internet-real-time-applications-part-ii
 		Riot's AS in US is AS (6507)
 		http://irrexplorer.nlnog.net/search/6507
-	
-	My note: the above is relevant with multipath. 
+
+	My note: the above is relevant with multipath.
 	When both paths are external, prefer the path that was received first (the oldest one).
-		"This step minimizes route-flap because a newer path does not displace an older one, even if the newer path would be 
+		"This step minimizes route-flap because a newer path does not displace an older one, even if the newer path would be
 		the preferred route based on the next decision criteria (Steps 11, 12, and 13)."
 		https://www.cisco.com/c/en/us/support/docs/ip/border-gateway-protocol-bgp/13753-25.html
-	
+
 Understanding BGP Convergence
 http://blog.ine.com/2010/11/22/understanding-bgp-convergence/
-	
+
 BGP next hop (â EBGP áóäåò àäðåñ àíîíñèðóþùåãî ðîóòåðà, â IBGP íå ìåíÿåòñÿ) -> next-hop self / next hop peer-address
 	logical systems
 	routing table names
 	MPLS LSPs
-	xWDM? 
+	xWDM?
 
 show bgp summary
 show route terse
@@ -137,7 +139,7 @@ show route protocol bgp extensive
 as-path-prepend
 
 !!! Policies based on RegExps
-	Examples: 
+	Examples:
 		Find all routes originating in AS 1
 		Find all routes that transited AS 100
 		Find the routes originating in my own AS
@@ -181,15 +183,15 @@ Cisco:
 	|-------------+---------------------------|
 	| _100_       | Any instance of AS 100    |
 	|-------------+---------------------------|
-	| ^[0-9]+$    | Directly connected ASes  
-	
+	| ^[0-9]+$    | Directly connected ASes
+
 
 BGP security
 	àòàêè:
 		Prefix hijack
 	Çàùèòà:
-		Resource Certification (RPKI) is a community-driven system in which all Regional Internet Registries, 
-		open source software developers and several major router vendors participate. 
+		Resource Certification (RPKI) is a community-driven system in which all Regional Internet Registries,
+		open source software developers and several major router vendors participate.
 		It uses open standards that were developed in the Secure Inter-Domain Routing (sidr) Working Group in the IETF.
 		https://www.ripe.net/manage-ips-and-asns/resource-management/certification/bgp-origin-validation
         https://habrahabr.ru/post/211146/
@@ -202,7 +204,7 @@ http://www.routeviews.org/ - anyone can download and investigate
 		A tool for visualizing BGP routing changes
 		Geoff Huston's analysis of BGP routing table dynamics
 		Sean Mccreary's work on routing table growth
-		Bradley Huffaker's analysis of the geographic scope of routing announcements, mapping ASes, announced prefixes, 
+		Bradley Huffaker's analysis of the geographic scope of routing announcements, mapping ASes, announced prefixes,
 		and IPv4 address space to the country that is administratively responsible for routing them.
 
 
@@ -238,8 +240,8 @@ https://tools.ietf.org/rfc/rfc4360.txt
    ...
    One possible use of the Route Origin Community is specified in
    [RFC4364].
-         
-         
+
+
 https://tools.ietf.org/html/rfc4364
 RFC 4364                    BGP/MPLS IP VPNs               February 2006
    The Site of Origin attribute, if used, is encoded as a Route Origin
@@ -251,7 +253,7 @@ RFC 4364                    BGP/MPLS IP VPNs               February 2006
    connection.  It is particularly useful if BGP is being used as the
    PE/CE protocol, but different sites have not been assigned distinct
    ASNs.
-         
+
 
 Anycast
 	Àíîíñèðóåì îäèíàêîâûé ïðåôèêñ ñ ðàçíûõ òî÷åê ïðèñóòñòâèÿ
@@ -261,7 +263,7 @@ Timers
     Quagga config: "timers bgp 4 16" - this command adjusts the network timers for keepalive and holddown timers.
          a keepalive is sent every 4 seconds, and the router should wait 16 seconds for keepalive messages before it declares the peer dead.
 
-         
+
 RFC 4384          BGP Communities for Data Collection      February 2006
 https://tools.ietf.org/html/rfc4384
 
@@ -313,7 +315,7 @@ https://tools.ietf.org/html/rfc4384
    Europe differently than the same route set received in North America,
    as it is common practice to sell transit in one region while peering
    in the other.
-   
+
    This memo follows the best current practice of using the basic format
    <AS>:<Value>.  The values for the route categories are described in
    the following table:
