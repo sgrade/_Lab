@@ -1,7 +1,9 @@
-# Overview
+# Key concepts
+
+## Overview
 An L1/L2 IS-IS network operates in a similar fashion to an OSPF NSSA with no summaries.
 
-# Metric
+## Metric
 Unlike OSPF, in which the link metric is calculated automatically based on bandwidth, there is no automatic calculation for IS-IS. All IS-IS links use a metric of 10 by default.
 Normally, IS-IS metrics can have values up to 63.
 The total cost to a destination is the sum of the metrics on all outgoing interfaces along a particular path from the source to the destination.
@@ -10,23 +12,23 @@ Wider metric:
 1) for Traffic Engineering; 2) Required if route leaking is used
 up to 16,777,215 (224 – 1)
 
-# Multi-area IS-IS
+## Multi-area IS-IS
 IS-IS Level 1 internal routes are redistributed into the Level 2 database by default.
 To provide interarea reachability for Level 1 routers, an L1/L2 router with a Level 2 adjacency to a router in another area sets its attached bit in its Level 1 LSPs.
 Level 1 routers install a 0.0.0.0/0 default route to the metrically closest attached router when they detect Level 1 LSPs with the attached bit set.
 
-# Route leaking
+## Route leaking
 Selective introduction of L2 information into an L1 area is called route leaking.
 Because the L1/L2 border router naturally stops the transmission of Level 2 routes into a Level 1 area, it is the logical location to override that default. You can accomplish this goal with a Junos routing policy.
 
-## External route
+### External route
 By default, external routes are not leaked between the Level 1 database and the Level 2 database
 Level 1 routes advertised as external routes into Level 1 are not advertised to any Level 2 routers by default;
 routing policy is needed to effect the leaking of Level 1 externals into the L2 backbone.
 the use of wide-metrics-only alters the natural L1/L2 boundary in that routes are no longer distinguishable as being internal or external.
 The use of wide metrics therefore results in the automatic leaking of all Level 1 routes into Level 2, because they will all appear to be internal routes.
 
-## Up / Down bit
+### Up / Down bit
 "internal/external" is a bit field in the ISIS TLV 128/130 (narrow-metric) and TLV 135 (for wide-metric).
 In TLV 135 the field name is actually (UP/DOWN).
 Up means it can be "leaked" to another area, down means it won't be "leaked" to another area, this is to prevent routing loop.
@@ -37,18 +39,18 @@ The purpose of this bit is to inform the L1/L2 routers whether a configured poli
 Only routes marked with the up direction are eligible for advertisement from Level 1 to Level 2.
 All internal Level 1 routes will have the up/down bit set in this manner.
 
-# Overload
+## Overload
 The routing device to continue participating in IS-IS routing, but prevents it from being used for transit traffic.
 Traffic destined to immediately attached subnets continues to transit the routing device.
 In overload mode, the routing device advertisement is originated with all the transit routing device links (except stub) set to a metric of 0xFFFF.
 The stub routing device links are advertised with the actual cost of the interfaces corresponding to the stub.
 This causes the transit traffic to avoid the overloaded routing device and take paths around the routing device.
 
-# IS Type Bits
+## IS Type Bits
 01 (0x01) - router can support only Level 1 routing
-11 (0x03) - bot Level 1 and Level 2 routing
+11 (0x03) - both Level 1 and Level 2 routing
 
-# Packets (PDUs)
+## Packets (PDUs)
 https://sites.google.com/site/amitsciscozone/home/is-is/is-is-packets
 In ISO terminology, packets are referred to as Protocol Data Units (PDUs).
 There are 3 categories of IS-IS packets:  
@@ -79,6 +81,6 @@ There are 3 categories of IS-IS packets:
 			The receiver sends a PSNP to the system that transmitted the complete sequence number PDUs (CSNPs), effectively requesting that the missing LSP be transmitted.  
 			That router, in turn, forwards the missing LSP to the requesting router.
 
-# Traffic Engineering
-[RFC 5305](https://tools.ietf.org/search/rfc5305)
+## Traffic Engineering
+[RFC 5305](https://tools.ietf.org/search/rfc5305)  
 IS-IS Extensions for Traffic Engineering    October 2008
