@@ -37,4 +37,14 @@ When `advertise-high-metric` is configured, IS-IS does not set the overload bit.
 Rather, it sets the metric to 63 or 16,777,214, depending whether wide metrics are enabled.  
 This allows the overloaded routing device to be used for transit as a last resort.  
 
-[source](https://www.juniper.net/documentation/en_US/junos/topics/reference/configuration-statement/overload-edit-protocols-isis.html)
+[source](https://www.juniper.net/documentation/en_US/junos/topics/reference/configuration-statement/overload-edit-protocols-isis.html
+
+# Route preference
+Level 1 internal route 15  
+Level 2 internal route 18  
+Level 1 external route 160  
+Level 2 external route 165  
+[Source](https://www.juniper.net/documentation/en_US/junos/topics/reference/general/routing-protocols-default-route-preference-values.html)
+
+Note: Using only wide metrics eliminates internal/external distinction.  
+Source - AJSPR course

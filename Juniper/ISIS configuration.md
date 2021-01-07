@@ -10,16 +10,6 @@ show route protocol isis
 show isis database extensive
 show isis database extensive | find tlv
 
-# Route preference
-Level 1 internal route 15
-Level 2 internal route 18
-Level 1 external route 160
-Level 2 external route 165
-[Source](https://www.juniper.net/documentation/en_US/junos/topics/reference/general/routing-protocols-default-route-preference-values.html)
-
-Note: Using only wide metrics eliminates internal/external distinction.
-Source - AJSPR (see below)
-
 # Best practices
 from AJSPR (Advanced SP Routing course: Multilevel IS-IS Networks)
 (quite old, but...)
