@@ -1,16 +1,17 @@
-# Key concepts
+# IS-IS key concepts
 
 ## Overview
-An L1/L2 IS-IS network operates in a similar fashion to an OSPF NSSA with no summaries.
+By default, an L1/L2 IS-IS network operates in a similar fashion to an OSPF NSSA with no summaries.
 
 ## Metric
 Unlike OSPF, in which the link metric is calculated automatically based on bandwidth, there is no automatic calculation for IS-IS. All IS-IS links use a metric of 10 by default.
 Normally, IS-IS metrics can have values up to 63.
 The total cost to a destination is the sum of the metrics on all outgoing interfaces along a particular path from the source to the destination.
 By default, the total path metric is limited to 1023.
-Wider metric:
-1) for Traffic Engineering; 2) Required if route leaking is used
-up to 16,777,215 (224 – 1)
+Wider metric:  
+1) for Traffic Engineering;  
+2) Required if route leaking is used
+up to 16,777,215 (224 – 1) 
 
 ## Multi-area IS-IS
 IS-IS Level 1 internal routes are redistributed into the Level 2 database by default.
