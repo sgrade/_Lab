@@ -51,7 +51,7 @@ This causes the transit traffic to avoid the overloaded routing device and take 
 # Packets (PDUs)
 https://sites.google.com/site/amitsciscozone/home/is-is/is-is-packets
 In ISO terminology, packets are referred to as Protocol Data Units (PDUs).
-There are 3 categories of IS-IS packets:
+There are 3 categories of IS-IS packets:  
 * IS-IS Hello Packets (IIHs)  
     These packets establish and maintain adjacencies between IS-IS neighbors.  
     Two kinds of IS-IS hellos PDUs exist: LAN hello PDUs and point-to-point hello PDUs.  
