@@ -4,14 +4,14 @@
 By default, an L1/L2 IS-IS network operates in a similar fashion to an OSPF NSSA with no summaries.
 
 ## Metric
-Unlike OSPF, in which the link metric is calculated automatically based on bandwidth, there is no automatic calculation for IS-IS. All IS-IS links use a metric of 10 by default.
-Normally, IS-IS metrics can have values up to 63.
-The total cost to a destination is the sum of the metrics on all outgoing interfaces along a particular path from the source to the destination.
-By default, the total path metric is limited to 1023.
+Unlike OSPF, in which the link metric is calculated automatically based on bandwidth, there is no automatic calculation for IS-IS. All IS-IS links use a metric of 10 by default.  
+Normally, IS-IS metrics can have values up to 63.  
+The total cost to a destination is the sum of the metrics on all outgoing interfaces along a particular path from the source to the destination.  
+By default, the total path metric is limited to 1023.  
 Wider metric:  
 1) for Traffic Engineering;  
 2) Required if route leaking is used
-up to 16,777,215 (224 – 1) 
+up to 16,777,215 (224 – 1)
 
 ## Multi-area IS-IS
 IS-IS Level 1 internal routes are redistributed into the Level 2 database by default.
@@ -48,12 +48,13 @@ The stub routing device links are advertised with the actual cost of the interfa
 This causes the transit traffic to avoid the overloaded routing device and take paths around the routing device.
 
 ## IS Type Bits
-01 (0x01) - router can support only Level 1 routing
+01 (0x01) - router can support only Level 1 routing  
 11 (0x03) - both Level 1 and Level 2 routing
 
 ## Packets (PDUs)
 https://sites.google.com/site/amitsciscozone/home/is-is/is-is-packets
-In ISO terminology, packets are referred to as Protocol Data Units (PDUs).
+
+In ISO terminology, packets are referred to as Protocol Data Units (PDUs).  
 There are 3 categories of IS-IS packets:  
 * IS-IS Hello Packets (IIHs)  
     These packets establish and maintain adjacencies between IS-IS neighbors.  
