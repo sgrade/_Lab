@@ -24,7 +24,7 @@ level-2-only
 
 ```
 interface fa0/1
-ip router isis  
+ip router isis
 int lo 0
 ip router isis
 end
@@ -32,7 +32,7 @@ end
 
 ## Verification
 ```
-show ip route isis  
-show clns is-neighbors  
+show ip route isis
+show clns is-neighbors
 show isis database
 ```

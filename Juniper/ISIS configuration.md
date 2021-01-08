@@ -1,5 +1,8 @@
-# JunOS CLI
+# JunOS configuration
 
+## Key commands
+
+```
 show isis interface
 show isis adjacency
 show isis adjacency detail
@@ -9,8 +12,9 @@ show isis route
 show route protocol isis
 show isis database extensive
 show isis database extensive | find tlv
+```
 
-# Best practices
+## Best practices
 from AJSPR (Advanced SP Routing course: Multilevel IS-IS Networks)
 (quite old, but...)
 
