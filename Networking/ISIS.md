@@ -23,21 +23,21 @@ Selective introduction of L2 information into an L1 area is called route leaking
 Because the L1/L2 border router naturally stops the transmission of Level 2 routes into a Level 1 area, it is the logical location to override that default. You can accomplish this goal with a Junos routing policy.
 
 ### External route
-By default, external routes are not leaked between the Level 1 database and the Level 2 database
-Level 1 routes advertised as external routes into Level 1 are not advertised to any Level 2 routers by default;
-routing policy is needed to effect the leaking of Level 1 externals into the L2 backbone.
-the use of wide-metrics-only alters the natural L1/L2 boundary in that routes are no longer distinguishable as being internal or external.
+By default, external routes are not leaked between the Level 1 database and the Level 2 database.  
+Level 1 routes advertised as external routes into Level 1 are not advertised to any Level 2 routers by default;  
+routing policy is needed to effect the leaking of Level 1 externals into the L2 backbone.  
+the use of wide-metrics-only alters the natural L1/L2 boundary in that routes are no longer distinguishable as being internal or external.  
 The use of wide metrics therefore results in the automatic leaking of all Level 1 routes into Level 2, because they will all appear to be internal routes.
 
 ### Up / Down bit
-"internal/external" is a bit field in the ISIS TLV 128/130 (narrow-metric) and TLV 135 (for wide-metric).
-In TLV 135 the field name is actually (UP/DOWN).
-Up means it can be "leaked" to another area, down means it won't be "leaked" to another area, this is to prevent routing loop.
+"internal/external" is a bit field in the ISIS TLV 128/130 (narrow-metric) and TLV 135 (for wide-metric).  
+In TLV 135 the field name is actually (UP/DOWN).  
+Up means it can be "leaked" to another area, down means it won't be "leaked" to another area, this is to prevent routing loop.  
 [Source](http://www.cisco.com/c/en/us/support/docs/ip/integrated-intermediate-system-to-intermediate-system-is-is/13796-route-leak.html)
 
-The potential for route leaking-induced routing loops is averted by a bit in the LSP known as the up/down (U/D) bit.
-The purpose of this bit is to inform the L1/L2 routers whether a configured policy can advertise a route.
-Only routes marked with the up direction are eligible for advertisement from Level 1 to Level 2.
+The potential for route leaking-induced routing loops is averted by a bit in the LSP known as the up/down (U/D) bit.  
+The purpose of this bit is to inform the L1/L2 routers whether a configured policy can advertise a route.  
+Only routes marked with the up direction are eligible for advertisement from Level 1 to Level 2.  
 All internal Level 1 routes will have the up/down bit set in this manner.
 
 ## Overload
