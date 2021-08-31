@@ -9,6 +9,30 @@ Telegraf / InfluxDB - for metrics.
 Prometheus - for event management.
 
 
+## Incident management
+Datadog - focus on observability (metrics, events, logs, traces on one platform).
+
+BigPanda - focus on event correlation, root cause analysis, automation of
+incident responce workflows.
+
+
+## Application Performance Management
+
+### OpenTelemetry
+A collection of tools, APIs, and SDKs ... to instrument, generate, collect, and export telemetry data (metrics, logs, and traces (MELT)) for analysis.
+
+Adopters: Cisco AppDynamics, Datadog, Dynatrace, NewRelic, Splunk; Google.
+
+Connected open-source projects: Jaeger (tracing), Prometheus (metrics).
+
+
+### NewRelic
+"Instrument, analyze, troubleshoot, and optimize your entire software stack."
+
+### Zipkin
+Tracing
+
+
 ## Messaging
 
 ### Kafka
