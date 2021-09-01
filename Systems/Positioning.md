@@ -4,19 +4,36 @@
 
 ELK (ElasticSearch / Logstash / Kibana) - for logs.
 
-Telegraf / InfluxDB - for metrics.
+Telegraf / InfluxDB - for metrics (push / pull).
 
-Prometheus - for event management.
+Prometheus - for metrics (pull) of cloud-native services.
 
 
 ## Incident management
-Datadog - focus on observability (metrics, events, logs, traces on one platform).
 
-BigPanda - focus on event correlation, root cause analysis, automation of
-incident responce workflows.
+### BigPanda
+Event correlation, root cause analysis, automation of incident response workflows.
+
+### Triggermesh
+Integrates applications and automation workflows
 
 
-## Application Performance Management
+## Collaboration
+
+### Ticketing
+Jira   
+Service Now
+
+### On-call
+Pagerduty   
+Opsgenie
+
+### Chat
+Slack   
+Microsoft Teams
+
+
+## Application Performance Monitoring
 
 ### OpenTelemetry
 A collection of tools, APIs, and SDKs ... to instrument, generate, collect, and export telemetry data (metrics, logs, and traces (MELT)) for analysis.
@@ -25,7 +42,6 @@ Adopters: Cisco AppDynamics, Datadog, Dynatrace, NewRelic, Splunk; Google.
 
 Connected open-source projects: Jaeger (tracing), Prometheus (metrics).
 
-
 ### NewRelic
 "Instrument, analyze, troubleshoot, and optimize your entire software stack."
 
@@ -33,10 +49,14 @@ Connected open-source projects: Jaeger (tracing), Prometheus (metrics).
 Tracing
 
 
+## Datadog
+Observability (metrics, events, logs, traces on one platform).
+
+
 ## Messaging
 
 ### Kafka
-Kafka consumers pull data from the topic
+Kafka consumers pull data from the topic.
 
 ### RabbitMQ
 Applications can subscribe to have RabbitMQ push enqueued messages (deliveries) to them.
