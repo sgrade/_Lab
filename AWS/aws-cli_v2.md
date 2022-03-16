@@ -37,12 +37,10 @@ To make it permanent, add it to:
 
 ### Profile
 
-"By default, the SDK checks the AWS_PROFILE environment variable to determine which profile to use. If no AWS_PROFILE variable is set, the SDK uses the default profile."
+"By default, the SDK checks AWS_PROFILE environment variable to determine which profile to use. If no AWS_PROFILE variable is set, the SDK uses default profile."
 [Source](https://docs.aws.amazon.com/sdk-for-go/v1/developer-guide/configuring-sdk.html)
 
 `export AWS_PROFILE=PROFILE_NAME`
-
-Note: change PROFILE_NAME to the name of your profile
 
 ### Test if your setup works
 
