@@ -22,12 +22,18 @@ Note: change PROFILE_NAME to the name of your profile
 ## Use
 
 ### Alias
-Below alias allows to use simple 'aws' instead of the long string
+Below alias allows using simple 'aws' instead of the long string with default profile.
 
-`alias aws='docker run --rm -it -v ~/.aws:/root/.aws -v $(pwd):/aws amazon/aws-cli`
+`alias aws='docker run --rm -it -v ~/.aws:/root/.aws -v $(pwd):/aws amazon/aws-cli'`
+
+Same with named profile.
+
+`alias aws='docker run --rm -it -v ~/.aws:/root/.aws -v $(pwd):/aws -e AWS_PROFILE amazon/aws-cli'`
 
 Note: The alias will disappear after reboot.
-To make it permanent, add it to ~/.bash_aliases
+To make it permanent, add it to:
+- bash: ~/.bash_aliases [how-to](https://bash.cyberciti.biz/guide/~/.bash_aliases)
+- zsh: ~/.zshrc
 
 ### Profile
 
@@ -37,3 +43,8 @@ To make it permanent, add it to ~/.bash_aliases
 `export AWS_PROFILE=PROFILE_NAME`
 
 Note: change PROFILE_NAME to the name of your profile
+
+### Test if your setup works
+
+`aws ec2 describe-instances`
+
