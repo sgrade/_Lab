@@ -1,4 +1,13 @@
-## bash
+## Bash
+
+### Examples and Best practices
+[A collection of simple Bash scripts.](https://github.com/ruanyf/simple-bash-scripts)
+
+[100 shell script examples](https://github.com/epety/100-shell-script-examples)
+
+[Best practices](https://bertvv.github.io/cheat-sheets/Bash.html)
+
+### bash itself
 [parentheses](https://ss64.com/bash/syntax-brackets.html)
 
 [command substitution](https://ss64.com/bash/syntax-substitution.html)

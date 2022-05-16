@@ -7,7 +7,9 @@ usage: tr [-Ccsu] string1 string2
 
 sed vs tr
 
-Sed and tr are old and simple batch editors in Unix systems. You can use sed to change any string of printable characters into what ever other printable characters. Using tr you can change any one character into any other character, except null (code 0).
+Use sed to change any string of printable characters into what ever other printable characters.
+
+Using tr you can change any one character into any other character, except null (code 0).
 
 [source](https://seismo.berkeley.edu/~rallen/resources/UNIXcmds/sed_tr_cut_od.html)
 
