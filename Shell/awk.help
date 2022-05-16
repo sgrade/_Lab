@@ -1,0 +1,22 @@
+Usage: awk [POSIX or GNU style options] -f progfile [--] file ...
+Usage: awk [POSIX or GNU style options] [--] 'program' file ...
+POSIX options : GNU long options: (standard)
+   -f progfile                --file=progfile
+   -F fs                      --field-separator=fs
+   -v var=val                 --assign=var=val
+Short options : GNU long options: (extensions)
+   -b                         --characters-as-bytes
+   -c                         --traditional
+   -d[file]                   --dump-variables[=file]
+   -e 'program-text'          --source='program-text'
+   -E file                    --exec=file
+   -g                         --gen-pot
+   -L [fatal]                 --lint[=fatal]
+   -n                         --non-decimal-data
+   -N                         --use-lc-numeric
+   -O                         --optimize
+   -p[file]                   --profile[=file]
+   -P                         --posix
+   -r                         --re-interval
+   -S                         --sandbox
+   -t                         --lint-old
