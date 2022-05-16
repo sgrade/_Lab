@@ -1,5 +1,7 @@
 Array
+```
 declare -a
+```
 
 everything in (()) is considered as part of arithmetic expression
 
@@ -51,13 +53,14 @@ awk.md
 ---
 
 read into an array and then filter out (remove) all containing the letter 'a' or 'A'.
+```
 a=$(cat | grep -vi a)
 echo $a
-
+```
 ---
 
 use for loops to display only odd natural numbers from 1 to 99.
-
+```
 #!/bin/bash
 for i in {1..99}
 do
@@ -65,12 +68,12 @@ if ((i % 2)); then
 echo $i
 fi
 done
-
-https://stackoverflow.com/questions/8304005/how-do-i-do-if-statement-arithmetic-in-bash
+```
+[Arithmetic](https://stackoverflow.com/questions/8304005/how-do-i-do-if-statement-arithmetic-in-bash)
 ---
 
-https://www.hackerrank.com/challenges/bash-tutorials---more-on-conditionals
-
+[Conditionals](https://www.hackerrank.com/challenges/bash-tutorials---more-on-conditionals)
+```
 #!/bin/bash
 read X
 read Y
@@ -87,26 +90,28 @@ if [ $X -eq $Y ] || [ $X -eq $Z ] || [ $Y -eq $Z ]; then
 else
     echo "SCALENE"
 fi
-
+```
 ---
 
 read formula
+```
 echo $formula | bc -l | xargs printf "%.3f"
+```
 
 ---
-
+```
 sum=0
 read n
 while read -r line || [[ -n "$line" ]]; do
     sum=$(($sum + $line))
 done
 printf "%.3f" $(echo "scale=10; $sum/$n" | bc -l)
-
+```
 ---
 
 Solution is from [the Discussions](https://www.hackerrank.com/challenges/fractal-trees-all/forum/comments/182305).
 I just analyzed it.
-
+```
 declare -A matrix
 num_rows=63
 num_columns=100
@@ -160,3 +165,4 @@ for ((i=1;i<=num_rows;i++)) do
     done
     printf "\n"
 done
+```
