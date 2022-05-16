@@ -54,7 +54,7 @@ awk.help
 awk.md
 ...
 ```
----
+
 
 Read into an array and then filter out (remove) all containing the letter 'a' or 'A'.
 ```

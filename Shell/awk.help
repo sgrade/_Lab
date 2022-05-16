@@ -1,3 +1,4 @@
+```
 Usage: awk [POSIX or GNU style options] -f progfile [--] file ...
 Usage: awk [POSIX or GNU style options] [--] 'program' file ...
 POSIX options : GNU long options: (standard)
@@ -20,3 +21,4 @@ Short options : GNU long options: (extensions)
    -r                         --re-interval
    -S                         --sandbox
    -t                         --lint-old
+```
