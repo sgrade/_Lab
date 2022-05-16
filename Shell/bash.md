@@ -3,42 +3,46 @@ Array
 declare -a
 ```
 
-everything in (()) is considered as part of arithmetic expression
+Everything in (()) is considered as part of arithmetic expression
 
----
 
 Given a list, each on a new line, read them into an array and then display the entire array space-delimited
 ```
 a=$(cat)
 echo ${a[@]}
 ```
+
 Same but elements from 2 to 7 (5 elements)
 ```
 a=($(cat))
 echo ${a[@]:3:5}
 ```
+
 Display the array 3 times (concatenate)
 ```
 a=$(cat)
 echo $a $a $a
 ```
+
 Display 3rd element
 ```
 a=($(cat))
 echo ${a[3]}
 ```
+
 Count number of elements in array
 ```
 arr=($(cat))
 echo ${#arr[@]}
 ```
+
 Substitute first letter of each word (capital) with .
 ```
 a=($(cat))
 echo ${a[@]/[A-Z]/.}
 ```
----
 
+Substitution
 ```
 a=$(ls)
 
@@ -52,12 +56,11 @@ awk.md
 ```
 ---
 
-read into an array and then filter out (remove) all containing the letter 'a' or 'A'.
+Read into an array and then filter out (remove) all containing the letter 'a' or 'A'.
 ```
 a=$(cat | grep -vi a)
 echo $a
 ```
----
 
 use for loops to display only odd natural numbers from 1 to 99.
 ```
@@ -69,10 +72,8 @@ echo $i
 fi
 done
 ```
-[Arithmetic](https://stackoverflow.com/questions/8304005/how-do-i-do-if-statement-arithmetic-in-bash)
----
 
-[Conditionals](https://www.hackerrank.com/challenges/bash-tutorials---more-on-conditionals)
+conditionals
 ```
 #!/bin/bash
 read X
@@ -91,14 +92,13 @@ else
     echo "SCALENE"
 fi
 ```
----
 
 read formula
 ```
 echo $formula | bc -l | xargs printf "%.3f"
 ```
 
----
+Cycle
 ```
 sum=0
 read n
@@ -107,10 +107,8 @@ while read -r line || [[ -n "$line" ]]; do
 done
 printf "%.3f" $(echo "scale=10; $sum/$n" | bc -l)
 ```
----
 
-Solution is from [the Discussions](https://www.hackerrank.com/challenges/fractal-trees-all/forum/comments/182305).
-I just analyzed it.
+The script is from [the Discussions](https://www.hackerrank.com/challenges/fractal-trees-all/forum/comments/182305). I just analyzed it.
 ```
 declare -A matrix
 num_rows=63
