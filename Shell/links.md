@@ -5,6 +5,8 @@
 
 [100 shell script examples](https://github.com/epety/100-shell-script-examples)
 
+[Log analysis](https://github.com/ndctdmh/loganalysis)
+
 [Best practices](https://bertvv.github.io/cheat-sheets/Bash.html)
 
 ### bash itself
