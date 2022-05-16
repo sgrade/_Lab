@@ -3,7 +3,9 @@
 ``awk 'BEGIN{printf "Sr No\tName\tSub\tMarks\n"} {print}' marks.txt``
 
 Printing Column or Field
-```awk '{print $3 "\t" $4}' marks.txt```
+```
+awk '{print $3 "\t" $4}' marks.txt
+```
 
 print the 3rd character from each line as a new line of output.
 ``awk '{print substr($0,3,1)}'``
