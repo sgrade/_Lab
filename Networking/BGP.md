@@ -349,7 +349,7 @@ RFC 4364                    BGP/MPLS IP VPNs               February 2006
 ###
 RFC 4384          BGP Communities for Data Collection      February 2006
 https://tools.ietf.org/html/rfc4384
-```
+
  Communities are also used for a wide
  variety of other applications, such as allowing customers to set
  attributes such as LOCAL_PREF [RFC1771] by sending appropriate
@@ -440,4 +440,3 @@ https://tools.ietf.org/html/rfc4384
      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
      |            <AS>               |   <R>   |X|        <CC>       |
      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-```
