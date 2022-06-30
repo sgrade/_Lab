@@ -71,6 +71,7 @@ My note: the above is relevant with multipath.
 When both paths are external, prefer the path that was received first (the oldest one).
 "This step minimizes route-flap because a newer path does not displace an older one, even if the newer path would be
 the preferred route based on the next decision criteria (Steps 11, 12, and 13)."
+
 [https://www.cisco.com/c/en/us/support/docs/ip/border-gateway-protocol-bgp/13753-25.html](https://www.cisco.com/c/en/us/support/docs/ip/border-gateway-protocol-bgp/13753-25.html)
 
 ## Attributes
@@ -176,7 +177,7 @@ The special 16-bit ASN 23456 ("AS_TRANS")[5] was assigned by IANA as a placehold
 
 [Source](https://en.wikipedia.org/wiki/Autonomous_system_(Internet))
 
-## route dampening (Cisco) / damping (Juniper)
+## Route dampening (Cisco) / damping (Juniper)
 
 There are five attributes:
 ```
@@ -226,9 +227,12 @@ as-path-prepend
 ```
 
 ## Policies based on RegExps
-### Examples:
+
+### Examples
 Find all routes originating in AS 1
+
 Find all routes that transited AS 100
+
 Find the routes originating in my own AS
 
 ### Cisco
@@ -288,14 +292,14 @@ https://www.ripe.net/manage-ips-and-asns/resource-management/certification/bgp-o
 bgpmon (now part of OpenDNS (now part of Cisco))
 http://www.routeviews.org/ - anyone can download and investigate
 ```
-	Other analyses using route-views data include:
-		Cyclops A useful system for detecting routing anomalies involving your network.
-		BGP::Inspect An indexed subset (5 peers) of routeviews data with a simple query interface.
-		A tool for visualizing BGP routing changes
-		Geoff Huston's analysis of BGP routing table dynamics
-		Sean Mccreary's work on routing table growth
-		Bradley Huffaker's analysis of the geographic scope of routing announcements, mapping ASes, announced prefixes,
-		and IPv4 address space to the country that is administratively responsible for routing them.
+Other analyses using route-views data include:
+Cyclops A useful system for detecting routing anomalies involving your network.
+BGP::Inspect An indexed subset (5 peers) of routeviews data with a simple query interface.
+A tool for visualizing BGP routing changes
+Geoff Huston's analysis of BGP routing table dynamics
+Sean Mccreary's work on routing table growth
+Bradley Huffaker's analysis of the geographic scope of routing announcements, mapping ASes, announced prefixes,
+and IPv4 address space to the country that is administratively responsible for routing them.
 ```
 
 ## Anycast
@@ -358,8 +362,7 @@ Well-known Communities
    ASNs.
 ```
 
-###
-RFC 4384          BGP Communities for Data Collection      February 2006
+### RFC 4384          BGP Communities for Data Collection      February 2006
 [ttps://tools.ietf.org/html/rfc4384](https://tools.ietf.org/html/rfc4384)
 ```
  Communities are also used for a wide
