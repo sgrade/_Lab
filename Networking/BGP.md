@@ -58,20 +58,20 @@ N WLLA OMNI (from CCNP ROUTE)
 
 From [Riot Games article](https://engineering.riotgames.com/news/fixing-internet-real-time-applications-part-ii)
 
-	BGP session age, a measure of how long a particular route has been in use.
-	Imagine two routes between Riot and a particular ISP: a faster route A and a slower route B.
-	If route A goes down, the traffic moves to route B certainly a reasonable shift as it's the best available route.
-	The problem occurs when route A comes back up as the ISP will continue to use route B simply because its session age is older,
-	and therefore automatically preferred.
-	This is done because it's the default behavior of the protocol,
-	and for ISPs with large amounts of peers it requires less work than manually rebalancing to the correct route.
-	We've had to find workarounds such as taking route B down intentionally to move that traffic back to route A.
+BGP session age, a measure of how long a particular route has been in use.
+Imagine two routes between Riot and a particular ISP: a faster route A and a slower route B.
+If route A goes down, the traffic moves to route B certainly a reasonable shift as it's the best available route.
+The problem occurs when route A comes back up as the ISP will continue to use route B simply because its session age is older,
+and therefore automatically preferred.
+This is done because it's the default behavior of the protocol,
+and for ISPs with large amounts of peers it requires less work than manually rebalancing to the correct route.
+We've had to find workarounds such as taking route B down intentionally to move that traffic back to route A.
 
-	My note: the above is relevant with multipath.
-	When both paths are external, prefer the path that was received first (the oldest one).
-		"This step minimizes route-flap because a newer path does not displace an older one, even if the newer path would be
-		the preferred route based on the next decision criteria (Steps 11, 12, and 13)."
-		https://www.cisco.com/c/en/us/support/docs/ip/border-gateway-protocol-bgp/13753-25.html
+My note: the above is relevant with multipath.
+When both paths are external, prefer the path that was received first (the oldest one).
+"This step minimizes route-flap because a newer path does not displace an older one, even if the newer path would be
+the preferred route based on the next decision criteria (Steps 11, 12, and 13)."
+[https://www.cisco.com/c/en/us/support/docs/ip/border-gateway-protocol-bgp/13753-25.html](https://www.cisco.com/c/en/us/support/docs/ip/border-gateway-protocol-bgp/13753-25.html)
 
 ## Attributes
 	Type_Code_value	Attribute_Name	Attribute_Type
@@ -176,33 +176,36 @@ The special 16-bit ASN 23456 ("AS_TRANS")[5] was assigned by IANA as a placehold
 
 [Source](https://en.wikipedia.org/wiki/Autonomous_system_(Internet))
 
-## route damping
-	route-map DAMP permit 10
-	set dampening 20 950 2500 80
-	àñ èíòåðåñóåò êîíñòðóêöèÿ set, ÷òî çà öèôðû îíà óñòàíàâëèâàåò.
-	20 — 20 ìèíóò ïðèíèìàåò çíà÷åíèå Half-Life-Time (ïî óìîë÷àíèþ 15)
-	950 — reuse limit
-	2500 — suppress limit
-	80 — max-life-time îáû÷íî ýòî 4 x half-life-time
+## route dampening (Cisco) / damping (Juniper)
+
+There are five attributes:
+```
+Penalty: 1000
+Suppress-Limit: 2000
+Half-Life: 15 minutes
+Reuse limit: 750
+Maximum Suppress-Limit: 60 minutes
+```
 
 ## Configuring Advanced BGP Features
-http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/iproute_bgp/configuration/xe-3s/irg-adv-features.html
-	BGP Support for Next-Hop Address Tracking
-	BGP Next-Hop Address Tracking
-	Default BGP Scanner Behavior
-	Selective BGP Next-Hop Route Filtering
-	BGP Next_Hop Attribute
-	BGP Nonstop Forwarding Awareness
-	Cisco NSF Routing and Forwarding Operation
-	Cisco Express Forwarding for NSF
-	BGP Graceful Restart for NSF
-	BGP NSF Awareness
-	BGP Graceful Restart per Neighbor
-	BGP Peer Session Templates
-	BGP Route Dampening
-	BFD for BGP
+[http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/iproute_bgp/configuration/xe-3s/irg-adv-features.html](http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/iproute_bgp/configuration/xe-3s/irg-adv-features.html)
 
-
+```
+BGP Support for Next-Hop Address Tracking
+BGP Next-Hop Address Tracking
+Default BGP Scanner Behavior
+Selective BGP Next-Hop Route Filtering
+BGP Next_Hop Attribute
+BGP Nonstop Forwarding Awareness
+Cisco NSF Routing and Forwarding Operation
+Cisco Express Forwarding for NSF
+BGP Graceful Restart for NSF
+BGP NSF Awareness
+BGP Graceful Restart per Neighbor
+BGP Peer Session Templates
+BGP Route Dampening
+BFD for BGP
+```
 
 ## Commands
 ```
@@ -223,64 +226,68 @@ as-path-prepend
 ```
 
 ## Policies based on RegExps
-	Examples:
-		Find all routes originating in AS 1
-		Find all routes that transited AS 100
-		Find the routes originating in my own AS
+### Examples:
+Find all routes originating in AS 1
+Find all routes that transited AS 100
+Find the routes originating in my own AS
 
-Cisco:
-	http://blog.ine.com/2008/01/06/understanding-bgp-regular-expressions/
-	```
-	+------------------------------------------------------+
-	| CHAR | USAGE                                         |
-	+------------------------------------------------------|
-	|  ^   | Start of string                               |
-	|------|-----------------------------------------------|
-	|  $   | End of string                                 |
-	|------|-----------------------------------------------|
-	|  []  | Range of characters                           |
-	|------|-----------------------------------------------|
-	|  -   | Used to specify range ( i.e. [0-9] )          |
-	|------|-----------------------------------------------|
-	|  ( ) | Logical grouping                              |
-	|------|-----------------------------------------------|
-	|  .   | Any single character                          |
-	|------|-----------------------------------------------|
-	|  *   | Zero or more instances                        |
-	|------|-----------------------------------------------|
-	|  +   | One or more instance                          |
-	|------|-----------------------------------------------|
-	|  ?   | Zero or one instance                          |
-	|------|-----------------------------------------------|
-	|  _   | Comma, open or close brace, open or close     |
-	|      | parentheses, start or end of string, or space |
-	+------------------------------------------------------+
-	```
-	```
-	+-------------+---------------------------+
-	| Expression  | Meaning                   |
-	|-------------+---------------------------|
-	| .*          | Anything                  |
-	|-------------+---------------------------|
-	| ^$          | Locally originated routes |
-	|-------------+---------------------------|
-	| ^100_       | Learned from AS 100       |
-	|-------------+---------------------------|
-	| _100$       | Originated in AS 100      |
-	|-------------+---------------------------|
-	| _100_       | Any instance of AS 100    |
-	|-------------+---------------------------|
-	| ^[0-9]+$    | Directly connected ASes
-	```
+### Cisco
+[http://blog.ine.com/2008/01/06/understanding-bgp-regular-expressions/](http://blog.ine.com/2008/01/06/understanding-bgp-regular-expressions/)
+
+```
++------------------------------------------------------+
+| CHAR | USAGE                                         |
++------------------------------------------------------|
+|  ^   | Start of string                               |
+|------|-----------------------------------------------|
+|  $   | End of string                                 |
+|------|-----------------------------------------------|
+|  []  | Range of characters                           |
+|------|-----------------------------------------------|
+|  -   | Used to specify range ( i.e. [0-9] )          |
+|------|-----------------------------------------------|
+|  ( ) | Logical grouping                              |
+|------|-----------------------------------------------|
+|  .   | Any single character                          |
+|------|-----------------------------------------------|
+|  *   | Zero or more instances                        |
+|------|-----------------------------------------------|
+|  +   | One or more instance                          |
+|------|-----------------------------------------------|
+|  ?   | Zero or one instance                          |
+|------|-----------------------------------------------|
+|  _   | Comma, open or close brace, open or close     |
+|      | parentheses, start or end of string, or space |
++------------------------------------------------------+
+```
+```
++-------------+---------------------------+
+| Expression  | Meaning                   |
+|-------------+---------------------------|
+| .*          | Anything                  |
+|-------------+---------------------------|
+| ^$          | Locally originated routes |
+|-------------+---------------------------|
+| ^100_       | Learned from AS 100       |
+|-------------+---------------------------|
+| _100$       | Originated in AS 100      |
+|-------------+---------------------------|
+| _100_       | Any instance of AS 100    |
+|-------------+---------------------------|
+| ^[0-9]+$    | Directly connected ASes
+```
 
 ## BGP security
 Resource Certification (RPKI) is a community-driven system in which all Regional Internet Registries, open source software developers and several major router vendors participate.
+
 It uses open standards that were developed in the Secure Inter-Domain Routing (sidr) Working Group in the IETF.
+
 https://www.ripe.net/manage-ips-and-asns/resource-management/certification/bgp-origin-validation
 
 ## Tools
 bgpmon (now part of OpenDNS (now part of Cisco))
 http://www.routeviews.org/ - anyone can download and investigate
+```
 	Other analyses using route-views data include:
 		Cyclops A useful system for detecting routing anomalies involving your network.
 		BGP::Inspect An indexed subset (5 peers) of routeviews data with a simple query interface.
@@ -289,9 +296,10 @@ http://www.routeviews.org/ - anyone can download and investigate
 		Sean Mccreary's work on routing table growth
 		Bradley Huffaker's analysis of the geographic scope of routing announcements, mapping ASes, announced prefixes,
 		and IPv4 address space to the country that is administratively responsible for routing them.
+```
 
 ## Anycast
-http://ddiguru.com/blog/125-anycast-dns-part-5-using-bgp
+[http://ddiguru.com/blog/125-anycast-dns-part-5-using-bgp](http://ddiguru.com/blog/125-anycast-dns-part-5-using-bgp)
 
 ## Timers
 Cisco routers, this defaults to 60 and 180 respectively.
@@ -299,9 +307,9 @@ Quagga config: "timers bgp 4 16" - this command adjusts the network timers for k
 A keepalive is sent every 4 seconds, and the router should wait 16 seconds for keepalive messages before it declares the peer dead.
 
 ## RFCs
-###
-RFC 1997               BGP Communities Attribute             August 1996
-https://tools.ietf.org/html/rfc1997
+### RFC 1997               BGP Communities Attribute             August 1996
+[https://tools.ietf.org/html/rfc1997](https://tools.ietf.org/html/rfc1997)
+```
 Well-known Communities
    The following communities have global significance and their
    operations shall be implemented in any community-attribute-aware BGP
@@ -321,10 +329,11 @@ Well-known Communities
          containing this value MUST NOT be advertised to external BGP
          peers (this includes peers in other members autonomous
          systems inside a BGP confederation).
+```
 
-###
-RFC 4360           BGP Extended Communities Attribute      February 2006
-https://tools.ietf.org/rfc/rfc4360.txt
+### RFC 4360           BGP Extended Communities Attribute      February 2006
+[https://tools.ietf.org/rfc/rfc4360.txt](https://tools.ietf.org/rfc/rfc4360.txt)
+```
 5.  Route Origin Community
    The Route Origin Community identifies one or more routers that inject
    a set of routes (that carry this Community) into BGP.  This is
@@ -332,10 +341,12 @@ https://tools.ietf.org/rfc/rfc4360.txt
    ...
    One possible use of the Route Origin Community is specified in
    [RFC4364].
+```
 
-###
-https://tools.ietf.org/html/rfc4364
-RFC 4364                    BGP/MPLS IP VPNs               February 2006
+### RFC 4364                    BGP/MPLS IP VPNs               February 2006
+[https://tools.ietf.org/html/rfc4364](https://tools.ietf.org/html/rfc4364)
+
+```
    The Site of Origin attribute, if used, is encoded as a Route Origin
    Extended Community [BGP-EXTCOMM].  The purpose of this attribute is
    to uniquely identify the set of routes learned from a particular
@@ -345,11 +356,12 @@ RFC 4364                    BGP/MPLS IP VPNs               February 2006
    connection.  It is particularly useful if BGP is being used as the
    PE/CE protocol, but different sites have not been assigned distinct
    ASNs.
+```
 
 ###
 RFC 4384          BGP Communities for Data Collection      February 2006
-https://tools.ietf.org/html/rfc4384
-
+[ttps://tools.ietf.org/html/rfc4384](https://tools.ietf.org/html/rfc4384)
+```
  Communities are also used for a wide
  variety of other applications, such as allowing customers to set
  attributes such as LOCAL_PREF [RFC1771] by sending appropriate
@@ -440,3 +452,4 @@ https://tools.ietf.org/html/rfc4384
      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
      |            <AS>               |   <R>   |X|        <CC>       |
      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+```
