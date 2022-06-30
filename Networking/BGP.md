@@ -230,6 +230,7 @@ as-path-prepend
 
 Cisco:
 	http://blog.ine.com/2008/01/06/understanding-bgp-regular-expressions/
+	```
 	+------------------------------------------------------+
 	| CHAR | USAGE                                         |
 	+------------------------------------------------------|
@@ -254,6 +255,8 @@ Cisco:
 	|  _   | Comma, open or close brace, open or close     |
 	|      | parentheses, start or end of string, or space |
 	+------------------------------------------------------+
+	```
+	```
 	+-------------+---------------------------+
 	| Expression  | Meaning                   |
 	|-------------+---------------------------|
@@ -268,17 +271,12 @@ Cisco:
 	| _100_       | Any instance of AS 100    |
 	|-------------+---------------------------|
 	| ^[0-9]+$    | Directly connected ASes
-
+	```
 
 ## BGP security
-	àòàêè:
-		Prefix hijack
-	Çàùèòà:
-		Resource Certification (RPKI) is a community-driven system in which all Regional Internet Registries,
-		open source software developers and several major router vendors participate.
-		It uses open standards that were developed in the Secure Inter-Domain Routing (sidr) Working Group in the IETF.
-		https://www.ripe.net/manage-ips-and-asns/resource-management/certification/bgp-origin-validation
-        https://habrahabr.ru/post/211146/
+Resource Certification (RPKI) is a community-driven system in which all Regional Internet Registries, open source software developers and several major router vendors participate.
+It uses open standards that were developed in the Secure Inter-Domain Routing (sidr) Working Group in the IETF.
+https://www.ripe.net/manage-ips-and-asns/resource-management/certification/bgp-origin-validation
 
 ## Tools
 bgpmon (now part of OpenDNS (now part of Cisco))
@@ -293,13 +291,12 @@ http://www.routeviews.org/ - anyone can download and investigate
 		and IPv4 address space to the country that is administratively responsible for routing them.
 
 ## Anycast
-	Àíîíñèðóåì îäèíàêîâûé ïðåôèêñ ñ ðàçíûõ òî÷åê ïðèñóòñòâèÿ
-        http://ddiguru.com/blog/125-anycast-dns-part-5-using-bgp
+http://ddiguru.com/blog/125-anycast-dns-part-5-using-bgp
 
 ## Timers
-    Cisco routers, this defaults to 60 and 180 respectively.
-    Quagga config: "timers bgp 4 16" - this command adjusts the network timers for keepalive and holddown timers.
-         a keepalive is sent every 4 seconds, and the router should wait 16 seconds for keepalive messages before it declares the peer dead.
+Cisco routers, this defaults to 60 and 180 respectively.
+Quagga config: "timers bgp 4 16" - this command adjusts the network timers for keepalive and holddown timers.
+     a keepalive is sent every 4 seconds, and the router should wait 16 seconds for keepalive messages before it declares the peer dead.
 
 ## RFCs
 ###
@@ -353,90 +350,90 @@ RFC 4364                    BGP/MPLS IP VPNs               February 2006
 RFC 4384          BGP Communities for Data Collection      February 2006
 https://tools.ietf.org/html/rfc4384
 
-   Communities are also used for a wide
-   variety of other applications, such as allowing customers to set
-   attributes such as LOCAL_PREF [RFC1771] by sending appropriate
-   communities to their service provider.  Other applications include
-   signaling various types of Virtual Private Networks (VPNs) (e.g.,
-   Virtual Private LAN Service (VPLS) [VPLS]), and carrying link
-   bandwidth for traffic engineering applications [RFC4360].
+ Communities are also used for a wide
+ variety of other applications, such as allowing customers to set
+ attributes such as LOCAL_PREF [RFC1771] by sending appropriate
+ communities to their service provider.  Other applications include
+ signaling various types of Virtual Private Networks (VPNs) (e.g.,
+ Virtual Private LAN Service (VPLS) [VPLS]), and carrying link
+ bandwidth for traffic engineering applications [RFC4360].
 
-   2. Definitions .....................................................3
-      2.1. Peers and Peering ..........................................3
-      2.2. Customer Routes ............................................3
-      2.3. Peer Routes ................................................3
-      2.4. Internal Routes ............................................4
-      2.5. Internal More Specific Routes ..............................4
-      2.6. Special Purpose Routes .....................................4
-      2.7. Upstream Routes ............................................4
-      2.8. National Routes ............................................4
-      2.9. Regional Routes ............................................4
+ 2. Definitions .....................................................3
+    2.1. Peers and Peering ..........................................3
+    2.2. Customer Routes ............................................3
+    2.3. Peer Routes ................................................3
+    2.4. Internal Routes ............................................4
+    2.5. Internal More Specific Routes ..............................4
+    2.6. Special Purpose Routes .....................................4
+    2.7. Upstream Routes ............................................4
+    2.8. National Routes ............................................4
+    2.9. Regional Routes ............................................4
 
-    2.3.  Peer Routes
-   Peer routes are those routes heard from peers via BGP, and not
-   propagated to other peers.  In particular, these routes are only
-   propagated to the service provider's customers.
-    2.4.  Internal Routes
-   Internal routes are those routes that a service provider originates
-   and passes to its peers and customers.  These routes are frequently
-   taken out of the address space allocated to a provider.
-    2.6.  Special Purpose Routes
-   Special purpose routes are those routes that do not fall into any of
-   the other classes described here.  In those cases in which such
-   routes need to be distinguished, a service provider may color such
-   routes with a unique value.  Examples of special purpose routes
-   include anycast routes and routes for overlay networks.
-    2.8.  National Routes
-   These are route sets that are sourced from and/or received within a
-   particular country.
-    2.9.  Regional Routes
-   Several global backbones implement regional policy based on their
-   deployed footprint and on strategic and business imperatives.
-   Service providers often have settlement-free interconnections with an
-   Autonomous System (AS) in one region, and that same AS is a customer
-   in another region.  This mandates use of regional routing, including
-   community attributes set by the network in question to allow easy
-   discrimination among regional routes.  For example, service providers
-   may treat a route set received from another service provider in
-   Europe differently than the same route set received in North America,
-   as it is common practice to sell transit in one region while peering
-   in the other.
+  2.3.  Peer Routes
+ Peer routes are those routes heard from peers via BGP, and not
+ propagated to other peers.  In particular, these routes are only
+ propagated to the service provider's customers.
+  2.4.  Internal Routes
+ Internal routes are those routes that a service provider originates
+ and passes to its peers and customers.  These routes are frequently
+ taken out of the address space allocated to a provider.
+  2.6.  Special Purpose Routes
+ Special purpose routes are those routes that do not fall into any of
+ the other classes described here.  In those cases in which such
+ routes need to be distinguished, a service provider may color such
+ routes with a unique value.  Examples of special purpose routes
+ include anycast routes and routes for overlay networks.
+  2.8.  National Routes
+ These are route sets that are sourced from and/or received within a
+ particular country.
+  2.9.  Regional Routes
+ Several global backbones implement regional policy based on their
+ deployed footprint and on strategic and business imperatives.
+ Service providers often have settlement-free interconnections with an
+ Autonomous System (AS) in one region, and that same AS is a customer
+ in another region.  This mandates use of regional routing, including
+ community attributes set by the network in question to allow easy
+ discrimination among regional routes.  For example, service providers
+ may treat a route set received from another service provider in
+ Europe differently than the same route set received in North America,
+ as it is common practice to sell transit in one region while peering
+ in the other.
 
-   This memo follows the best current practice of using the basic format
-   <AS>:<Value>.  The values for the route categories are described in
-   the following table:
-       Category                                 Value
-     ===============================================================
-     Reserved                                 <AS>:0000000000000000
-     Customer Routes                          <AS>:0000000000000001
-     Peer Routes                              <AS>:0000000000000010
-     Internal Routes                          <AS>:0000000000000011
-     Internal More Specific Routes            <AS>:0000000000000100
-     Special Purpose Routes                   <AS>:0000000000000101
-     Upstream Routes                          <AS>:0000000000000110
-     Reserved                                 <AS>:0000000000000111-
-                                              <AS>:0000011111111111
-     National and Regional Routes             <AS>:0000100000000000-
-                                              <AS>:1111111111111111
-      Encoded as                               <AS>:<R><X><CC>
-      Reserved National and Regional values    <AS>:0100000000000000-
-                                               <AS>:1111111111111111
+ This memo follows the best current practice of using the basic format
+ <AS>:<Value>.  The values for the route categories are described in
+ the following table:
+     Category                                 Value
+   ===============================================================
+   Reserved                                 <AS>:0000000000000000
+   Customer Routes                          <AS>:0000000000000001
+   Peer Routes                              <AS>:0000000000000010
+   Internal Routes                          <AS>:0000000000000011
+   Internal More Specific Routes            <AS>:0000000000000100
+   Special Purpose Routes                   <AS>:0000000000000101
+   Upstream Routes                          <AS>:0000000000000110
+   Reserved                                 <AS>:0000000000000111-
+                                            <AS>:0000011111111111
+   National and Regional Routes             <AS>:0000100000000000-
+                                            <AS>:1111111111111111
+    Encoded as                               <AS>:<R><X><CC>
+    Reserved National and Regional values    <AS>:0100000000000000-
+                                             <AS>:1111111111111111
    Where
-    <AS> is the 16-bit AS
-    <R>  is the 5-bit Region Identifier
-    <X>  is the 1-bit satellite link indication
-         X = 1 for satellite links, 0 otherwise
-    <CC> is the 10-bit ISO-3166-2 country code [ISO3166]
-   and <R> takes the values:
-    Africa (AF)                            00001
-    Oceania (OC)                           00010
-    Asia (AS)                              00011
-    Antarctica (AQ)                        00100
-    Europe (EU)                            00101
-    Latin America/Caribbean Islands (LAC)  00110
-    North America (NA)                     00111
-    Reserved                               01000-11111
-   That is:
+  <AS> is the 16-bit AS
+  <R>  is the 5-bit Region Identifier
+  <X>  is the 1-bit satellite link indication
+       X = 1 for satellite links, 0 otherwise
+  <CC> is the 10-bit ISO-3166-2 country code [ISO3166]
+ and <R> takes the values:
+  Africa (AF)                            00001
+  Oceania (OC)                           00010
+  Asia (AS)                              00011
+  Antarctica (AQ)                        00100
+  Europe (EU)                            00101
+  Latin America/Caribbean Islands (LAC)  00110
+  North America (NA)                     00111
+  Reserved                               01000-11111
+ That is:
 
       0                   1                   2                   3
       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
