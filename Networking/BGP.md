@@ -296,7 +296,7 @@ http://ddiguru.com/blog/125-anycast-dns-part-5-using-bgp
 ## Timers
 Cisco routers, this defaults to 60 and 180 respectively.
 Quagga config: "timers bgp 4 16" - this command adjusts the network timers for keepalive and holddown timers.
-     a keepalive is sent every 4 seconds, and the router should wait 16 seconds for keepalive messages before it declares the peer dead.
+A keepalive is sent every 4 seconds, and the router should wait 16 seconds for keepalive messages before it declares the peer dead.
 
 ## RFCs
 ###
@@ -349,7 +349,7 @@ RFC 4364                    BGP/MPLS IP VPNs               February 2006
 ###
 RFC 4384          BGP Communities for Data Collection      February 2006
 https://tools.ietf.org/html/rfc4384
-
+```
  Communities are also used for a wide
  variety of other applications, such as allowing customers to set
  attributes such as LOCAL_PREF [RFC1771] by sending appropriate
@@ -440,3 +440,4 @@ https://tools.ietf.org/html/rfc4384
      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
      |            <AS>               |   <R>   |X|        <CC>       |
      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+```
