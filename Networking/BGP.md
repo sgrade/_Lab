@@ -1,24 +1,34 @@
+## Connection
 TCP port 179
+
+## States
 Idle
+
 Connect - BGP is waiting for the transport protocol connection to be completed
 	If OK, send Open message, changes to OpenSent
 	If fails, restarts the ConnectRetryTimer, listens for incoming connections, changes to Active
+
 Active - initiating a transport protocol connection
 	If OK, send Open message, changes to OpenSent
 	If the local system’s BGP state remains in the Active state, you should check physical connectivity as well as the configuration
 		on both peers
+
 OpenSent - BGP waits for an OPEN message from its peer
 	When received, it is checked and verified to ensure that no errors exist.
 	If an error is detected, back to Idle.
 	If no errors are detected, BGP sends a Keepalive message.
+
 OpenConfirm - BGP waits for a KEEPALIVE or NOTIFICATION message.
 	If no KEEPALIVE received before the negotiated hold timer expires, the local system sends a NOTIFICATION message stating that
 		the hold timer has expired and changes its state to Idle.
 	If receives NOTIFICATION message, Idle.
 	If receives KEEPALIVE message, Established.
+
 Established - BGP can exchange UPDATE, NOTIFICATION, and KEEPALIVE messages with its peer
 	When receives UPDATE or KEEPALIVE message, and negotiated hold timer value is nonzero, it restarts its hold timer.
 	If the negotiated hold timer reaches zero, the local system sends out a KEEPALIVE message and restarts the hold timer.
+
+## Best-Path Algorithm
 
 N WLLA OMNI (from CCNP ROUTE)
 
@@ -36,20 +46,34 @@ N WLLA OMNI (from CCNP ROUTE)
 
 	Plus there are some additional steps. This where it is tricky.
 
-	For eBGP, select the oldest route. If bgp compare router-id is enabled, skip this step.
-	For iBGP and eBGP with Òbgp compare router-idÓ, lowest RID wins.
-	If it is still a tie, prefer neighbor with shortest RR cluster list length (only applies to iBGP RRs)
+	For eBGP, select the oldest route. If `bgp compare router-id` is enabled, skip this step.
+
+	For iBGP and eBGP with `bgp compare router-id`, lowest RID wins.
+
+	If it is still a tie, prefer neighbor with shortest RR cluster list length (only applies to iBGP RRs).
+
 	If it is still a tie, compare neighbor IP addresses, lowest wins.
 
-äëÿ êàæäîãî ñîñåäà ìîæåò áûòü óêàçàíî óíèêàëüíîå çíà÷åíèå òàéìåðîâ keepalive è hold.
-	BGP âûïîëíÿåò ïðîâåðêó òàéìåðîâ keepalive è hold, îäíàêî íåñîâïàäåíèå ýòèõ ïàðàìåòðîâ íå âëèÿåò íà óñòàíîâêó îòíîøåíèé ñîñåäñòâà.
-	Åñëè âûáðàííîå çíà÷åíèå òàéìåðà Hold ðàâíî íóëþ, òî ñîîáùåíèÿ Keepalive îòïðàâëÿòüñÿ íå áóäóò.
+### BGP session age
 
-clear bgp neighbor
-clear bgp neighbor soft
-crear bgp neighbor soft-inbound
+From [Riot Games article](https://engineering.riotgames.com/news/fixing-internet-real-time-applications-part-ii)
 
-Attributes:
+	BGP session age, a measure of how long a particular route has been in use.
+	Imagine two routes between Riot and a particular ISP: a faster route A and a slower route B.
+	If route A goes down, the traffic moves to route B certainly a reasonable shift as it's the best available route.
+	The problem occurs when route A comes back up as the ISP will continue to use route B simply because its session age is older,
+	and therefore automatically preferred.
+	This is done because it's the default behavior of the protocol,
+	and for ISPs with large amounts of peers it requires less work than manually rebalancing to the correct route.
+	We've had to find workarounds such as taking route B down intentionally to move that traffic back to route A.
+
+	My note: the above is relevant with multipath.
+	When both paths are external, prefer the path that was received first (the oldest one).
+		"This step minimizes route-flap because a newer path does not displace an older one, even if the newer path would be
+		the preferred route based on the next decision criteria (Steps 11, 12, and 13)."
+		https://www.cisco.com/c/en/us/support/docs/ip/border-gateway-protocol-bgp/13753-25.html
+
+## Attributes
 	Type_Code_value	Attribute_Name	Attribute_Type
 	1	ORIGIN				Well-known mandatory
 	2	AS_PATH				Well-known mandatory
@@ -69,7 +93,90 @@ Attributes:
 	16	Extended communities
 	256	Reserved for future development
 
-route damping
+### NEXT_HOP
+
+In an external BGP (eBGP) session, by default, the router changes the next hop attribute of a BGP route (to its own address) when the router sends out a route.
+
+The BGP Next Hop Unchanged feature allows BGP to send an update to an eBGP multihop peer with the next hop attribute unchanged. [Source](https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/iproute_bgp/configuration/xe-16-10/irg-xe-16-10-book/irg-next-hop.html)
+
+There is an exception to the default behavior of the router changing the next hop attribute of a BGP route when the router sends out a route. When the next hop is in the same subnet as the peering address of the eBGP peer, the next hop is not modified. This is referred to as third party next-hop.
+
+### MULTI_EXIT_DISC (MED)
+
+MED to influence inbound paths to our AS. Can do some primitive load balancing. Values are often translated from IGP metrics
+
+```
+metric igp
+```
+
+### Weight (Cisco only)
+
+Local to router
+
+## Understanding BGP Convergence
+[http://blog.ine.com/2010/11/22/understanding-bgp-convergence/](http://blog.ine.com/2010/11/22/understanding-bgp-convergence/)
+
+## Loop prevention
+In BGP there are two loop prevention mechanism:
+- for EBGP there is AS-Path attribute which states that router will drop BGP advertisement when it sees it own AS number in AS path attribute
+- for IBGP there is split horizon rule which states that update sent by one IBGP neighbor should be not send to another IBGP neighbor
+
+The split horizon rule is there for loop prevention. Within an AS the AS-PATH number doesn't change. So if you got looped topology you may create a loop without this rule. The real problem arises if the originator router delete the BGP advertisement, but because of absence of control mechanism in BGP the router can be fooled by a copy of advertisement received in same time from another node.
+
+We can prevent this behavior by two ways:
+
+- create full mesh bgp neighborship between nodes
+- route reflectors
+
+## Route reflectors
+
+Route reflectors have the special BGP ability to readvertise routes learned from an internal peer to other internal peers.
+
+The formula to compute the number of sessions required for a full mesh is v * (v - 1)/2, where v is the number of BGP-enabled devices. The full-mesh model does not scale well. Using a route reflector, you group routers into clusters, which are identified by numeric identifiers unique to the autonomous system (AS). Within the cluster, you must configure a BGP session from a single router (the route reflector) to each internal peer. With this configuration, the IBGP full-mesh requirement is met.
+
+You can configure multiple clusters and link them by configuring a full mesh of route reflectors.
+
+A route reflector that supports multiple clusters does not accept a route with the same cluster ID from a non-client router. Therefore, you must configure a different cluster ID for a redundant RR to reflect the route to other clusters.
+
+[Source](https://www.juniper.net/documentation/us/en/software/junos/bgp/topics/topic-map/bgp-rr.html)
+
+By default cluster ID is set to the BGP router id value, but can be set to an arbitrary 32-bit value. Multiple cluster IDs (MCID) feature allows to assign per-neighbor cluster IDs. Thus, there are 3 types of route reflection scenarios.
+
+- Between client and non-client
+- Between clients in the same cluster (intra-cluster)
+- Between clients in different clusters (inter-cluster)
+
+[Source](https://www.cisco.com/c/en/us/support/docs/ip/border-gateway-protocol-bgp/200153-BGP-Route-Reflection-and-Multiple-Cluste.html)
+
+## Cold vs Hot potato routing
+
+### Hot potato
+Hot - get rid of traffic as soon as possible (as it is hot).
+
+Wikipedia: hot-potato routing is the practice of passing traffic off to another autonomous system as quickly as possible, thus using their network for wide-area transit.
+
+Send it via the closest connection to Internet or peer. So we don't need to send traffic via our network - don't need to have capacity for it in our network - it is cheaper.
+
+### Cold potato
+Cold-potato routing is the opposite, where the originating autonomous system holds onto the packet until it is as near to the destination as possible.
+
+Examples: premium network services in public cloud providers.
+
+### Route announcement policy
+The terms can also be used to describe the route announcement policy of a network: by choosing to announce their network at a large number of points at the periphery of another autonomous system, a provider can pull incoming traffic onto their network as soon as possible, ensuring that the traffic stays on their network all the way to their customer's connection.[Source](https://en.wikipedia.org/wiki/Hot-potato_and_cold-potato_routing)
+
+## AS Numbers
+There are two types of BGP Autonomous system numbers: Private and Public. The Public AS numbers range from 1 to 64511 and the Private AS numbers range from 64512 to 65535 (last 10 bits).
+
+Until 2007, AS numbers were defined as 16-bit integers, which allowed for a maximum of 65,536 assignments. Since then,[3] the IANA has begun to also assign 32-bit AS numbers to regional Internet registry (RIRs).
+
+Numbers of the form 0.y are exactly the old 16-bit AS numbers.
+
+The special 16-bit ASN 23456 ("AS_TRANS")[5] was assigned by IANA as a placeholder for 32-bit ASN values for the case when 32-bit-ASN capable routers ("new BGP speakers") send BGP messages to routers with older BGP software ("old BGP speakers") which do not understand the new 32-bit ASNs.
+
+[Source](https://en.wikipedia.org/wiki/Autonomous_system_(Internet))
+
+## route damping
 	route-map DAMP permit 10
 	set dampening 20 950 2500 80
 	àñ èíòåðåñóåò êîíñòðóêöèÿ set, ÷òî çà öèôðû îíà óñòàíàâëèâàåò.
@@ -78,11 +185,7 @@ route damping
 	2500 — suppress limit
 	80 — max-life-time îáû÷íî ýòî 4 x half-life-time
 
-
-Veon's
-http://bgp.he.net/AS3216#_peers
-
-Configuring Advanced BGP Features
+## Configuring Advanced BGP Features
 http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/iproute_bgp/configuration/xe-3s/irg-adv-features.html
 	BGP Support for Next-Hop Address Tracking
 	BGP Next-Hop Address Tracking
@@ -99,46 +202,27 @@ http://www.cisco.com/c/en/us/td/docs/ios-xml/ios/iproute_bgp/configuration/xe-3s
 	BGP Route Dampening
 	BFD for BGP
 
-MED to influence inbound paths to our AS. Can do some primitive load balancing. Values are often translated from IGP metrics
-÷åì ìåíüøå, òåì ëó÷øå
-metric igp
 
-From Riot article
-	BGP session age, a measure of how long a particular route has been in use.
-	Imagine two routes between Riot and a particular ISP: a faster route A and a slower route B.
-	If route A goes down, the traffic moves to route B certainly a reasonable shift as it's the best available route.
-	The problem occurs when route A comes back up as the ISP will continue to use route B simply because its session age is older,
-	and therefore automatically preferred.
-	This is done because it's the default behavior of the protocol,
-	and for ISPs with large amounts of peers it requires less work than manually rebalancing to the correct route.
-	We've had to find workarounds such as taking route B down intentionally to move that traffic back to route A.
-		https://engineering.riotgames.com/news/fixing-internet-real-time-applications-part-ii
-		Riot's AS in US is AS (6507)
-		http://irrexplorer.nlnog.net/search/6507
 
-	My note: the above is relevant with multipath.
-	When both paths are external, prefer the path that was received first (the oldest one).
-		"This step minimizes route-flap because a newer path does not displace an older one, even if the newer path would be
-		the preferred route based on the next decision criteria (Steps 11, 12, and 13)."
-		https://www.cisco.com/c/en/us/support/docs/ip/border-gateway-protocol-bgp/13753-25.html
+## Commands
+```
+clear bgp neighbor
+clear bgp neighbor soft
+crear bgp neighbor soft-inbound
+```
 
-Understanding BGP Convergence
-http://blog.ine.com/2010/11/22/understanding-bgp-convergence/
+BGP next hop -> next-hop self / next hop peer-address
 
-BGP next hop (â EBGP áóäåò àäðåñ àíîíñèðóþùåãî ðîóòåðà, â IBGP íå ìåíÿåòñÿ) -> next-hop self / next hop peer-address
-	logical systems
-	routing table names
-	MPLS LSPs
-	xWDM?
-
+```
 show bgp summary
 show route terse
 show route hidden extensive
 show route protocol bgp extensive
 
 as-path-prepend
+```
 
-!!! Policies based on RegExps
+## Policies based on RegExps
 	Examples:
 		Find all routes originating in AS 1
 		Find all routes that transited AS 100
@@ -186,7 +270,7 @@ Cisco:
 	| ^[0-9]+$    | Directly connected ASes
 
 
-BGP security
+## BGP security
 	àòàêè:
 		Prefix hijack
 	Çàùèòà:
@@ -196,6 +280,7 @@ BGP security
 		https://www.ripe.net/manage-ips-and-asns/resource-management/certification/bgp-origin-validation
         https://habrahabr.ru/post/211146/
 
+## Tools
 bgpmon (now part of OpenDNS (now part of Cisco))
 http://www.routeviews.org/ - anyone can download and investigate
 	Other analyses using route-views data include:
@@ -207,7 +292,17 @@ http://www.routeviews.org/ - anyone can download and investigate
 		Bradley Huffaker's analysis of the geographic scope of routing announcements, mapping ASes, announced prefixes,
 		and IPv4 address space to the country that is administratively responsible for routing them.
 
+## Anycast
+	Àíîíñèðóåì îäèíàêîâûé ïðåôèêñ ñ ðàçíûõ òî÷åê ïðèñóòñòâèÿ
+        http://ddiguru.com/blog/125-anycast-dns-part-5-using-bgp
 
+## Timers
+    Cisco routers, this defaults to 60 and 180 respectively.
+    Quagga config: "timers bgp 4 16" - this command adjusts the network timers for keepalive and holddown timers.
+         a keepalive is sent every 4 seconds, and the router should wait 16 seconds for keepalive messages before it declares the peer dead.
+
+## RFCs
+###
 RFC 1997               BGP Communities Attribute             August 1996
 https://tools.ietf.org/html/rfc1997
 Well-known Communities
@@ -230,7 +325,7 @@ Well-known Communities
          peers (this includes peers in other members autonomous
          systems inside a BGP confederation).
 
-
+###
 RFC 4360           BGP Extended Communities Attribute      February 2006
 https://tools.ietf.org/rfc/rfc4360.txt
 5.  Route Origin Community
@@ -241,7 +336,7 @@ https://tools.ietf.org/rfc/rfc4360.txt
    One possible use of the Route Origin Community is specified in
    [RFC4364].
 
-
+###
 https://tools.ietf.org/html/rfc4364
 RFC 4364                    BGP/MPLS IP VPNs               February 2006
    The Site of Origin attribute, if used, is encoded as a Route Origin
@@ -254,16 +349,7 @@ RFC 4364                    BGP/MPLS IP VPNs               February 2006
    PE/CE protocol, but different sites have not been assigned distinct
    ASNs.
 
-
-Anycast
-	Àíîíñèðóåì îäèíàêîâûé ïðåôèêñ ñ ðàçíûõ òî÷åê ïðèñóòñòâèÿ
-        http://ddiguru.com/blog/125-anycast-dns-part-5-using-bgp
-Timers
-    Cisco routers, this defaults to 60 and 180 respectively.
-    Quagga config: "timers bgp 4 16" - this command adjusts the network timers for keepalive and holddown timers.
-         a keepalive is sent every 4 seconds, and the router should wait 16 seconds for keepalive messages before it declares the peer dead.
-
-
+###
 RFC 4384          BGP Communities for Data Collection      February 2006
 https://tools.ietf.org/html/rfc4384
 

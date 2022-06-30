@@ -7,7 +7,7 @@ Special addresses:
 Linux:
 	ip -6 addr
 
-Types: 	unicast, multicast, anycase
+Types: 	unicast, multicast, anycast
 	Unicast:
 		Global: 2000::/3 (it's effectively 2000::/4 and 3000::/4)
 		Link-local: fe80::/64
@@ -34,7 +34,7 @@ NDP (Neighbor Discovery Protocol)
 	Handles:
 		Host address auto configuration
 		Discovery of neighbor hosts
-		Determining link layer addresses of other hosts 
+		Determining link layer addresses of other hosts
 		Duplicate address detection
 		Finding routers (through router advertisements)
 		Prefix discovery
@@ -92,20 +92,20 @@ NDP (Neighbor Discovery Protocol)
 		ff02::fb - mDNS (Apple's Bonjour Service)
 		ff02::101 - link-local NTP
 
-Ethernet 
+Ethernet
 	EtherType
 		IPv4: 0x0800
 		IPv6: 0x86DD
 	Multicast MAC
 		33:33:xx:xx:xx:xx
 
-Jumbograms - layer 3 function. Through extension 
-Often confused with jumbo frames - layer 2 function		
-	
+Jumbograms - layer 3 function. Through extension
+Often confused with jumbo frames - layer 2 function
+
 Anycast
 	Use cases:
 		Global Anycast DNS
-		HA 
+		HA
 		mitigate DDoS
 		stable address services for services
 		...
@@ -119,7 +119,7 @@ ICMPv6
 			If router has smaller MTU than packet received, it sends "packet too big" ICMPv6 message
 		Neighbor discovery
 		...
-	On MS Windows: 
+	On MS Windows:
 		ping and tracert are the same
 		ping -6 cav6tf.org
 			Note: -6 only says that I am only interested in AAAA DNS record
@@ -137,14 +137,14 @@ ICMPv6
 			e.g.
 			ndisc6 2001:470:1f05:9a4:d532:e510:21f:38f5 eth0
 			it will tell what the MAC address is for IPv6 address
-			
+
 Subnetting - use natural nibble boundaries (count in increments of 4)
 	/48 - 1 subnets - 65536 /64 networks (VLANs)
 	/52 - 16 - 4096
 	/56 - 256 - 256
 	/60 - 4096 - 16
 	/64 - 65536 - 1
-			
+
 Prefix policy table - defines source address selection
 	OS version dependent (two different RFC: 3484 and 6724)
 	Windows:
@@ -158,7 +158,7 @@ Prefix policy table - defines source address selection
 SLAAC - Stateless Address Autoconfiguration
 	leaves the hosts the ability to make the autoconfiguration by themselves without the need to communicate to anybody else on the network
 	host or router interface is assigned a 64-bit prefix, and then the last 64 bits of its address are derived by the host or router with help of EUI-64 process.
-			
+
 DNS
 	AAAA (quad A) resolves into IPv6 address
 		(Note: A record = 32 bits of IPv6, quad = 4*32 (128 bit))
@@ -179,8 +179,3 @@ DNS
 		ping6, traceroute -6, ifconfig
 		Google DNS: 2001:4860:4860::8888, 2001:4860:4860::8844
 		OpenDNS: 2620:0:ccd::2
-		
-
-	
-	
-	
