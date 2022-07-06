@@ -20,8 +20,14 @@ Source - [https://www.youtube.com/watch?v=sOIOY6Ks0xA](https://www.youtube.com/w
 
 Basic Input/Output System (BIOS)
 
-BIOS only works in 16 bits and therefore it cannot address more than 1MB of space. As a consequence, it can only initialize one device at a time and the booting might take longer.
-
 Unified Extensible Firmware Interface (UEFI)
 
-In contrast, UEFI operates in 64-bit mode, meaning it has higher addressable memory and thus it makes the booting process faster.
+UEFI firmware provides several technical advantages over a traditional BIOS system:
+- Ability to boot a disk containing large partitions (over 2 TB) with a GUID
+- Partition Table (GPT)
+- Flexible pre-OS environment, including network capability, GUI, multi language
+32-bit (for example IA-32, ARM32) or 64-bit (for example x64, AArch64) pre-OS environment
+- C language programming
+- Modular design
+- Backward and forward compatibility
+[Source](https://en.wikipedia.org/wiki/Unified_Extensible_Firmware_Interface#Advantages)

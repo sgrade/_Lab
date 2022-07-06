@@ -12,10 +12,10 @@ a=$(cat)
 echo ${a[@]}
 ```
 
-Same but elements from 2 to 7 (5 elements)
+Same but 5 elements elements starting from index 1
 ```
 a=($(cat))
-echo ${a[@]:3:5}
+echo ${a[@]:1:5}
 ```
 
 Display the array 3 times (concatenate)

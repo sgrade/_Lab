@@ -22,6 +22,7 @@ After the design is sketched, validate the dataflow, check from the end user vie
 What type of system are we designing:
 - distributed: components are on different computers
 - scalable: vertical, horizontal
+
 Hyperscale: scale appropriately as increased demand is added to the system.
 
 ## Where to start
@@ -29,7 +30,7 @@ Hyperscale: scale appropriately as increased demand is added to the system.
 - What/who produce the inputs?
 - What/who consume the outputs? Until when the outputs are relevant?
 - What are the major (loosely-coupled) sub-systems?
-- Which variables we can use to describe / observe the distributed system(s) (in terms of M.E.L.T.)?
+- Which variables can we use to describe / observe the distributed system(s) (in terms of M.E.L.T.)?
 - What are the baselines for the variables?
   - We will use them for the calculations (e.g. number of fields to calculate storage requirements, number of queries per second to calculate rate)?
 - Calculations to size the requirements (per second, per day):
@@ -62,7 +63,7 @@ Hyperscale: scale appropriately as increased demand is added to the system.
     - Cost
     - Quality degradation
   - Metrics
-    - MTTR (mean time to repair) is the most important as it affect the SLO
+    - MTTR (mean time to repair) is the most important as it affects the SLO
   - Means
     - Redundancy
     - Replication
@@ -81,5 +82,7 @@ Hyperscale: scale appropriately as increased demand is added to the system.
 
 ### Data lake
 ETL vs ELT
+
 ETL - Extract, Transform, Load. Transformation is before the data lake.
+
 ELT - Extract, Load, Transform. Transformation is when we query from the data lake.
