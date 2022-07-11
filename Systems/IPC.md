@@ -24,3 +24,21 @@ The remote process establishes a network socket in its own instance of the proto
 ## [Pipeline (Unix)](https://en.wikipedia.org/wiki/Pipeline_(Unix))
 
 A pipeline is a mechanism for inter-process communication using message passing. A pipeline is a set of processes chained together by their standard streams, so that the output text of each process (stdout) is passed directly as input (stdin) to the next one.
+
+## Message Queues
+
+[https://tldp.org/LDP/tlk/ipc/ipc.html](https://tldp.org/LDP/tlk/ipc/ipc.html)
+
+Message queues allow one or more processes to write messages, which will be read by one or more reading processes. Linux maintains a list of message queues, the msgque vector; each element of which points to a msqid_ds data structure that fully describes the message queue.
+
+## Semaphores
+
+[https://tldp.org/LDP/tlk/ipc/ipc.html](https://tldp.org/LDP/tlk/ipc/ipc.html)
+
+In its simplest form a semaphore is a location in memory whose value can be tested and set by more than one process.
+
+## Shared Memory
+
+[https://tldp.org/LDP/tlk/ipc/ipc.html](https://tldp.org/LDP/tlk/ipc/ipc.html)
+
+Shared memory allows one or more processes to communicate via memory that appears in all of their virtual address spaces.
