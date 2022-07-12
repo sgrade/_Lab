@@ -18,7 +18,7 @@ A DNS server could be responsible (authoritative) for all records under the "xyz
 
 A **primary** server is a server that stores the original copies of all zone records. A **secondary** server uses a special automatic updating mechanism in the DNS protocol in communication with its primary to maintain an identical copy of the primary records.
 
-## What happens with I type www.example.com in browser
+## What happens when I type www.example.com in browser
 
 www.example.com is a DNS name. First, it needs to be resolved into the IP address.
 
@@ -47,7 +47,7 @@ Internet service providers typically provide recursive and caching name servers 
 - A (Host address)
 - AAAA (IPv6 host address)
 - ALIAS (Auto resolved alias)
- - provide "flattened" (no CNAME-record chain) synthesized records with data from a hidden source name.
+  - provides "flattened" (no CNAME-record chain) synthesized records with data from a hidden source name.
 - CNAME (Canonical name for an alias)
   - CNAME-records can be used to give a single computer multiple names (aliases). For example, the computer "computer1.xyz.com" may be both a web-server and an ftp-server, so two CNAME-records are defined: "www.xyz.com" = "computer1.xyz.com" and "ftp.xyz.com" = "computer1.xyz.com".
 - MX (Mail eXchange)
