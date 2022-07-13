@@ -2,31 +2,100 @@
 TCP port 179
 
 ## States
-Idle
+[Cisco](https://www.ciscopress.com/articles/article.asp?p=2756480&seqNum=4)
 
-Connect - BGP is waiting for the transport protocol connection to be completed
-	If OK, send Open message, changes to OpenSent
-	If fails, restarts the ConnectRetryTimer, listens for incoming connections, changes to Active
+- Idle
+	- This is the **first stage** of the BGP FSM. BGP detects a start event, tries to initiate a TCP connection to the BGP peer, and also listens for a new connect from a peer router.
+	- If an error causes BGP to go back to the Idle state for a **second time**, the ConnectRetryTimer (Cisco) / connect-retry (Juniper) is set to 60 seconds (Cisco) and must decrement to zero before the connection is initiated again.
+	- **Further failures** to leave the Idle state result in the ConnectRetryTimer doubling in length from the previous time.
 
-Active - initiating a transport protocol connection
-	If OK, send Open message, changes to OpenSent
-	If the local system’s BGP state remains in the Active state, you should check physical connectivity as well as the configuration
-		on both peers
+- Connect - BGP is waiting for the transport protocol connection to be completed.
+	- If OK, resets the ConnectRetryTimer, sends Open message, changes to OpenSent.
+	- If fails, restarts the ConnectRetryTimer, listens for incoming connections, changes to Active.
 
-OpenSent - BGP waits for an OPEN message from its peer
-	When received, it is checked and verified to ensure that no errors exist.
-	If an error is detected, back to Idle.
-	If no errors are detected, BGP sends a Keepalive message.
+- Active - BGP starts a new 3-way TCP handshake.
+	- If OK, send Open message, changes to OpenSent.
 
-OpenConfirm - BGP waits for a KEEPALIVE or NOTIFICATION message.
-	If no KEEPALIVE received before the negotiated hold timer expires, the local system sends a NOTIFICATION message stating that
-		the hold timer has expired and changes its state to Idle.
-	If receives NOTIFICATION message, Idle.
-	If receives KEEPALIVE message, Established.
+- OpenSent - BGP waits for an OPEN message from its peer.
+	- When received, it is checked and verified to ensure that no errors exist.
+	- If an error is detected, back to Idle.
+	- If no errors are detected, BGP sends a Keepalive message.
 
-Established - BGP can exchange UPDATE, NOTIFICATION, and KEEPALIVE messages with its peer
-	When receives UPDATE or KEEPALIVE message, and negotiated hold timer value is nonzero, it restarts its hold timer.
-	If the negotiated hold timer reaches zero, the local system sends out a KEEPALIVE message and restarts the hold timer.
+- OpenConfirm - BGP waits for a KEEPALIVE or NOTIFICATION message.
+	- If no KEEPALIVE received before the negotiated hold timer expires, the local system sends a NOTIFICATION message stating that the hold timer has expired and changes its state to Idle.
+	- If receives NOTIFICATION message, Idle.
+	- If receives KEEPALIVE message, Established.
+
+- Established - BGP can exchange UPDATE, NOTIFICATION, and KEEPALIVE messages with its peer.
+	- When receives UPDATE or KEEPALIVE message, and negotiated hold timer value is nonzero, it restarts its hold timer.
+	- If the negotiated hold timer reaches zero, the local system sends out a KEEPALIVE message and restarts the hold timer.
+
+## [BGP Message types](https://www.iana.org/assignments/bgp-parameters/bgp-parameters.xhtml#bgp-parameters-1)
+
+- 1 - OPEN - Sets up and establishes BGP adjacency.
+
+- 2 - UPDATE - Advertises, updates, or withdraws routes.
+
+- 3 - NOTIFICATION - Indicates an error condition to a BGP neighbor.
+
+- 4 - KEEPALIVE - Ensures that BGP neighbors are still alive.
+
+- 5 - ROUTE-REFRESH - requires that both BGP peers advertise route-refresh feature support in the OPEN message. If successfully negotiated, either BGP peer can use the route-refresh feature to request full routing information from the other end. [More](https://www.juniper.net/documentation/en_US/nsm2012.2/topics/concept/security-service-firewall-screenos-route-refresh-capability-overview.html)
+
+## BGP Troubleshooting
+
+[Juniper](https://www.juniper.net/documentation/us/en/software/junos/bgp/topics/topic-map/troubleshooting-bgp-sessions.html)
+
+### Check config on both sides
+- Peer IP
+- Peer ASN
+- MD5 password
+- Allowed number of prefixes to receive
+
+### Idle
+Reasons:
+- There is no route towards the neighbor
+- The neighbor refused an earlier connection attempt
+- The neighbor has sent more prefixes than the configured maximum-prefixes limit
+- The BGP session is administratively disabled (shutdown state)
+
+The session will remain in Idle until it’s cleared/reset.
+
+### Active
+Reasons:
+- Physical connectivity.
+- Configuration on both peers.
+- Other side doesn't respond
+	- If the other side doesn’t respond, the session can remain in Active for a long time.
+- Direct link to the BGP peer is broken, there is a route through another router, but no multihop is configured.
+
+### OpenSent
+If an error is found in the Open message, Notification message is sent.
+
+The following ites are compared:
+- BGP versions.
+- Source IP matches the IP configured for the neighbor.
+- AS number matches the ASN configure for the neighbor.
+- BGP Identifiers (RID) must be unique.
+- Security parameters (pass, TTL, ...)
+
+### Notification
+When something bad happens that a router needs to tear down a BGP session, it sends a NOTIFICATION message to the peer, then it terminates the session.
+
+Check:
+- "Notification sent" - we terminated the session from our end.
+- "Notification received" - the other end terminated the session.
+
+BGP Error (Notification) Codes are [here](https://www.iana.org/assignments/bgp-parameters/bgp-parameters.xhtml#bgp-parameters-3).
+
+### MD5 Password
+- The log entry should exist.
+- No MD5-related notification is sent.
+
+### Number of routes
+- How many routes are sent
+- How many routes are received
+
 
 ## Best-Path Algorithm
 
@@ -74,7 +143,7 @@ the preferred route based on the next decision criteria (Steps 11, 12, and 13)."
 
 [https://www.cisco.com/c/en/us/support/docs/ip/border-gateway-protocol-bgp/13753-25.html](https://www.cisco.com/c/en/us/support/docs/ip/border-gateway-protocol-bgp/13753-25.html)
 
-## Attributes
+## [BGP Path Attributes](https://www.iana.org/assignments/bgp-parameters/bgp-parameters.xhtml#bgp-parameters-2)
 	Type_Code_value	Attribute_Name	Attribute_Type
 	1	ORIGIN				Well-known mandatory
 	2	AS_PATH				Well-known mandatory
