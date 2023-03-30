@@ -11,3 +11,15 @@ Display the last  characters of an input file.
 ```
 tail -c 20
 ```
+
+tail -n +X starts at line X beginning at 1, i.e., it shows all but the first (X-1) lines.
+
+Display whole file. 
+```
+tail -n +1 file.txt
+```
+
+Display content of all files separated by `==> filename <==\n`
+```
+tail -n +1 *
+```
