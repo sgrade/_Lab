@@ -3,4 +3,19 @@
 # 192. Word Frequency
 # https://leetcode.com/problems/word-frequency/
 
-cat words.txt | tr -s ' ' '\n' | sort | uniq -c | sort -r | awk '{print $2, $1}'
+declare -A counter
+
+while read -r -a line; do
+    for ch in ${line[@]}; do (( counter[$ch]++ )); done
+done < words.txt
+
+printf "%s\n" "${counter[@]}" | sort -r
+
+output=""
+for key in "${!counter[@]}"; do
+    output+="$key ${counter[$key]}\n"
+done
+
+
+
+echo $output

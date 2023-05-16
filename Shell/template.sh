@@ -37,3 +37,17 @@ else
 	exit 1
 fi
 comment
+
+while read -r line; do echo "$line"; done < words.txt
+
+# OR
+
+input="words.txt"
+while read -r line
+do 
+	echo "$line"
+done < "$input"
+
+varname="varvalue"
+# Curly braces show where the variable name starts/stops
+echo "${varname}s"
