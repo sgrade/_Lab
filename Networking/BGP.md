@@ -238,11 +238,11 @@ The terms can also be used to describe the route announcement policy of a networ
 ## AS Numbers
 There are two types of BGP Autonomous system numbers: Private and Public. The Public AS numbers range from 1 to 64511 and the Private AS numbers range from 64512 to 65535 (last 10 bits).
 
-Until 2007, AS numbers were defined as 16-bit integers, which allowed for a maximum of 65,536 assignments. Since then,[3] the IANA has begun to also assign 32-bit AS numbers to regional Internet registry (RIRs).
+Until 2007, AS numbers were defined as 16-bit integers, which allowed for a maximum of 65,536 assignments. Since then, the IANA has begun to also assign 32-bit AS numbers to regional Internet registry (RIRs).
 
 Numbers of the form 0.y are exactly the old 16-bit AS numbers.
 
-The special 16-bit ASN 23456 ("AS_TRANS")[5] was assigned by IANA as a placeholder for 32-bit ASN values for the case when 32-bit-ASN capable routers ("new BGP speakers") send BGP messages to routers with older BGP software ("old BGP speakers") which do not understand the new 32-bit ASNs.
+The special 16-bit ASN 23456 ("AS_TRANS") was assigned by IANA as a placeholder for 32-bit ASN values for the case when 32-bit-ASN capable routers ("new BGP speakers") send BGP messages to routers with older BGP software ("old BGP speakers") which do not understand the new 32-bit ASNs.
 
 [Source](https://en.wikipedia.org/wiki/Autonomous_system_(Internet))
 

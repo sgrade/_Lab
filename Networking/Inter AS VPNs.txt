@@ -1,17 +1,19 @@
 Option A - back-to-back VRFs
-	No MPLS between Service Providers (only IP connectivity between ASBRs)
+	ASBRs interact as PE-CE
+	No MPLS between ASs (Service Providers) (only IP connectivity between ASBRs)
 	Unlabeled VPN IPv4
 	Sub-interface on on ASBR  per customer; ASBRs need to keep routing table per customer
-	
 
-Option B - 
+
+Option B -
 	MPLS between Service Providers (between ASBRs)
-	Labeled VPN IPv4
+	Single-hop MP-EBGP
 	MP-eBGP between ASBRs (exchanging VPNv4 routes)
-	
-		
-Option C - 
+	Labeled VPN IPv4
+
+
+Option C -
 	MPLS between Service Providers
-	Multihop MP-BGP
+	Multihop MP-EBGP between RRs
 	End-to-end LSPs between PEs of different SP
-	Sercurity might be a concern, when connecting with another SP, because you need to leak loopback IP addresses of RRs and PEs to another SP\\
+	Sercurity might be a concern, when connecting with another SP, because you need to leak loopback IP addresses of RRs and PEs to another SP
