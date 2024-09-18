@@ -29,7 +29,7 @@ DHCP operations fall into four phases: server discovery, IP lease offer, IP leas
 - DHCP Acknowledge Message – Broadcast in the network layer and unicast in the data link layer
 
 Discover
-```Source IP address: 0.0.0.0  
+```Source IP address: 0.0.0.0
 Destination IP address: 255.255.255.255
 Source MAC address: MAC address of DHCP clients
 Destination MAC address: FF:FF:FF:FF:FF:FF
@@ -79,17 +79,39 @@ The Dynamic Host Configuration Protocol version 6 (DHCPv6) is a network protocol
 
 In this example, without rapid-commit present, the server's link-local address is fe80::0011:22ff:fe33:5566 and the client's link-local address is fe80::aabb:ccff:fedd:eeff.
 
-Client sends a **solicit** from [fe80::aabb:ccff:fedd:eeff]:546 to multicast address [ff02::1:2]:547.(Roman: All_DHCP_Relay_Agents_and_Servers)
-Server replies with an **advertise** from [fe80::0011:22ff:fe33:5566]:547 to [fe80::aabb:ccff:fedd:eeff]:546.
-Client replies with a **request** from [fe80::aabb:ccff:fedd:eeff]:546 to [ff02::1:2]:547.
-Server finishes with a **reply** from [fe80::0011:22ff:fe33:5566]:547 to [fe80::aabb:ccff:fedd:eeff]:546.
+- Client sends a **solicit** from [fe80::aabb:ccff:fedd:eeff]:546 to multicast address [ff02::1:2]:547. (Roman: All_DHCP_Relay_Agents_and_Servers)
+- Server replies with an **advertise** from [fe80::0011:22ff:fe33:5566]:547 to [fe80::aabb:ccff:fedd:eeff]:546.
+- Client replies with a **request** from [fe80::aabb:ccff:fedd:eeff]:546 to [ff02::1:2]:547.
+- Server finishes with a **reply** from [fe80::0011:22ff:fe33:5566]:547 to [fe80::aabb:ccff:fedd:eeff]:546.
 
 [Source](https://en.wikipedia.org/wiki/DHCPv6)
 
+## Prefix delegation
+
+Since it would not be practical to manually provision networks at scale, in IPv6 networking, DHCPv6 prefix delegation (RFC 3633; RFC 8415 § 6.3) is used to assign a network address prefix and automate configuration and provisioning of the public routable addresses for the network. In the typical case of a home network, for example, the home router uses DHCPv6 to request a network prefix from the ISP's DHCPv6 server. Once assigned, the ISP routes this network to the customer's home router and the home router starts advertising the new address space to hosts on the network, either via SLAAC or using DHCPv6.
+
+DHCPv6 Prefix Delegation is supported by most ISPs who provide native IPv6 for consumers on fixed networks.
+
+Prefix delegation is generally not supported on cellular networks, for example LTE or 5G. Most cellular networks route a fixed /64 prefix to the subscriber.
+
+[Source]https://en.wikipedia.org/wiki/Prefix_delegation)
+
 ## Stateless address autoconfiguration (SLAAC)
 
-IPv6 hosts configure themselves automatically. Every interface has a self-generated link-local address and, when connected to a network, conflict resolution is performed and routers provide network prefixes via router advertisements.[19] Stateless configuration of routers can be achieved with a special router renumbering protocol.[20] When necessary, hosts may configure additional stateful addresses via Dynamic Host Configuration Protocol version 6 (DHCPv6) or static addresses manually.
+IPv6 hosts configure themselves automatically. Every interface has a self-generated link-local address and, when connected to a network, conflict resolution is performed and routers provide network prefixes via router advertisements.
 
-A stable, unique, globally addressable IP address would facilitate tracking a device across networks. Therefore, such addresses are a particular privacy concern for mobile devices, such as laptops and cell phones. To address these privacy concerns, the SLAAC protocol includes what are typically called "privacy addresses" or, more correctly, "temporary addresses", codified in RFC 4941, "Privacy Extensions for Stateless Address Autoconfiguration in IPv6".[22] Temporary addresses are random and unstable. A typical consumer device generates a new temporary address daily and will ignore traffic addressed to an old address after one week.
+Stateless configuration of routers can be achieved with a special router renumbering protocol. When necessary, hosts may configure additional stateful addresses via Dynamic Host Configuration Protocol version 6 (DHCPv6) or static addresses manually.
+
+A stable, unique, globally addressable IP address would facilitate tracking a device across networks. Therefore, such addresses are a particular privacy concern for mobile devices, such as laptops and cell phones. To address these privacy concerns, the SLAAC protocol includes what are typically called "privacy addresses" or, more correctly, "temporary addresses", codified in RFC 4941, "Privacy Extensions for Stateless Address Autoconfiguration in IPv6". Temporary addresses are random and unstable. A typical consumer device generates a new temporary address daily and will ignore traffic addressed to an old address after one week.
 
 [Source](https://en.wikipedia.org/wiki/IPv6#Stateless_address_autoconfiguration_(SLAAC))
+
+## Neighbor Discovery Protocol (NDP)
+
+NDP defines five ICMPv6 packet types for the purpose of router solicitation, router advertisement, neighbor solicitation, neighbor advertisement, and network redirects.
+
+- Router Solicitation (Type 133): Hosts inquire with Router Solicitation messages to locate routers on an attached link.
+- Router Advertisement (Type 134): Routers advertise their presence together with various link and Internet parameters either periodically, or in response to a Router Solicitation message.
+- Neighbor Solicitation (Type 135): Neighbor solicitations are used by nodes to determine the link-layer address of a neighbor, or to verify that a neighbor is still reachable via a cached link-layer address.
+- Neighbor Advertisement (Type 136): Neighbor advertisements are used by nodes to respond to a Neighbor Solicitation message, or unsolicited to provide new information quickly.
+- Redirect (Type 137): Routers may inform hosts of a better first-hop router for a destination.
