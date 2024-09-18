@@ -15,7 +15,11 @@
             "version": "latest",
             "ppa": "false"
         },
-		"ghcr.io/devcontainers/features/terraform:1": {}
+		
+		// For https://developer.hashicorp.com/terraform/tutorials/kubernetes/gke
+		"ghcr.io/devcontainers/features/terraform:1": {},
+		"ghcr.io/dhoeric/features/google-cloud-cli:1": {},
+		"ghcr.io/devcontainers-contrib/features/kubectl-asdf:2": {}
 	},
 	"customizations": {
 		// Configure properties specific to VS Code.
